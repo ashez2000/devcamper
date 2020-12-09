@@ -2,6 +2,7 @@ const dotenv = require('dotenv')
 const express = require('express')
 
 const connectDb = require('./db')
+const errorHandler = require('./middlewares/error.middleware')
 
 const bootcamps = require('./routers/bootcamp.router')
 
@@ -16,4 +17,11 @@ app.use(express.json())
 // routes
 app.use('/api/bootcamps', bootcamps)
 
+app.use(errorHandler)
+
+// server
 const server = app.listen(PORT, console.log(`Server Live | PORT: ${PORT}`))
+process.on('unhandledRejection', err => {
+    console.log(`Rejection Error: ${err.message}`)
+    server.close(() => process.exit(1))
+})

@@ -1,4 +1,6 @@
 const asyncHandler = require('../middlewares/async.middleware')
+const ErrorResponse = require('../utils/error.util')
+
 const Bootcamp = require('../models/bootcamp.model')
 
 // desc  : gets all bootcamps
@@ -12,6 +14,11 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
 // route : GET /api/bootcamps/:id | public
 exports.getBootcamp = asyncHandler(async (req, res, next) => {
     const bootcamp = await Bootcamp.findById(req.params.id)
+
+    if(!bootcamp) {
+        return next(new ErrorResponse(`No bootcamp with id: ${req.params.id}`, 404))
+    }
+
     res.status(200).json({success: true, data: bootcamp}) 
 })
 
@@ -30,12 +37,22 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
         runValidators: true
     }
     const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, opt)
+
+    if(!bootcamp) {
+        return next(new ErrorResponse(`No bootcamp with id: ${req.params.id}`, 404))
+    }
+
     res.status(200).json({success: true, data: bootcamp}) 
 })
 
 // desc  : gets all bootcamps
 // route : DELETE /api/bootcamps | private
 exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
-    await Bootcamp.findByIdAndDelete(req.params.id)
+    const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id)
+
+    if(!bootcamp) {
+        return next(new ErrorResponse(`No bootcamp with id: ${req.params.id}`, 404))
+    }
+
     res.status(200).json({success: true, data: {}}) 
 })
