@@ -12,7 +12,7 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
     const fieldsToExclude = ['select', 'sort', 'page', 'limit']
     fieldsToExclude.forEach(param => delete query[param])
 
-    let q = Bootcamp.find(query)
+    let q = Bootcamp.find(query).populate('courses')
 
     // select query
     if(req.query.select) {
@@ -81,15 +81,13 @@ exports.createBootcamp = asyncHandler(async (req, res, next) => {
 // desc  : updates a bootcamp
 // route : PUT /api/bootcamps/:id | private
 exports.updateBootcamp = asyncHandler(async (req, res, next) => {
-    const opt = {
-        new: true,
-        runValidators: true
-    }
-    const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, opt)
-
+    let bootcamp = await Bootcamp.findById(req.params.id)
     if(!bootcamp) {
         return next(new ErrorResponse(`No bootcamp with id: ${req.params.id}`, 404))
     }
+
+    const opt = { new: true, runValidators: true }
+    bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, opt)
 
     res.status(200).json({success: true, data: bootcamp}) 
 })
@@ -97,11 +95,13 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
 // desc  : gets all bootcamps
 // route : DELETE /api/bootcamps | private
 exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
-    const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id)
+    const bootcamp = await Bootcamp.findById(req.params.id)
 
     if(!bootcamp) {
         return next(new ErrorResponse(`No bootcamp with id: ${req.params.id}`, 404))
     }
+
+    bootcamp.remove()
 
     res.status(200).json({success: true, data: {}}) 
 })

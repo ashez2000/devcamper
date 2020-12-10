@@ -10,6 +10,12 @@ const {
     getBootcampsInRadius
 } = require('../controllers/bootcamp.controller')
 
+// route forward
+const courseRouter = require('./course.router')
+
+router.use('/:bootcampId/courses', courseRouter)
+
+
 router.route('/radius/:zipcode/:distance').get(getBootcampsInRadius)
 
 router.route('/')

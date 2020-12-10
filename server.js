@@ -5,6 +5,7 @@ const connectDb = require('./db')
 const errorHandler = require('./middlewares/error.middleware')
 
 const bootcamps = require('./routers/bootcamp.router')
+const courses = require('./routers/course.router')
 
 dotenv.config()
 const app = express()
@@ -16,6 +17,7 @@ app.use(express.json())
 
 // routes
 app.use('/api/bootcamps', bootcamps)
+app.use('/api/courses', courses)
 
 app.use(errorHandler)
 

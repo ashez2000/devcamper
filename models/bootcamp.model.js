@@ -98,6 +98,9 @@ const BootcampSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     }
+}, {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
 })
 
 // slug middleware
@@ -120,6 +123,20 @@ BootcampSchema.pre('save', async function(next) {
         country: loc[0].countryCode
     }
     this.address = undefined
+    next()
+})
+
+// virtual field
+BootcampSchema.virtual('courses', {
+    ref: 'Course',
+    localField: '_id',
+    foreignField: 'bootcamp',
+    justOne: false
+})
+
+// delete course 
+BootcampSchema.pre('remove', async function(next) {
+    await this.model('Course').deleteMany({ bootcamp: this._id })
     next()
 })
 
