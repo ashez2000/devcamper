@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config() // ? why this is required
 const geocoder = require('node-geocoder')
 
 const con = {
