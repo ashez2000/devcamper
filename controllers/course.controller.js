@@ -7,20 +7,12 @@ const Bootcamp = require('../models/bootcamp.model')
 // desc  : gets all bootcamps
 // route : GET /api/courses and /api/bootcamps/:bootcampId/courses | public
 exports.getCourses = asyncHandler(async (req, res, next) => {
-    let q
-
     if(req.params.bootcampId) {
-        q = Course.find({ bootcamp: req.params.bootcampId })
-    } else {
-        q = Course.find().populate({
-            path: 'bootcamp',
-            select: 'name description'
-        })
+        const courses = await Course.find({ bootcamp: req.params.bootcampId })
+        return res.status(200).json({ success: true, count: courses, data: courses })
     }
 
-    const courses = await q
-
-    res.status(200).json({ success: true, count: courses.length, data: courses })
+    res.status(200).json(req.advResults)
 })
 
 // desc  : get single course

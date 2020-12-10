@@ -7,56 +7,7 @@ const Bootcamp = require('../models/bootcamp.model')
 // desc  : gets all bootcamps
 // route : GET /api/bootcamps | public
 exports.getBootcamps = asyncHandler(async (req, res, next) => {
-    let query = { ...req.query }
-
-    const fieldsToExclude = ['select', 'sort', 'page', 'limit']
-    fieldsToExclude.forEach(param => delete query[param])
-
-    let q = Bootcamp.find(query).populate('courses')
-
-    // select query
-    if(req.query.select) {
-        const fields = req.query.select.split(',').join(' ')
-        q = q.select(fields)
-    }
-
-    // sort query
-    if(req.query.sort) {
-        const sortBy = req.query.sort.split(',').join(' ')
-        q = q.sort(sortBy)
-    } else {
-        q = q.sort('-createdAt')
-    }
-
-    // pagination
-    const page = parseInt(req.query.page, 10) || 1
-    const limit = parseInt(req.query.page, 10) || 20
-    const s = (page - 1) * limit
-    const e = page * limit
-    const total = await Bootcamp.countDocuments()
-    q = q.skip(s).limit(limit)
-
-    // executing query
-    const bootcamps = await q
-
-    // pagination res
-    let pagination = {}
-
-    if (e < total) {
-        pagination.next = {
-            page: page + 1,
-            limit
-        }
-    }
-
-    if (s > 0) {
-        pagination.prev = {
-            page: page - 1,
-            limit
-        }
-    }
-
-    res.status(200).json({success: true, count: bootcamps.length, pagination, data: bootcamps}) 
+    res.status(200).json(req.advResults)
 })
 
 // desc  : gets a single bootcamp
