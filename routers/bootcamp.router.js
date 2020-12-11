@@ -14,6 +14,9 @@ const {
 const Bootcamp = require('../models/bootcamp.model')
 const advRes = require('../middlewares/advResults.middleware')
 
+// auth middleware
+const { protect, authorize } = require('../middlewares/auth.middleware')
+
 // route forward
 const courseRouter = require('./course.router')
 
@@ -24,11 +27,11 @@ router.route('/radius/:zipcode/:distance').get(getBootcampsInRadius)
 
 router.route('/')
 .get(advRes(Bootcamp, 'course'), getBootcamps)
-.post(createBootcamp)
+.post(protect, authorize('admin', 'publisher'), createBootcamp)
 
 router.route('/:id')
 .get(getBootcamp)
-.put(updateBootcamp)
-.delete(deleteBootcamp)
+.put(protect, authorize('admin', 'publisher'), updateBootcamp)
+.delete(protect, authorize('admin', 'publisher'), deleteBootcamp)
 
 module.exports = router

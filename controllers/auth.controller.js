@@ -32,3 +32,10 @@ exports.login = asyncHandler(async (req, res, next) => {
     const token = user.getSignedToken()
     res.status(200).json({ success: true, token })
 })
+
+// desc  : get logged user
+// route : GET /api/auth/me | privete
+exports.getLoggedUser = asyncHandler(async (req, res, next) => {
+    const user = await User.findById(req.user.id)
+    res.status(200).json({ success: true, data: user })
+})
