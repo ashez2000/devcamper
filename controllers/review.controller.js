@@ -45,3 +45,40 @@ exports.addReview = asyncHandler(async (req, res, next) => {
 
     res.status(201).json({ success: true, data: review })
 })
+
+// desc  : update review
+// route : PUT /api/reviews/:id | private
+exports.updateReview = asyncHandler(async (req, res, next) => {
+    let review = await Review.findById(req.params.id)
+    if(!review) {
+        return next(new ErrorResponse(`no review with id: ${req.params.id}`, 404))
+    }
+
+    // ownership
+    if(review.user.toString() !== req.user.id && req.user.role !== 'admin') {
+        return next(new ErrorResponse(`user with: ${req.user.id} id not authorizer to update this review`, 401))
+    }
+
+    const opt = { new: true, runValidators: true }
+    review = await Review.findByIdAndUpdate(req.params.id, req.body, opt)
+
+    res.status(201).json({ success: true, data: review })
+})
+
+// desc  : delete review
+// route : DELETE /api/reviews/:id | private
+exports.deleteReview = asyncHandler(async (req, res, next) => {
+    let review = await Review.findById(req.params.id)
+    if(!review) {
+        return next(new ErrorResponse(`no review with id: ${req.params.id}`, 404))
+    }
+
+    // ownership
+    if(review.user.toString() !== req.user.id && req.user.role !== 'admin') {
+        return next(new ErrorResponse(`user with: ${req.user.id} id not authorizer to update this review`, 401))
+    }
+
+    review.remove()
+
+    res.status(201).json({ success: true, data: {} })
+})

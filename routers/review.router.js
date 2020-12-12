@@ -4,7 +4,9 @@ const router = express.Router({ mergeParams: true })
 const {
     getReviews,
     getReview,
-    addReview
+    addReview,
+    updateReview,
+    deleteReview
 } = require('../controllers/review.controller')
 
 // advanced results
@@ -21,5 +23,7 @@ router.route('/')
 
 router.route('/:id')
 .get(getReview)
+.put(protect, authorize('user', 'admin'), updateReview)
+.delete(protect, authorize('user', 'admin'), deleteReview)
 
 module.exports = router
