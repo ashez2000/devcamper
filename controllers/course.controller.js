@@ -9,7 +9,7 @@ const Bootcamp = require('../models/bootcamp.model')
 exports.getCourses = asyncHandler(async (req, res, next) => {
     if(req.params.bootcampId) {
         const courses = await Course.find({ bootcamp: req.params.bootcampId })
-        return res.status(200).json({ success: true, count: courses, data: courses })
+        return res.status(200).json({ success: true, count: courses.length, data: courses })
     }
 
     res.status(200).json(req.advResults)
@@ -51,7 +51,7 @@ exports.createCourse = asyncHandler(async (req, res, next) => {
     res.status(200).json({ success: true, data: course })
 })
 
-// desc  : creates course
+// desc  : updates course
 // route : PUT /api/courses/:id | privete
 exports.updateCourse = asyncHandler(async (req, res, next) => {
     let course = await Course.findById(req.params.id)
@@ -60,12 +60,13 @@ exports.updateCourse = asyncHandler(async (req, res, next) => {
     }
 
     // user ownership
-    if(bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    if(course.user.toString() !== req.user.id && req.user.role !== 'admin') {
         return next(new ErrorResponse(`user: ${req.user.id} is not authoerized to update course to this bootcamp`, 401))
     }
 
     const opt = { new: true, runValidators: true }
     course = await Course.findByIdAndUpdate(req.params.id, req.body, opt)
+    course.save()
 
     res.status(200).json({ success: true, data: course })
 })

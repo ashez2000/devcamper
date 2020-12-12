@@ -61,6 +61,7 @@ exports.updateReview = asyncHandler(async (req, res, next) => {
 
     const opt = { new: true, runValidators: true }
     review = await Review.findByIdAndUpdate(req.params.id, req.body, opt)
+    review.save()
 
     res.status(201).json({ success: true, data: review })
 })
