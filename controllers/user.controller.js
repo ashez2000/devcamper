@@ -21,14 +21,14 @@ exports.getUser = asyncHandler(async (req, res, next) => {
     res.status(200).json({ success: true, data: user })
 })
 
-// desc  : create user
+// desc  : creates a user
 // route : POST /api/users/ | admin
 exports.createUser = asyncHandler(async (req, res, next) => {
     const user = await User.create(req.body)
     res.status(200).json({ success: true, data: user })
 })
 
-// desc  : update user
+// desc  : updates a user
 // route : PUT /api/users/:id | admin
 exports.updateUser = asyncHandler(async (req, res, next) => {
     let user = await User.findById(req.params.id)
@@ -42,7 +42,7 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
     res.status(200).json({ success: true, data: user })
 })
 
-// desc  : delte user
+// desc  : deletes a user
 // route : DELETE /api/users/:id | admin
 exports.deleteUser = asyncHandler(async (req, res, next) => {
     const user = await User.findById(req.params.id)

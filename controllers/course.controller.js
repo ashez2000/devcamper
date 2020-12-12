@@ -4,7 +4,7 @@ const ErrorResponse = require('../utils/error.util')
 const Course = require('../models/course.model')
 const Bootcamp = require('../models/bootcamp.model')
 
-// desc  : gets all bootcamps
+// desc  : gets all courses
 // route : GET /api/courses and /api/bootcamps/:bootcampId/courses | public
 exports.getCourses = asyncHandler(async (req, res, next) => {
     if(req.params.bootcampId) {
@@ -15,8 +15,8 @@ exports.getCourses = asyncHandler(async (req, res, next) => {
     res.status(200).json(req.advResults)
 })
 
-// desc  : get single course
-// route : GET /api/courses and /api/courses/:id | public
+// desc  : gets single course
+// route : /api/courses/:id | public
 exports.getCourse = asyncHandler(async (req, res, next) => {
     const course = await (await Course.findById(req.params.id)).populate({
         path: 'bootcamp',
@@ -30,8 +30,8 @@ exports.getCourse = asyncHandler(async (req, res, next) => {
     res.status(200).json({ success: true, data: course })
 })
 
-// desc  : creates course
-// route : POST /api/bootcamps/:bootcampId/courses | privete
+// desc  : creates a course
+// route : POST /api/bootcamps/:bootcampId/courses | private
 exports.createCourse = asyncHandler(async (req, res, next) => {
     req.body.bootcamp = req.params.bootcampId
     req.body.user = req.user.id
@@ -51,8 +51,8 @@ exports.createCourse = asyncHandler(async (req, res, next) => {
     res.status(200).json({ success: true, data: course })
 })
 
-// desc  : updates course
-// route : PUT /api/courses/:id | privete
+// desc  : updates a course
+// route : PUT /api/courses/:id | private
 exports.updateCourse = asyncHandler(async (req, res, next) => {
     let course = await Course.findById(req.params.id)
     if(!course) {
@@ -71,7 +71,7 @@ exports.updateCourse = asyncHandler(async (req, res, next) => {
     res.status(200).json({ success: true, data: course })
 })
 
-// desc  : delete course
+// desc  : deletes a course
 // route : DELETE /api/courses/:id | privete
 exports.deleteCourse = asyncHandler(async (req, res, next) => {
     let course = await Course.findById(req.params.id)

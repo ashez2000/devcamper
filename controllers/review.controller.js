@@ -15,7 +15,7 @@ exports.getReviews = asyncHandler(async (req, res, next) => {
     res.status(200).json(req.advResults)
 })
 
-// desc  : get single review
+// desc  : gets a single review
 // route : GET /api/reviews/:id | public
 exports.getReview = asyncHandler(async (req, res, next) => {
     const review = await Review.findById(req.params.id).populate({
@@ -30,7 +30,7 @@ exports.getReview = asyncHandler(async (req, res, next) => {
     res.status(200).json({ success: true, data: review })
 })
 
-// desc  : add review
+// desc  : adds a review
 // route : POST /api/reviews/:id | private
 exports.addReview = asyncHandler(async (req, res, next) => {
     req.body.bootcamp = req.params.bootcampId
@@ -46,7 +46,7 @@ exports.addReview = asyncHandler(async (req, res, next) => {
     res.status(201).json({ success: true, data: review })
 })
 
-// desc  : update review
+// desc  : updates a review
 // route : PUT /api/reviews/:id | private
 exports.updateReview = asyncHandler(async (req, res, next) => {
     let review = await Review.findById(req.params.id)
@@ -66,7 +66,7 @@ exports.updateReview = asyncHandler(async (req, res, next) => {
     res.status(201).json({ success: true, data: review })
 })
 
-// desc  : delete review
+// desc  : deletes a review
 // route : DELETE /api/reviews/:id | private
 exports.deleteReview = asyncHandler(async (req, res, next) => {
     let review = await Review.findById(req.params.id)

@@ -1,9 +1,10 @@
 {
   "name": "bootcamp-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "bootcamp api is a node backend service for online bootcamps.",
   "main": "server.js",
   "scripts": {
+    "start": "node server.js",
     "dev": "nodemon server.js"
   },
   "keywords": [],

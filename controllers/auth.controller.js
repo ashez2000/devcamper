@@ -34,14 +34,14 @@ exports.login = asyncHandler(async (req, res, next) => {
 })
 
 // desc  : get logged user
-// route : GET /api/auth/me | privete
+// route : GET /api/auth/me | private
 exports.getLoggedUser = asyncHandler(async (req, res, next) => {
     const user = await User.findById(req.user.id)
     res.status(200).json({ success: true, data: user })
 })
 
 // desc  : update details of user
-// route : PUT /api/auth/updatedetails | privete
+// route : PUT /api/auth/updatedetails | private
 exports.updateUser = asyncHandler(async (req, res, next) => {
     const fields = {
         name: req.body.name,
@@ -55,7 +55,7 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
 })
 
 // desc  : update password of user
-// route : PUT /api/auth/updatedetails | privete
+// route : PUT /api/auth/updatedetails | private
 exports.updatePassword = asyncHandler(async (req, res, next) => {
     const { currentPassword, newPassword } = req.body
     const user = await User.findById(req.user.id).select('+password')
