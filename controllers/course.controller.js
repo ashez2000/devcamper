@@ -34,10 +34,16 @@ exports.getCourse = asyncHandler(async (req, res, next) => {
 // route : POST /api/bootcamps/:bootcampId/courses | privete
 exports.createCourse = asyncHandler(async (req, res, next) => {
     req.body.bootcamp = req.params.bootcampId
+    req.body.user = req.user.id
 
     const bootcamp = await Bootcamp.findById(req.params.bootcampId)
     if(!bootcamp) {
         return next(new ErrorResponse(`No bootcamp with id: ${req.params.bootcampId}`, 404))
+    }
+
+    // user ownership
+    if(bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+        return next(new ErrorResponse(`user: ${req.user.id} is not authoerized to create course to this bootcamp`, 401))
     }
 
     const course = await Course.create(req.body)
@@ -53,6 +59,11 @@ exports.updateCourse = asyncHandler(async (req, res, next) => {
         return next(new ErrorResponse(`No course with id: ${req.params.id}`, 404))
     }
 
+    // user ownership
+    if(bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+        return next(new ErrorResponse(`user: ${req.user.id} is not authoerized to update course to this bootcamp`, 401))
+    }
+
     const opt = { new: true, runValidators: true }
     course = await Course.findByIdAndUpdate(req.params.id, req.body, opt)
 
@@ -65,6 +76,11 @@ exports.deleteCourse = asyncHandler(async (req, res, next) => {
     let course = await Course.findById(req.params.id)
     if(!course) {
         return next(new ErrorResponse(`No course with id: ${req.params.id}`, 404))
+    }
+
+    // user ownership
+    if(bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+        return next(new ErrorResponse(`user: ${req.user.id} is not authoerized to update course to this bootcamp`, 401))
     }
 
     course.remove()
