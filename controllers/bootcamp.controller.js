@@ -25,6 +25,15 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
 // desc  : creates a bootcamp
 // route : POST /api/bootcamps | private
 exports.createBootcamp = asyncHandler(async (req, res, next) => {
+    req.body.user = req.user.id
+
+    // only one bootcamp 
+    // admin can create multiples
+    const publised = await Bootcamp.findOne({ user: req.user.id })
+    if(publised && req.user.role !== 'admin') {
+        return next(new ErrorResponse(`user with id  : ${req.user.id} already publised a bootcamp`))
+    }
+
     const bootcamp = await Bootcamp.create(req.body)
     res.status(200).json({success: true, data: bootcamp}) 
 })
@@ -35,6 +44,11 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
     let bootcamp = await Bootcamp.findById(req.params.id)
     if(!bootcamp) {
         return next(new ErrorResponse(`No bootcamp with id: ${req.params.id}`, 404))
+    }
+
+    // user ownership
+    if(bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+        return next(new ErrorResponse(`user: ${req.user.id} is not authoerized to update this bootcamp`, 401))
     }
 
     const opt = { new: true, runValidators: true }
@@ -50,6 +64,11 @@ exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
 
     if(!bootcamp) {
         return next(new ErrorResponse(`No bootcamp with id: ${req.params.id}`, 404))
+    }
+
+    // user ownership
+    if(bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+        return next(new ErrorResponse(`user: ${req.user.id} is not authoerized to delete this bootcamp`, 401))
     }
 
     bootcamp.remove()
