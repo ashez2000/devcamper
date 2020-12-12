@@ -19,8 +19,10 @@ const { protect, authorize } = require('../middlewares/auth.middleware')
 
 // route forward
 const courseRouter = require('./course.router')
+const reviewRouter = require('./review.router')
 
 router.use('/:bootcampId/courses', courseRouter)
+router.use('/:bootcampId/reviews', reviewRouter)
 
 
 router.route('/radius/:zipcode/:distance').get(getBootcampsInRadius)

@@ -8,6 +8,7 @@ const bootcamps = require('./routers/bootcamp.router')
 const courses = require('./routers/course.router')
 const auth = require('./routers/auth.router')
 const users = require('./routers/user.router')
+const reviews = require('./routers/review.router')
 
 dotenv.config()
 const app = express()
@@ -22,6 +23,7 @@ app.use('/api/bootcamps', bootcamps)
 app.use('/api/courses', courses)
 app.use('/api/auth', auth)
 app.use('/api/users', users)
+app.use('/api/reviews', reviews)
 
 app.use(errorHandler)
 
