@@ -1,15 +1,11 @@
-# bootcamp-api
+# Bootcamp-api
 
-bootcamp api is a node backend service for online bootcamps.
+Bootcamp-api is a node backend service for organizing online bootcamps.
 
-## env vars required
+## ENV VARS
 
-**MONGO_URI** : mongodb database connection
-
-**GEO_PROVIDER** : geocoder provider
-
-**GEO_KEY** : map api key
-
-**JWT_KEY** : jsonwebtoken secret
-
-**JWT_EXP** : expire time
+**MONGO_URI** : mongodb database connection <br>
+**GEO_PROVIDER** : geocoder provider <br>
+**GEO_KEY** : map api key <br>
+**JWT_KEY** : jsonwebtoken secret <br>
+**JWT_EXP** : expire time <br>

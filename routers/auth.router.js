@@ -2,11 +2,11 @@ const express = require('express')
 const router = express.Router()
 
 const {
-    register,
-    login,
-    getLoggedUser,
-    updateUser,
-    updatePassword
+  register,
+  login,
+  getLoggedUser,
+  updateUser,
+  updatePassword,
 } = require('../controllers/auth.controller')
 
 // auth middleware

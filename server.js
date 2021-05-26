@@ -10,6 +10,7 @@ const rateLimit = require('./middlewares/ratelimit.middleware')
 const hpp = require('hpp')
 const cors = require('cors')
 
+// routes
 const bootcamps = require('./routers/bootcamp.router')
 const courses = require('./routers/course.router')
 const auth = require('./routers/auth.router')
@@ -19,9 +20,9 @@ const reviews = require('./routers/review.router')
 dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 3000
-
 connectDb()
 
+// app config
 app.use(express.json())
 app.use(mongoSanitize())
 app.use(helmet())
@@ -40,8 +41,18 @@ app.use('/api/reviews', reviews)
 app.use(errorHandler)
 
 // server
-const server = app.listen(PORT, console.log(`Server Live | PORT: ${PORT}`))
-process.on('unhandledRejection', err => {
-    console.log(`Rejection Error: ${err.message}`)
-    server.close(() => process.exit(1))
+app.listen(PORT, () => {
+  console.log(`Bootcamp APi | PORT: ${PORT}`)
+  console.log(`Server running ${process.env.NODE_ENV} mode`)
 })
+
+/* 
+  env vars:
+
+  NODE_ENV
+  GEO_KEY
+  GEO_PROVIDER
+  JWT_EXP
+  JWT_KEY
+  MONGO_URI
+*/
