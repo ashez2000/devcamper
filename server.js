@@ -36,6 +36,10 @@ app.use(fileupload())
 app.use(express.static(path.join(__dirname, 'public')))
 
 // routes
+app.get('/', (req, res) => {
+  res.redirect('https://documenter.getpostman.com/view/13842753/TzXxkdXp')
+})
+
 app.use('/api/bootcamps', bootcamps)
 app.use('/api/courses', courses)
 app.use('/api/auth', auth)
@@ -46,7 +50,7 @@ app.use(errorHandler)
 
 // server
 app.listen(PORT, () => {
-  console.log(`Bootcamp APi | PORT: ${PORT}`)
+  console.log(`Bootcamp api: http://localhost:${PORT}`)
   console.log(`Server running ${process.env.NODE_ENV} mode`)
 })
 
