@@ -1,9 +1,11 @@
 const dotenv = require('dotenv')
 const express = require('express')
+const path = require('path')
 
 const connectDb = require('./db')
 const errorHandler = require('./middlewares/error.middleware')
 const mongoSanitize = require('express-mongo-sanitize')
+const fileupload = require('express-fileupload')
 const helmet = require('helmet')
 const xss = require('xss-clean')
 const rateLimit = require('./middlewares/ratelimit.middleware')
@@ -30,6 +32,8 @@ app.use(xss())
 app.use(rateLimit)
 app.use(hpp())
 app.use(cors())
+app.use(fileupload())
+app.use(express.static(path.join(__dirname, 'public')))
 
 // routes
 app.use('/api/bootcamps', bootcamps)
