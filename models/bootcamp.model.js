@@ -1,3 +1,4 @@
+const fs = require('fs')
 const mongoose = require('mongoose')
 const slugify = require('slugify')
 const geocoder = require('../utils/geocoder.util')
@@ -141,9 +142,19 @@ BootcampSchema.virtual('courses', {
   justOne: false,
 })
 
-// delete course
+// delete associated course and bootcamp image from server
 BootcampSchema.pre('remove', async function (next) {
-  await this.model('Course').deleteMany({ bootcamp: this._id })
+  try {
+    await this.model('Course').deleteMany({ bootcamp: this._id })
+    if (this.photo !== 'default.jpg')
+      fs.rm(`./public/uploads/${this.photo}`, (err) => {
+        if (err) {
+          throw err
+        }
+      })
+  } catch (err) {
+    console.error(err)
+  }
   next()
 })
 
