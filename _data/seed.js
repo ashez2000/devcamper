@@ -6,10 +6,10 @@ const dotenv = require('dotenv')
 dotenv.config()
 
 // Load models
-const Bootcamp = require('./models/bootcamp.model')
-const Course = require('./models/course.model')
-const User = require('./models/user.model')
-const Review = require('./models/review.model')
+const Bootcamp = require('../models/bootcamp.model')
+const Course = require('../models/course.model')
+const User = require('../models/user.model')
+const Review = require('../models/review.model')
 
 // Connect to DB
 mongoose.connect(process.env.MONGO_URI, {
@@ -20,21 +20,10 @@ mongoose.connect(process.env.MONGO_URI, {
 })
 
 // Read JSON files
-const bootcamps = JSON.parse(
-  fs.readFileSync(`${__dirname}/_data/bootcamps.json`, 'utf-8')
-)
-
-const courses = JSON.parse(
-  fs.readFileSync(`${__dirname}/_data/courses.json`, 'utf-8')
-)
-
-const users = JSON.parse(
-  fs.readFileSync(`${__dirname}/_data/users.json`, 'utf-8')
-)
-
-const reviews = JSON.parse(
-  fs.readFileSync(`${__dirname}/_data/reviews.json`, 'utf-8')
-)
+const bootcamps = JSON.parse(fs.readFileSync(`bootcamps.json`, 'utf-8'))
+const courses = JSON.parse(fs.readFileSync(`courses.json`, 'utf-8'))
+const users = JSON.parse(fs.readFileSync(`users.json`, 'utf-8'))
+const reviews = JSON.parse(fs.readFileSync(`reviews.json`, 'utf-8'))
 
 // Import into DB
 const importData = async () => {

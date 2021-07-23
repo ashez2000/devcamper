@@ -1,66 +1,33 @@
+const mongoose = require('mongoose')
 const dotenv = require('dotenv')
-const express = require('express')
-const path = require('path')
 
-const connectDb = require('./db')
-const errorHandler = require('./middlewares/error.middleware')
-const mongoSanitize = require('express-mongo-sanitize')
-const fileupload = require('express-fileupload')
-const helmet = require('helmet')
-const xss = require('xss-clean')
-const rateLimit = require('./middlewares/ratelimit.middleware')
-const hpp = require('hpp')
-const cors = require('cors')
-
-// routes
-const bootcamps = require('./routers/bootcamp.router')
-const courses = require('./routers/course.router')
-const auth = require('./routers/auth.router')
-const users = require('./routers/user.router')
-const reviews = require('./routers/review.router')
+process.on('uncaughtException', (err) => {
+  console.log('uncaught exception, shutting down server')
+  console.log(err.name, err.message)
+  process.exit(1)
+})
 
 dotenv.config()
-const app = express()
-const PORT = process.env.PORT || 3000
-connectDb()
+const app = require('./app')
 
-// app config
-app.use(express.json())
-app.use(mongoSanitize())
-app.use(helmet())
-app.use(xss())
-app.use(rateLimit)
-app.use(hpp())
-app.use(cors())
-app.use(fileupload())
-app.use(express.static(path.join(__dirname, 'public')))
+mongoose
+  .connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true,
+  })
+  .then((conn) => console.log(`mongodb:${conn.connection.host}`))
 
-// routes
-app.get('/', (req, res) => {
-  res.redirect('https://documenter.getpostman.com/view/13842753/TzXxkdXp')
+const server = app.listen(process.env.PORT, () => {
+  console.log(`bootcamp-api, port:${process.env.PORT}`)
+  console.log(`server running in ${process.env.NODE_ENV} mode`)
 })
 
-app.use('/api/bootcamps', bootcamps)
-app.use('/api/courses', courses)
-app.use('/api/auth', auth)
-app.use('/api/users', users)
-app.use('/api/reviews', reviews)
-
-app.use(errorHandler)
-
-// server
-app.listen(PORT, () => {
-  console.log(`Bootcamp api: http://localhost:${PORT}`)
-  console.log(`Server running ${process.env.NODE_ENV} mode`)
+process.on('unhandledRejection', (err) => {
+  console.log('unhandled rejection, shutting down server')
+  console.log(err.name, err.message)
+  server.close(() => {
+    process.exit(1)
+  })
 })
-
-/* 
-  env vars:
-
-  NODE_ENV
-  GEO_KEY
-  GEO_PROVIDER
-  JWT_EXP
-  JWT_KEY
-  MONGO_URI
-*/
