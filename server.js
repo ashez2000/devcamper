@@ -1,14 +1,14 @@
-const mongoose = require('mongoose')
-const dotenv = require('dotenv')
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
 
 process.on('uncaughtException', (err) => {
-  console.log('uncaught exception, shutting down server')
-  console.log(err.name, err.message)
-  process.exit(1)
-})
+  console.log('uncaught exception, shutting down server');
+  console.log(err.name, err.message);
+  process.exit(1);
+});
 
-dotenv.config()
-const app = require('./app')
+dotenv.config();
+const app = require('./app');
 
 mongoose
   .connect(process.env.MONGO_URI, {
@@ -17,17 +17,23 @@ mongoose
     useFindAndModify: false,
     useUnifiedTopology: true,
   })
-  .then((conn) => console.log(`mongodb:${conn.connection.host}`))
+  .then((conn) => console.log(`mongodb:${conn.connection.host}`));
 
 const server = app.listen(process.env.PORT, () => {
-  console.log(`bootcamp-api, port:${process.env.PORT}`)
-  console.log(`server running in ${process.env.NODE_ENV} mode`)
-})
+  console.log(`bootcamp-api, port:${process.env.PORT}`);
+  console.log(`server running in ${process.env.NODE_ENV} mode`);
+});
 
 process.on('unhandledRejection', (err) => {
-  console.log('unhandled rejection, shutting down server')
-  console.log(err.name, err.message)
+  console.log('unhandled rejection, shutting down server');
+  console.log(err.name, err.message);
   server.close(() => {
-    process.exit(1)
-  })
-})
+    process.exit(1);
+  });
+});
+
+process.on('SIGTERM', () => {
+  server.close(() => {
+    console.log('Shutting down server !');
+  });
+});
