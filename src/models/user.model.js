@@ -1,29 +1,13 @@
-const mongoose = require('mongoose')
-const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const bcrypt = require('bcryptjs')
+const mongoose = require('mongoose')
 const ErrorResponse = require('../utils/error.util')
 
 const UserSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Please provide a name'],
-  },
-  email: {
-    type: String,
-    required: [true, 'Please provide an email'],
-    unique: true,
-  },
-  role: {
-    type: String,
-    enum: ['user', 'publisher'],
-    default: 'user',
-  },
-  password: {
-    type: String,
-    required: [true, 'Please provide a password'],
-    minlength: 6,
-    select: false,
-  },
+  name: String,
+  email: String,
+  password: String,
+  role: String,
 })
 
 // hash password
