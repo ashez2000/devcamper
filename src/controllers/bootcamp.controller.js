@@ -10,8 +10,9 @@ const Bootcamp = require('../models/bootcamp.model')
 exports.getBootcamps = asyncHandler(async (req, res, next) => {
   const bootcamps = await Bootcamp.find()
 
-  res.status(200).json({
+  return res.status(200).json({
     status: 'success',
+    results: bootcamps.length,
     bootcamps,
   })
 })
@@ -30,7 +31,7 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
     )
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     status: 'success',
     bootcamp,
   })
@@ -44,7 +45,7 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
 exports.createBootcamp = asyncHandler(async (req, res, next) => {
   const bootcamp = await Bootcamp.create(req.body)
 
-  res.status(201).json({
+  return res.status(201).json({
     status: 'success',
     bootcamp,
   })
@@ -56,7 +57,10 @@ exports.createBootcamp = asyncHandler(async (req, res, next) => {
  * @access  Private
  */
 exports.updateBootcamp = asyncHandler(async (req, res, next) => {
-  const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body)
+  const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  })
 
   if (!bootcamp) {
     return next(
@@ -64,7 +68,7 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
     )
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     status: 'success',
     bootcamp,
   })
@@ -84,7 +88,7 @@ exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
     )
   }
 
-  res.status(200).json({
+  return res.status(200).json({
     status: 'success',
     bootcamp,
   })
