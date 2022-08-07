@@ -10,7 +10,7 @@ const errorHandler = require('./middlewares/error.middleware')
 const rateLimit = require('./middlewares/ratelimit.middleware')
 
 const auth = require('./routers/auth.router')
-// const bootcamps = require('./routers/bootcamp.router');
+const bootcamps = require('./routers/bootcamp.router')
 // const courses = require('./routers/course.router');
 // const users = require('./routers/user.router');
 // const reviews = require('./routers/review.router');
@@ -27,7 +27,7 @@ app.use(rateLimit)
 app.use(express.json())
 
 app.use('/api/v1/auth', auth)
-// app.use('/api/bootcamps', bootcamps);
+app.use('/api/bootcamps', bootcamps)
 // app.use('/api/courses', courses);
 // app.use('/api/users', users);
 // app.use('/api/reviews', reviews);
