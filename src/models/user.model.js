@@ -1,20 +1,17 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const ErrorResponse = require('../utils/error.util')
 
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Please add a name'],
+    required: [true, 'Please provide a name'],
   },
   email: {
     type: String,
-    required: [true, 'Please add an email'],
+    required: [true, 'Please provide an email'],
     unique: true,
-    match: [
-      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-      'Please add a valid email',
-    ],
   },
   role: {
     type: String,
@@ -23,26 +20,9 @@ const UserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Please add a password'],
+    required: [true, 'Please provide a password'],
     minlength: 6,
     select: false,
-  },
-  resetPasswordToken: String,
-  resetPasswordExpire: Date,
-  confirmEmailToken: String,
-  isEmailConfirmed: {
-    type: Boolean,
-    default: false,
-  },
-  twoFactorCode: String,
-  twoFactorCodeExpire: Date,
-  twoFactorEnable: {
-    type: Boolean,
-    default: false,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
   },
 })
 
@@ -54,15 +34,33 @@ UserSchema.pre('save', async function (next) {
 })
 
 // sign token
-UserSchema.methods.getSignedToken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_KEY, {
+UserSchema.methods.getJWT = function () {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXP,
   })
 }
 
-// password check for login
-UserSchema.methods.matchPassword = async function (enteredPass) {
-  return await bcrypt.compare(enteredPass, this.password)
+// json response
+UserSchema.methods.toJSON = function () {
+  const user = this.toObject()
+  delete user.password
+
+  return user
+}
+
+// find user with email and password
+UserSchema.statics.findByCredentials = async function (email, password) {
+  const user = await this.findOne({ email }).select('+password')
+  if (!user) {
+    throw new ErrorResponse('Invalid credentials', 401)
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password)
+  if (!isMatch) {
+    throw new ErrorResponse('Invalid credentials', 401)
+  }
+
+  return user
 }
 
 module.exports = mongoose.model('User', UserSchema)

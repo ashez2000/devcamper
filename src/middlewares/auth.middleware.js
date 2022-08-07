@@ -1,36 +1,40 @@
 const jwt = require('jsonwebtoken')
-const asyncHandler = require('../middlewares/async.middleware')
 const ErrorResponse = require('../utils/error.util')
-const User = require('../models/user.model')
 
-exports.protect = asyncHandler(async (req, res, next) => {
-  // bearer token
-  const token = req.headers.authorization.split(' ')[1]
+exports.protect = (req, res, next) => {
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    let token = req.headers.authorization.split(' ')[1]
+    console.log('token:', token)
 
-  if (!token) {
-    return next(new ErrorResponse('not authorized mot tokenm', 401))
-  }
+    if (!token) {
+      return next(new ErrorResponse('You are not logged in', 401))
+    }
 
-  // verify token
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_KEY)
-    req.user = await User.findById(decoded.id)
+    console.log(process.env.JWT_SECRET)
+    const decoded = jwt.verify(token, process.env.JWT_SECRET)
+    req.user.id = decoded.id
+
     next()
-  } catch (err) {
-    return next(new ErrorResponse('not authorized to access this route', 401))
+  } else {
+    next(new ErrorResponse('You are not logged in', 401))
   }
-})
+}
 
-exports.authorize =
-  (...roles) =>
-  (req, res, next) => {
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    // roles ['admin', 'publisher', 'user']
     if (!roles.includes(req.user.role)) {
       return next(
         new ErrorResponse(
-          `${req.user.role}s are not authorized for this route`,
+          'You do not have permission to perform this action',
           403
         )
       )
     }
+
     next()
   }
+}
