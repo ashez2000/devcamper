@@ -7,15 +7,13 @@ exports.protect = (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     let token = req.headers.authorization.split(' ')[1]
-    console.log('token:', token)
 
     if (!token) {
       return next(new ErrorResponse('You are not logged in', 401))
     }
 
-    console.log(process.env.JWT_SECRET)
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    req.user.id = decoded.id
+    req.user = decoded
 
     next()
   } else {
