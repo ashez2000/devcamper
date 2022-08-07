@@ -11,8 +11,7 @@ const rateLimit = require('./middlewares/ratelimit.middleware')
 
 const auth = require('./routers/auth.router')
 const bootcamps = require('./routers/bootcamp.router')
-// const courses = require('./routers/course.router');
-// const users = require('./routers/user.router');
+const courses = require('./routers/course.router')
 // const reviews = require('./routers/review.router');
 
 const app = express()
