@@ -1,12 +1,11 @@
 {
   "name": "bootcamp-api",
   "version": "1.0.0",
-  "description": "bootcamp api is a node backend service for online bootcamps.",
-  "main": "server.js",
+  "description": "Bootcamp API is a backend service for online bootcamps.",
   "type": "commonjs",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "start": "node src/main.js",
+    "dev": "nodemon src/main.js"
   },
   "keywords": [],
   "author": "Aswin Gangadharan",
