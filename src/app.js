@@ -11,7 +11,7 @@ const rateLimit = require('./middlewares/ratelimit.middleware')
 
 const auth = require('./routers/auth.router')
 const bootcamps = require('./routers/bootcamp.router')
-const courses = require('./routers/course.router')
+// const courses = require('./routers/course.router')
 // const reviews = require('./routers/review.router');
 
 const app = express()
@@ -22,11 +22,11 @@ app.use(mongoSanitize())
 app.use(xss())
 app.use(hpp())
 app.use(cors())
-app.use(rateLimit)
+// app.use(rateLimit)
 app.use(express.json())
 
 app.use('/api/v1/auth', auth)
-app.use('/api/bootcamps', bootcamps)
+app.use('/api/v1/bootcamps', bootcamps)
 // app.use('/api/courses', courses);
 // app.use('/api/users', users);
 // app.use('/api/reviews', reviews);
