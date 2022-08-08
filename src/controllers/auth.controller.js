@@ -1,7 +1,6 @@
 const asyncHandler = require('../middlewares/async.middleware')
 const ErrorResponse = require('../utils/error.util')
-
-const User = require('../models/user.model')
+const userService = require('../services/users.service')
 
 /**
  * @description - Signup a user
@@ -10,10 +9,9 @@ const User = require('../models/user.model')
  */
 exports.signup = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body
-  const user = await User.create({ name, email, password })
+  const user = await userService.create({ name, email, password })
 
   return res.status(201).json({
-    status: 'success',
     user: user.toJSON(),
     token: user.getJWT(),
   })
@@ -31,10 +29,9 @@ exports.signin = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Please provide an email and password', 400))
   }
 
-  const user = await User.findByCredentials(email, password)
+  const user = await userService.findByCredential(email, password)
 
   return res.status(200).json({
-    status: 'success',
     user: user.toJSON(),
     token: user.getJWT(),
   })
@@ -46,7 +43,7 @@ exports.signin = asyncHandler(async (req, res, next) => {
  * @access Private
  */
 exports.getUser = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.user.id)
+  const user = await userService.findById(req.user.id)
 
   return res.status(200).json({
     status: 'success',
