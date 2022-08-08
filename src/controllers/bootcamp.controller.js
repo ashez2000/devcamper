@@ -1,6 +1,6 @@
 const asyncHandler = require('../middlewares/async.middleware')
 const ErrorResponse = require('../utils/error.util')
-const Bootcamp = require('../models/bootcamp.model')
+const bootcampService = require('../services/bootcamps.service')
 
 /**
  * @desc    Get all bootcamps
@@ -8,7 +8,7 @@ const Bootcamp = require('../models/bootcamp.model')
  * @access  Public
  */
 exports.getBootcamps = asyncHandler(async (req, res, next) => {
-  const bootcamps = await Bootcamp.find()
+  const bootcamps = await bootcampService.find()
 
   return res.status(200).json({
     status: 'success',
@@ -23,13 +23,7 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
  * @access  Public
  */
 exports.getBootcamp = asyncHandler(async (req, res, next) => {
-  const bootcamp = await Bootcamp.findById(req.params.id)
-
-  if (!bootcamp) {
-    return next(
-      new ErrorResponse(`Bootcamp not found with id ${req.params.id}`, 404)
-    )
-  }
+  const bootcamp = await bootcampService.findById(req.params.id)
 
   return res.status(200).json({
     status: 'success',
@@ -43,7 +37,7 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
  * @access  Private
  */
 exports.createBootcamp = asyncHandler(async (req, res, next) => {
-  const bootcamp = await Bootcamp.create(req.body)
+  const bootcamp = await bootcampService.create(req.body)
 
   return res.status(201).json({
     status: 'success',
@@ -57,16 +51,7 @@ exports.createBootcamp = asyncHandler(async (req, res, next) => {
  * @access  Private
  */
 exports.updateBootcamp = asyncHandler(async (req, res, next) => {
-  const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  })
-
-  if (!bootcamp) {
-    return next(
-      new ErrorResponse(`Bootcamp not found with id ${req.params.id}`, 404)
-    )
-  }
+  const bootcamp = await bootcampService.update(req.params.id, req.body)
 
   return res.status(200).json({
     status: 'success',
@@ -80,13 +65,7 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
  * @access  Private
  */
 exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
-  const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id)
-
-  if (!bootcamp) {
-    return next(
-      new ErrorResponse(`Bootcamp not found with id ${req.params.id}`, 404)
-    )
-  }
+  const bootcamp = await bootcampService.delete(req.params.id)
 
   return res.status(200).json({
     status: 'success',
