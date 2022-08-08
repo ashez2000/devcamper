@@ -1,5 +1,4 @@
 const asyncHandler = require('../middlewares/async.middleware')
-const ErrorResponse = require('../utils/error.util')
 const bootcampService = require('../services/bootcamps.service')
 
 /**
@@ -11,7 +10,6 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
   const bootcamps = await bootcampService.find()
 
   return res.status(200).json({
-    status: 'success',
     results: bootcamps.length,
     bootcamps,
   })
@@ -26,7 +24,6 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
   const bootcamp = await bootcampService.findById(req.params.id)
 
   return res.status(200).json({
-    status: 'success',
     bootcamp,
   })
 })
@@ -40,7 +37,6 @@ exports.createBootcamp = asyncHandler(async (req, res, next) => {
   const bootcamp = await bootcampService.create(req.body)
 
   return res.status(201).json({
-    status: 'success',
     bootcamp,
   })
 })
@@ -54,7 +50,6 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
   const bootcamp = await bootcampService.update(req.params.id, req.body)
 
   return res.status(200).json({
-    status: 'success',
     bootcamp,
   })
 })
@@ -68,7 +63,6 @@ exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
   const bootcamp = await bootcampService.delete(req.params.id)
 
   return res.status(200).json({
-    status: 'success',
     bootcamp,
   })
 })

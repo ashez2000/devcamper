@@ -6,6 +6,7 @@ const mongoSanitize = require('express-mongo-sanitize')
 const helmet = require('helmet')
 const xss = require('xss-clean')
 
+const ErrorResponse = require('./utils/error.util')
 const errorHandler = require('./middlewares/error.middleware')
 const rateLimit = require('./middlewares/ratelimit.middleware')
 
@@ -32,10 +33,9 @@ app.use('/api/v1/bootcamps', bootcamps)
 // app.use('/api/reviews', reviews);
 
 app.all('*', (req, res, next) => {
-  res.status(404).json({
-    success: false,
-    error: `Can't find ${req.originalUrl} on this server!`,
-  })
+  return next(
+    new ErrorResponse(`Can't find ${req.originalUrl} on this server!`, 404)
+  )
 })
 
 app.use(errorHandler)
