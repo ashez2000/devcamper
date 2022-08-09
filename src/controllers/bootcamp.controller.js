@@ -1,4 +1,5 @@
 const asyncHandler = require('../middlewares/async.middleware')
+const ErrorResponse = require('../utils/error.util')
 const bootcampService = require('../services/bootcamps.service')
 
 /**
@@ -34,6 +35,7 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
  * @access  Private
  */
 exports.createBootcamp = asyncHandler(async (req, res, next) => {
+  req.body.user = req.user.id
   const bootcamp = await bootcampService.create(req.body)
 
   return res.status(201).json({
@@ -47,7 +49,18 @@ exports.createBootcamp = asyncHandler(async (req, res, next) => {
  * @access  Private
  */
 exports.updateBootcamp = asyncHandler(async (req, res, next) => {
-  const bootcamp = await bootcampService.update(req.params.id, req.body)
+  let bootcamp = await bootcampService.findById(req.params.id)
+
+  if (bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} is not authorized to update this bootcamp`,
+        401
+      )
+    )
+  }
+
+  bootcamp = await bootcampService.update(req.params.id, req.body)
 
   return res.status(200).json({
     bootcamp,
@@ -60,7 +73,16 @@ exports.updateBootcamp = asyncHandler(async (req, res, next) => {
  * @access  Private
  */
 exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
-  const bootcamp = await bootcampService.delete(req.params.id)
+  const bootcamp = await bootcampService.findById(req.params.id)
+
+  if (bootcamp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} is not authorized to delete this bootcamp`,
+        401
+      )
+    )
+  }
 
   return res.status(200).json({
     bootcamp,

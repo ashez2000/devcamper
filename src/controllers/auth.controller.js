@@ -8,8 +8,8 @@ const userService = require('../services/users.service')
  * @access Public
  */
 exports.signup = asyncHandler(async (req, res, next) => {
-  const { name, email, password } = req.body
-  const user = await userService.create({ name, email, password })
+  const { name, email, password, role } = req.body
+  const user = await userService.create({ name, email, password, role })
 
   return res.status(201).json({
     user: user.toJSON(),
