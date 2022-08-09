@@ -1,7 +1,10 @@
 const express = require('express')
+const courseRouter = require('./course.router')
+const bootcampCtrl = require('../controllers/bootcamp.controller')
+
 const router = express.Router()
 
-const bootcampCtrl = require('../controllers/bootcamp.controller')
+router.use('/:bootcampId/courses', courseRouter)
 
 router
   .route('/')

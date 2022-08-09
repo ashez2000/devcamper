@@ -17,7 +17,7 @@ exports.getCourses = asyncHandler(async (req, res, next) => {
 
 /**
  * @desc  Get single course
- * @route GET /api/v1/bootcamps/:bootcampId/courses/:id
+ * @route GET /api/v1/courses/:id
  * @access Public
  */
 exports.getCourse = asyncHandler(async (req, res, next) => {
@@ -34,6 +34,8 @@ exports.getCourse = asyncHandler(async (req, res, next) => {
  * @access Private
  */
 exports.createCourse = asyncHandler(async (req, res, next) => {
+  req.body.bootcamp = req.params.bootcampId
+
   const course = await coureService.create(req.body)
 
   res.status(201).json({
@@ -43,7 +45,7 @@ exports.createCourse = asyncHandler(async (req, res, next) => {
 
 /**
  * @desc  Update a course
- * @route PUT /api/v1/bootcamps/:bootcampId/courses/:id
+ * @route PUT /api/v1/courses/:id
  * @access Private
  */
 exports.updateCourse = asyncHandler(async (req, res, next) => {
@@ -56,7 +58,7 @@ exports.updateCourse = asyncHandler(async (req, res, next) => {
 
 /**
  * @desc  Delete a course
- * @route DELETE /api/v1/bootcamps/:bootcampId/courses/:id
+ * @route DELETE /api/v1/courses/:id
  * @access Private
  */
 exports.deleteCourse = asyncHandler(async (req, res, next) => {
