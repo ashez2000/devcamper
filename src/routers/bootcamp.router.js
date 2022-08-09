@@ -1,10 +1,12 @@
 const express = require('express')
 const courseRouter = require('./course.router')
+const reviewRouter = require('./review.router')
 const bootcampCtrl = require('../controllers/bootcamp.controller')
 
 const router = express.Router()
 
 router.use('/:bootcampId/courses', courseRouter)
+router.use('/:bootcampId/reviews', reviewRouter)
 
 router
   .route('/')

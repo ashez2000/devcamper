@@ -13,7 +13,7 @@ const rateLimit = require('./middlewares/ratelimit.middleware')
 const auth = require('./routers/auth.router')
 const bootcamps = require('./routers/bootcamp.router')
 const courses = require('./routers/course.router')
-// const reviews = require('./routers/review.router');
+const reviews = require('./routers/review.router')
 
 const app = express()
 
@@ -29,8 +29,8 @@ app.use(express.json())
 app.use('/api/v1/auth', auth)
 app.use('/api/v1/bootcamps', bootcamps)
 app.use('/api/v1/courses', courses)
+app.use('/api/v1/reviews', reviews)
 // app.use('/api/users', users);
-// app.use('/api/reviews', reviews);
 
 app.all('*', (req, res, next) => {
   return next(
