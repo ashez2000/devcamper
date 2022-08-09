@@ -18,6 +18,17 @@ exports.find = async (bootcampId) => {
 }
 
 /**
+ * @desc Find a review by id
+ * @param {string} id
+ * @returns {Promise<Review>} review
+ */
+exports.findById = async (id) => {
+  const review = await Review.findById(id)
+  if (!review) throw new ReviewNotFound(id)
+  return review
+}
+
+/**
  * @desc Create a new review
  * @param {object} data
  * @returns {Promise<Review>} review
