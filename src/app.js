@@ -1,3 +1,4 @@
+const path = require('path')
 const express = require('express')
 const cors = require('cors')
 const hpp = require('hpp')
@@ -23,8 +24,13 @@ app.use(mongoSanitize())
 app.use(xss())
 app.use(hpp())
 app.use(cors())
-// app.use(rateLimit)
+app.use(rateLimit)
+app.use(express.static(path.join(__dirname, '..', 'public')))
 app.use(express.json())
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'index.html'))
+})
 
 app.use('/api/v1/auth', auth)
 app.use('/api/v1/bootcamps', bootcamps)
