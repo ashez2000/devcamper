@@ -5,8 +5,6 @@ const BootcampSchema = new mongoose.Schema({
   name: String,
   slug: String,
   description: String,
-  averageRating: Number,
-  averageCost: Number,
   user: mongoose.Schema.Types.ObjectId,
 })
 
