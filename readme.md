@@ -1,3 +1,3 @@
-# Bootcamp-api
+# Devcamper
 
-Bootcamp-api is a node backend service for organizing online bootcamps.
+Nodejs API service for organizing educational online bootcamps. 
