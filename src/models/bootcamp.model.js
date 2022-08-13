@@ -15,6 +15,11 @@ const BootcampSchema = new mongoose.Schema({
     required: true,
     default: 0,
   },
+  averageRating: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
   slug: String,
   photo: String,
   user: {
