@@ -11,10 +11,10 @@ const ErrorResponse = require('./utils/error.util')
 const errorHandler = require('./middlewares/error.middleware')
 const rateLimit = require('./middlewares/ratelimit.middleware')
 
-const auth = require('./routers/auth.router')
-const bootcamps = require('./routers/bootcamp.router')
-const courses = require('./routers/course.router')
-const reviews = require('./routers/review.router')
+const auth = require('./routes/auth.router')
+const bootcamps = require('./routes/bootcamp.router')
+const courses = require('./routes/course.router')
+const reviews = require('./routes/review.router')
 
 const app = express()
 
@@ -36,7 +36,6 @@ app.use('/api/v1/auth', auth)
 app.use('/api/v1/bootcamps', bootcamps)
 app.use('/api/v1/courses', courses)
 app.use('/api/v1/reviews', reviews)
-// app.use('/api/users', users);
 
 app.all('*', (req, res, next) => {
   return next(

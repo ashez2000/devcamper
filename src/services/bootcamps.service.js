@@ -8,8 +8,7 @@ class BootcampNotFound extends ErrorResponse {
 }
 
 /**
- * @desc Get all bootcamps
- * @returns {Promise<Bootcamp[]>}
+ * Get all bootcamps
  */
 exports.find = async () => {
   const bootcamps = await Bootcamp.find()
@@ -17,10 +16,8 @@ exports.find = async () => {
 }
 
 /**
- * @desc Get bootcamp by id
+ * Get bootcamp by id
  * @param {string} id
- * @returns {Promise<Bootcamp>}
- * @throws {BootcampNotFound}
  */
 exports.findById = async (id) => {
   const bootcamp = await Bootcamp.findById(id)
@@ -29,9 +26,8 @@ exports.findById = async (id) => {
 }
 
 /**
- * @desc Create new bootcamp
- * @param {object} data
- * @returns {Promise<Bootcamp>}
+ * Create new bootcamp
+ * @param {object} data - data to create
  */
 exports.create = async (data) => {
   const bootcamp = await Bootcamp.create(data)
@@ -39,27 +35,13 @@ exports.create = async (data) => {
 }
 
 /**
- * @desc Update bootcamp
- * @param {string} id
- * @param {object} data
- * @returns {Promise<Bootcamp>}
- * @throws {BootcampNotFound}
+ * Update bootcamp
+ * @param {string} id - bootcamp id
+ * @param {object} data - data to update
  */
 exports.update = async (id, data) => {
   const opt = { new: true, runValidators: true }
   const bootcamp = await Bootcamp.findByIdAndUpdate(id, data, opt)
-  if (!bootcamp) throw new BootcampNotFound(id)
-  return bootcamp
-}
-
-/**
- * @desc Delete bootcamp
- * @param {string} id
- * @returns {Promise<Bootcamp>}
- * @throws {BootcampNotFound}
- */
-exports.delete = async (id) => {
-  const bootcamp = await Bootcamp.findByIdAndDelete(id)
   if (!bootcamp) throw new BootcampNotFound(id)
   return bootcamp
 }
