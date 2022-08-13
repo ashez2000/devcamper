@@ -2,10 +2,21 @@ const mongoose = require('mongoose')
 const slugify = require('slugify')
 
 const BootcampSchema = new mongoose.Schema({
-  name: String,
+  name: {
+    type: String,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
   slug: String,
-  description: String,
-  user: mongoose.Schema.Types.ObjectId,
+  image: String,
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User',
+    required: true,
+  },
 })
 
 BootcampSchema.pre('save', function (next) {
