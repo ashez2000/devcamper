@@ -4,7 +4,10 @@ const { protect, restrictTo } = require('../middlewares/auth.middleware')
 
 const router = express.Router({ mergeParams: true })
 
-router.route('/').get(courseCtrl.getCourses).post(courseCtrl.createCourse)
+router
+  .route('/')
+  .get(courseCtrl.getCourses)
+  .post(protect, restrictTo('admin', 'publisher'), courseCtrl.createCourse)
 
 router
   .route('/:id')
