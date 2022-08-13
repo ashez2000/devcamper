@@ -5,7 +5,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "node src/main.js",
-    "test": "vitest --globals",
+    "test": "jest",
     "dev": "nodemon src/main.js",
     "data:im": "node ./data/seed.js -i",
     "data:ds": "node ./data/seed.js -d"
@@ -30,6 +30,8 @@
     "xss-clean": "^0.1.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.7"
+    "jest": "^28.1.3",
+    "nodemon": "^2.0.7",
+    "supertest": "^6.2.4"
   }
 }
