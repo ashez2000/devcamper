@@ -1,11 +1,8 @@
 const rateLimit = require('express-rate-limit')
 
-// windowMs : mins
-// max : req per min
-
 const limitter = rateLimit({
-  windowMs: 10 * 60 * 1000,
-  max: 100,
+  windowMs: process.env.RATE_LIMIT_TIME,
+  max: process.env.RATE_LIMIT_MAX,
 })
 
 module.exports = limitter

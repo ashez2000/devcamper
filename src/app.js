@@ -15,6 +15,7 @@ const auth = require('./routes/auth.router')
 const bootcamps = require('./routes/bootcamp.router')
 const courses = require('./routes/course.router')
 const reviews = require('./routes/review.router')
+const cookieParser = require('cookie-parser')
 
 const app = express()
 
@@ -27,6 +28,7 @@ app.use(cors())
 app.use(rateLimit)
 app.use(express.static(path.join(__dirname, '..', 'public')))
 app.use(express.json())
+app.use(cookieParser())
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'index.html'))
