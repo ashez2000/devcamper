@@ -1,6 +1,19 @@
-const mongoose = require('mongoose')
+import { Schema, model, Types, Model } from 'mongoose'
+import Bootcamp from './bootcamp.model'
 
-const CourseSchema = new mongoose.Schema({
+interface ICourse {
+  title: string
+  description: string
+  tuition: number
+  bootcamp?: Types.ObjectId
+  user?: Types.ObjectId
+}
+
+interface ICourseModel extends Model<ICourse> {
+  getAverageCost: (bootcampId: string) => Promise<void>
+}
+
+const CourseSchema = new Schema<ICourse>({
   title: {
     type: String,
     required: true,
@@ -15,12 +28,12 @@ const CourseSchema = new mongoose.Schema({
     required: true,
   },
   bootcamp: {
-    type: mongoose.Schema.ObjectId,
+    type: Types.ObjectId,
     ref: 'Bootcamp',
     required: true,
   },
   user: {
-    type: mongoose.Schema.ObjectId,
+    type: Types.ObjectId,
     ref: 'User',
     required: true,
   },
@@ -41,7 +54,7 @@ CourseSchema.statics.getAverageCost = async function (bootcampId) {
   ])
 
   try {
-    await this.model('Bootcamp').findByIdAndUpdate(bootcampId, {
+    await Bootcamp.findByIdAndUpdate(bootcampId, {
       averageCost: Math.ceil(obj[0].averageCost / 10) * 10,
     })
   } catch (err) {
@@ -51,12 +64,14 @@ CourseSchema.statics.getAverageCost = async function (bootcampId) {
 
 // Call getAverageCost after save
 CourseSchema.post('save', function () {
-  this.constructor.getAverageCost(this.bootcamp)
+  Course.getAverageCost(this.bootcamp?.toString() || '')
 })
 
 // Call getAverageCost before remove
 CourseSchema.pre('remove', function () {
-  this.constructor.getAverageCost(this.bootcamp)
+  Course.getAverageCost(this.bootcamp?.toString() || '')
 })
 
-module.exports = mongoose.model('Course', CourseSchema)
+const Course = model<ICourse, ICourseModel>('Course', CourseSchema)
+
+export default Course
