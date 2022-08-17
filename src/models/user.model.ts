@@ -1,9 +1,28 @@
-const jwt = require('jsonwebtoken')
-const bcrypt = require('bcryptjs')
-const mongoose = require('mongoose')
-const ErrorResponse = require('../utils/error.util')
+import jwt from 'jsonwebtoken'
+import argon from 'argon2'
+import { Types, Schema, model, Model, HydratedDocument } from 'mongoose'
 
-const UserSchema = new mongoose.Schema({
+import ErrorResponse from '../utils/error.util'
+
+interface IUser {
+  name: string
+  email: string
+  password: string
+  role: string
+}
+
+interface IUserMethods {
+  getJWT: () => string
+}
+
+interface IUserModel extends Model<IUser, {}, IUserMethods> {
+  findByCredentials: (
+    email: string,
+    password: string
+  ) => Promise<HydratedDocument<IUser, IUserMethods>>
+}
+
+const UserSchema = new Schema<IUser>({
   name: {
     type: String,
     required: true,
@@ -27,9 +46,7 @@ const UserSchema = new mongoose.Schema({
 // hash password
 UserSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next()
-
-  const salt = await bcrypt.genSalt(10)
-  this.password = await bcrypt.hash(this.password, salt)
+  this.password = await argon.hash(this.password)
   next()
 })
 
@@ -40,27 +57,21 @@ UserSchema.methods.getJWT = function () {
     role: this.role,
   }
 
-  return jwt.sign(user, process.env.JWT_SECRET, {
+  return jwt.sign(user, process.env.JWT_SECRET || 'secret', {
     expiresIn: process.env.JWT_EXP,
   })
-}
-
-// json response
-UserSchema.methods.toJSON = function () {
-  const user = this.toObject()
-  delete user.password
-
-  return user
 }
 
 // find user with email and password
 UserSchema.statics.findByCredentials = async function (email, password) {
   const user = await this.findOne({ email }).select('+password')
+
   if (!user) {
     throw new ErrorResponse('Invalid credentials', 401)
   }
 
-  const isMatch = await bcrypt.compare(password, user.password)
+  const isMatch = await argon.verify(user.password, password)
+
   if (!isMatch) {
     throw new ErrorResponse('Invalid credentials', 401)
   }
@@ -68,4 +79,6 @@ UserSchema.statics.findByCredentials = async function (email, password) {
   return user
 }
 
-module.exports = mongoose.model('User', UserSchema)
+const User = model<IUser, IUserModel>('User', UserSchema)
+
+export default User
