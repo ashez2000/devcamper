@@ -14,7 +14,7 @@ import ratelimit from './utils/ratelimit.util'
 
 import auth from './routes/auth.router'
 import bootcamp from './routes/bootcamp.router'
-// const courses = require('./routes/course.router')
+import course from './routes/course.router'
 // const reviews = require('./routes/review.router')
 
 const app = express()
@@ -36,7 +36,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/v1/auth', auth)
 app.use('/api/v1/bootcamps', bootcamp)
-// app.use('/api/v1/courses', courses)
+app.use('/api/v1/courses', course)
 // app.use('/api/v1/reviews', reviews)
 
 app.all('*', (req, res, next) => {
