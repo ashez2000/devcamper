@@ -1,13 +1,14 @@
 import express from 'express'
 
 import courseRouter from './course.router'
+import reviewRouter from './review.router'
 import { protect, restrictTo } from '../middlewares/auth.middleware'
 import * as bootcampCtrl from '../controllers/bootcamp.controller'
 
 const router = express.Router()
 
 router.use('/:bootcampId/courses', courseRouter)
-// router.use('/:bootcampId/reviews', reviewRouter)
+router.use('/:bootcampId/reviews', reviewRouter)
 
 router
   .route('/')
