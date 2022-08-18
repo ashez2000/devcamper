@@ -1,7 +1,20 @@
-const mongoose = require('mongoose')
-const slugify = require('slugify')
+import { Schema, model, Types } from 'mongoose'
+import slugify from 'slugify'
 
-const BootcampSchema = new mongoose.Schema({
+import Course from './course.model'
+import Review from './review.model'
+
+interface IBootcamp {
+  name: string
+  description: string
+  slug?: string
+  photo?: string
+  averageCost: number
+  averageRating: number
+  user?: Types.ObjectId
+}
+
+const BootcampSchema = new Schema<IBootcamp>({
   name: {
     type: String,
     required: true,
@@ -23,7 +36,7 @@ const BootcampSchema = new mongoose.Schema({
   slug: String,
   photo: String,
   user: {
-    type: mongoose.Schema.ObjectId,
+    type: Types.ObjectId,
     ref: 'User',
     required: true,
   },
@@ -37,9 +50,11 @@ BootcampSchema.pre('save', function (next) {
 
 // Cascade delete courses and revires when a bootcamp is deleted
 BootcampSchema.pre('remove', async function (next) {
-  await this.model('Course').deleteMany({ bootcamp: this._id })
-  await this.model('Review').deleteMany({ bootcamp: this._id })
+  await Course.deleteMany({ bootcamp: this._id })
+  await Review.deleteMany({ bootcamp: this._id })
   next()
 })
 
-module.exports = mongoose.model('Bootcamp', BootcampSchema)
+const Bootcamp = model('Bootcamp', BootcampSchema)
+
+export default Bootcamp

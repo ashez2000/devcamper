@@ -1,9 +1,9 @@
-const express = require('express')
-const courseRouter = require('./course.router')
-const reviewRouter = require('./review.router')
-const bootcampCtrl = require('../controllers/bootcamp.controller')
+import express from 'express'
 
-const { protect, restrictTo } = require('../middlewares/auth.middleware')
+import courseRouter from './course.router'
+import reviewRouter from './review.router'
+import { protect, restrictTo } from '../middlewares/auth.middleware'
+import * as bootcampCtrl from '../controllers/bootcamp.controller'
 
 const router = express.Router()
 
@@ -25,4 +25,4 @@ router
     bootcampCtrl.deleteBootcamp
   )
 
-module.exports = router
+export default router

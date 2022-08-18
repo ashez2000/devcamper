@@ -1,6 +1,6 @@
-const express = require('express')
-const reviewCtrl = require('../controllers/review.controller')
-const { protect, restrictTo } = require('../middlewares/auth.middleware')
+import express = require('express')
+import * as reviewCtrl from '../controllers/review.controller'
+import { protect, restrictTo } from '../middlewares/auth.middleware'
 
 const router = express.Router({ mergeParams: true })
 
@@ -11,4 +11,4 @@ router
   .put(protect, restrictTo('user'), reviewCtrl.updateReview)
   .delete(protect, restrictTo('user', 'admin'), reviewCtrl.deleteReview)
 
-module.exports = router
+export default router

@@ -1,6 +1,18 @@
-const mongoose = require('mongoose')
+import { Schema, model, Types, Model } from 'mongoose'
+import Bootcamp from './bootcamp.model'
 
-const ReviewSchema = new mongoose.Schema({
+interface IReview {
+  text: string
+  rating: number
+  bootcamp?: Types.ObjectId
+  user?: Types.ObjectId
+}
+
+interface IReviewModel extends Model<IReview> {
+  getAverageRating: (bootcampId: string) => Promise<void>
+}
+
+const ReviewSchema = new Schema<IReview>({
   text: {
     type: String,
     required: true,
@@ -12,12 +24,12 @@ const ReviewSchema = new mongoose.Schema({
     max: 10,
   },
   bootcamp: {
-    type: mongoose.Schema.ObjectId,
+    type: Types.ObjectId,
     ref: 'Bootcamp',
     required: true,
   },
   user: {
-    type: mongoose.Schema.ObjectId,
+    type: Types.ObjectId,
     ref: 'User',
     required: true,
   },
@@ -41,7 +53,7 @@ ReviewSchema.statics.getAverageRating = async function (bootcampId) {
   ])
 
   try {
-    await this.model('Bootcamp').findByIdAndUpdate(bootcampId, {
+    await Bootcamp.findByIdAndUpdate(bootcampId, {
       averageRating: obj[0].averageRating,
     })
   } catch (err) {
@@ -51,12 +63,14 @@ ReviewSchema.statics.getAverageRating = async function (bootcampId) {
 
 // Call getAverageRating after save
 ReviewSchema.post('save', function () {
-  this.constructor.getAverageRating(this.bootcamp)
+  Review.getAverageRating(this.bootcamp?.toString() || '')
 })
 
 // Call getAverageRating before remove
 ReviewSchema.pre('remove', function () {
-  this.constructor.getAverageRating(this.bootcamp)
+  Review.getAverageRating(this.bootcamp?.toString() || '')
 })
 
-module.exports = mongoose.model('Review', ReviewSchema)
+const Review = model<IReview, IReviewModel>('Review', ReviewSchema)
+
+export default Review
