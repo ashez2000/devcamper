@@ -1,14 +1,17 @@
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
+import config from 'config'
 
 dotenv.config()
+
 import app from './app'
 
 mongoose
-  .connect(process.env.MONGO_URI || 'mongodb://localhost:27017/devcamper')
+  .connect(config.get('MONGO_URI'))
   .then((conn) => console.log(`mongodb : ${conn.connection.host}`))
 
-const port = process.env.PORT || 3000
+const port = config.get<number>('PORT')
+
 const server = app.listen(port, () => {
   console.log(`server running on port ${port}`)
 })
