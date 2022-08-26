@@ -1,18 +1,19 @@
-const fs = require('fs')
-const mongoose = require('mongoose')
-const dotenv = require('dotenv')
+import fs from 'fs'
+import dotenv from 'dotenv'
+import mongoose from 'mongoose'
+import config from 'config'
 
 // Load env vars
 dotenv.config()
 
 // Load models
-const User = require('../src/models/user.model')
-const Bootcamp = require('../src/models/bootcamp.model')
-const Course = require('../src/models/course.model')
-const Review = require('../src/models/review.model')
+import User from '../src/models/user.model'
+import Bootcamp from '../src/models/bootcamp.model'
+import Course from '../src/models/course.model'
+import Review from '../src/models/review.model'
 
 // Connect to DB
-mongoose.connect(process.env.MONGO_URI).then(() => {
+mongoose.connect(config.get('MONGO_URI')).then(() => {
   console.log('MongoDB Connected')
 })
 
