@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express'
-import * as userService from '../services/users.service'
+import * as userService from '../users/users.service'
 import { SignUpSchema, SignInSchema } from '../schemas/auth.schema'
 
 const cookieOptions = {
