@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express'
 import * as userService from '../users/users.service'
-import { SignUpSchema, SignInSchema } from '../schemas/auth.schema'
+import { SignupSchema, SigninSchema } from '../users/users.validator'
 
 const cookieOptions = {
   httpOnly: true,
@@ -15,7 +15,7 @@ const cookieOptions = {
  */
 export const signup: RequestHandler = async (req, res, next) => {
   try {
-    const data = SignUpSchema.parse(req.body)
+    const data = SignupSchema.parse(req.body)
     const user = await userService.createUser(data)
 
     res.cookie('token', user.getJWT(), cookieOptions)
@@ -39,7 +39,7 @@ export const signup: RequestHandler = async (req, res, next) => {
  */
 export const signin: RequestHandler = async (req, res, next) => {
   try {
-    const data = SignInSchema.parse(req.body)
+    const data = SigninSchema.parse(req.body)
     const user = await userService.findByUserCredential(data)
 
     res.cookie('token', user.getJWT(), cookieOptions)
