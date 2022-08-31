@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express'
-import * as bootcampService from '../services/bootcamps.service'
+import * as bootcampService from './bootcamps.service'
 import ErrorResponse from '../utils/error.util'
 
 /**

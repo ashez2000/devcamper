@@ -13,7 +13,7 @@ import errorHandler from './middlewares/error.middleware'
 import ratelimit from './utils/ratelimit.util'
 
 import authRouter from './auth/auth.router'
-import bootcamp from './routes/bootcamp.router'
+import bootcamp from './bootcamps/bootcamp.router'
 import course from './routes/course.router'
 import review from './routes/review.router'
 
@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/v1/auth', authRouter)
-// app.use('/api/v1/bootcamps', bootcamp)
+app.use('/api/v1/bootcamps', bootcamp)
 // app.use('/api/v1/courses', course)
 // app.use('/api/v1/reviews', review)
 

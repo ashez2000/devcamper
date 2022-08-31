@@ -1,8 +1,8 @@
 import User from './user.model'
 import ErrorResponse from '../utils/error.util'
-import { SignInData, SignUpData } from '../schemas/auth.schema'
+import { SigninData, SignupData } from './users.validator'
 
-export const createUser = async (data: SignUpData) => {
+export const createUser = async (data: SigninData) => {
   return await User.create(data)
 }
 
@@ -15,8 +15,7 @@ export const findUserById = async (id: string) => {
 
   return user
 }
-
-export const findByUserCredential = async (data: SignInData) => {
+export const findByUserCredential = async (data: SigninData) => {
   const user = await User.findByCredentials(data.email, data.password)
   return user
 }

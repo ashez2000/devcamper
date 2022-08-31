@@ -12,5 +12,5 @@ export const SigninSchema = z.object({
   password: z.string(),
 })
 
-export type SinupData = z.infer<typeof SignupSchema>
+export type SignupData = z.infer<typeof SignupSchema>
 export type SigninData = z.infer<typeof SigninSchema>
