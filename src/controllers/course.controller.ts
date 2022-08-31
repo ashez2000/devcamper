@@ -2,7 +2,7 @@ import { RequestHandler } from 'express'
 
 import ErrorResponse from '../utils/error.util'
 import * as courseService from '../services/courses.service'
-import * as bootcampService from '../services/bootcamps.service'
+import * as bootcampService from '../bootcamps/bootcamps.service'
 
 /**
  * Get all courses associated with a bootcamp

@@ -1,7 +1,7 @@
 import express from 'express'
 const router = express.Router()
 
-import * as authCtrl from '../controllers/auth.controller'
+import * as authCtrl from './auth.controller'
 import { protect } from '../middlewares/auth.middleware'
 
 router.route('/signup').post(authCtrl.signup)

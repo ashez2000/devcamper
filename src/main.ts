@@ -1,16 +1,15 @@
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
-import config from 'config'
 
 dotenv.config()
-
+import * as config from './config'
 import app from './app'
 
 mongoose
-  .connect(config.get('MONGO_URI'))
+  .connect(config.mongouri)
   .then((conn) => console.log(`mongodb : ${conn.connection.host}`))
 
-const port = config.get<number>('PORT')
+const port = config.port
 
 const server = app.listen(port, () => {
   console.log(`server running on port ${port}`)

@@ -1,9 +1,9 @@
 import express from 'express'
 
-import courseRouter from './course.router'
-import reviewRouter from './review.router'
+import courseRouter from '../routes/course.router'
+import reviewRouter from '../routes/review.router'
 import { protect, restrictTo } from '../middlewares/auth.middleware'
-import * as bootcampCtrl from '../controllers/bootcamp.controller'
+import * as bootcampCtrl from './bootcamp.controller'
 
 const router = express.Router()
 

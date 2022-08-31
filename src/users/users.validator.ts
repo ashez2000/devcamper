@@ -1,16 +1,16 @@
 import z from 'zod'
 
-export const SignUpSchema = z.object({
+export const SignupSchema = z.object({
   name: z.string(),
   email: z.string().email(),
   password: z.string().min(6),
   role: z.enum(['user', 'publisher']),
 })
 
-export const SignInSchema = z.object({
+export const SigninSchema = z.object({
   email: z.string().email(),
   password: z.string(),
 })
 
-export type SignUpData = z.infer<typeof SignUpSchema>
-export type SignInData = z.infer<typeof SignInSchema>
+export type SignupData = z.infer<typeof SignupSchema>
+export type SigninData = z.infer<typeof SigninSchema>

@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken'
 import argon from 'argon2'
-import config from 'config'
 import { Schema, model, Model, HydratedDocument } from 'mongoose'
 import ErrorResponse from '../utils/error.util'
+import * as config from '../config'
 
 interface IUser {
   name: string
@@ -58,8 +58,8 @@ UserSchema.methods.getJWT = function () {
     role: this.role,
   }
 
-  return jwt.sign(user, config.get('JWT_SECRET'), {
-    expiresIn: process.env.JWT_EXP,
+  return jwt.sign(user, config.jwtSecret, {
+    expiresIn: config.jwtExpiration,
   })
 }
 
