@@ -1,108 +1,59 @@
 import { RequestHandler } from 'express'
-import * as reviewService from '../services/reviews.service'
-import ErrorResponse from '../utils/app-error'
+
+import AppError from '../utils/app-error'
+import asyncHandler from '../utils/async-handler'
+import {
+  findReviewsForBootcamp,
+  createReview,
+  findReviewById,
+  deleteReviewById,
+} from './reviews.service'
+import { isAuthorized } from '../auth/auth.utils'
 
 /**
- * Get all reviews
- * @route   GET /api/v1/bootcamps/:bootcampId/reviews
- * @access  Public
+ * Get all reviews for bootcamp handler
  */
-export const getReviews: RequestHandler = async (req, res, next) => {
-  try {
-    const reviews = await reviewService.findReviews(req.params.bootcampId)
+export const getReviewsForBootcampHandler: RequestHandler = asyncHandler(
+  async (req, res, next) => {
+    const reviews = await findReviewsForBootcamp(req.params.bootcampId)
 
     res.status(200).json({
       reviews,
     })
-  } catch (error) {
-    next(error)
   }
-}
+)
 
 /**
- * Create a new review
- * @route   POST /api/v1/bootcamps/:bootcampId/reviews
- * @access  Private
+ * Create new review for bootcamp handler
  */
-export const createReview: RequestHandler = async (req, res, next) => {
-  try {
+export const createReviewHandler: RequestHandler = asyncHandler(
+  async (req, res, next) => {
     req.body.bootcamp = req.params.bootcampId
     req.body.user = res.locals.user.id
 
-    const review = await reviewService.createReview(req.body)
+    const review = await createReview(req.body)
 
     res.status(201).json({
       review,
     })
-  } catch (error) {
-    next(error)
   }
-}
+)
 
 /**
- * @desc    Update a review
- * @route   PUT /api/v1/bootcamps/:bootcampId/reviews/:id
- * @access  Private
+ * Delete a review by id handler
  */
-export const updateReview: RequestHandler = async (req, res, next) => {
-  try {
-    let review = await reviewService.findById(req.params.id)
+export const deleteReviewHandler: RequestHandler = asyncHandler(
+  async (req, res, next) => {
+    let review = await findReviewById(req.params.id)
 
-    if (!review.user) {
-      return next(
-        new ErrorResponse(`Review not found with id of ${req.params.id}`, 404)
-      )
+    if (!isAuthorized(review.user, res.locals.user)) {
+      throw new AppError('Not authorized to delete this review', 401)
     }
 
-    if (review.user.toString() !== res.locals.user.id) {
-      return next(
-        new ErrorResponse(
-          `User ${res.locals.user.id} is not authorized to update this bootcamp`,
-          401
-        )
-      )
-    }
-
-    review = await reviewService.updateReview(req.params.id, req.body)
+    review = await deleteReviewById(req.params.id)
 
     res.status(200).json({
       review,
     })
-  } catch (error) {
-    next(error)
   }
-}
-
-/**
- * Delete a review
- * @route   DELETE /api/v1/bootcamps/:bootcampId/reviews/:id
- * @access  Private
- */
-export const deleteReview: RequestHandler = async (req, res, next) => {
-  try {
-    let review = await reviewService.findById(req.params.id)
-
-    if (!review.user) {
-      return next(
-        new ErrorResponse(`Review not found with id of ${req.params.id}`, 404)
-      )
-    }
-
-    if (review.user.toString() !== res.locals.user.id) {
-      return next(
-        new ErrorResponse(
-          `User ${res.locals.user.id} is not authorized to update this bootcamp`,
-          401
-        )
-      )
-    }
-
-    review = await reviewService.deleteReview(req.params.id)
-
-    res.status(200).json({
-      review,
-    })
-  } catch (error) {
-    next(error)
-  }
-}
+)

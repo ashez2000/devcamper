@@ -1,14 +1,27 @@
 import express = require('express')
-import * as reviewCtrl from '../controllers/review.controller'
-import { protect, restrictTo } from '../middlewares/auth.middleware'
+import { protect, restrictTo } from '../auth/auth.controller'
+import {
+  getReviewsForBootcampHandler,
+  createReviewHandler,
+  deleteReviewHandler,
+} from './review.controller'
 
-const router = express.Router({ mergeParams: true })
+const router = express.Router()
 
-router.route('/').get(reviewCtrl.getReviews).post(reviewCtrl.createReview)
+router.get('/bootcamps/:bootcampId/reviews', getReviewsForBootcampHandler)
 
-router
-  .route('/:id')
-  .put(protect, restrictTo('user'), reviewCtrl.updateReview)
-  .delete(protect, restrictTo('user', 'admin'), reviewCtrl.deleteReview)
+router.post(
+  '/bootcamps/:bootcampId/reviews',
+  protect,
+  restrictTo('user'),
+  createReviewHandler
+)
+
+router.delete(
+  '/reviews/:id',
+  protect,
+  restrictTo('user', 'admin'),
+  deleteReviewHandler
+)
 
 export default router

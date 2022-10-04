@@ -1,17 +1,11 @@
-import Review from '../models/review.model'
-import ErrorResponse from '../utils/app-error'
-import type { ReviewInputData } from '../schemas/review.schema'
-
-class ReviewNotFound extends ErrorResponse {
-  constructor(id: string) {
-    super(`Review with id ${id} not found`, 404)
-  }
-}
+import Review from './review.model'
+import AppError from '../utils/app-error'
+import { CreateReviewDto } from './review.dto'
 
 /**
- * Get all reviews
+ * Find all reviews for bootcamp
  */
-export const findReviews = async (bootcampId: string) => {
+export const findReviewsForBootcamp = async (bootcampId: string) => {
   const reviews = await Review.find({ bootcamp: bootcampId })
   return reviews
 }
@@ -19,35 +13,26 @@ export const findReviews = async (bootcampId: string) => {
 /**
  * Find a review by id
  */
-export const findById = async (id: string) => {
+export const findReviewById = async (id: string) => {
   const review = await Review.findById(id)
-  if (!review) throw new ReviewNotFound(id)
+  if (!review) throw new AppError(`Review not found with id of ${id}`, 404)
+
   return review
 }
 
 /**
- * Create a new review
+ * Create new review
  */
-export const createReview = async (data: ReviewInputData) => {
+export const createReview = async (data: CreateReviewDto) => {
   const review = await Review.create(data)
   return review
 }
 
 /**
- * Update a review
+ * Delete a review by id
  */
-export const updateReview = async (id: string, data: any) => {
-  const opt = { new: true, runValidators: true }
-  const review = await Review.findByIdAndUpdate(id, data, opt)
-  if (!review) throw new ReviewNotFound(id)
-  return review
-}
-
-/**
- * Delete a review
- */
-export const deleteReview = async (id: string) => {
+export const deleteReviewById = async (id: string) => {
   const review = await Review.findByIdAndDelete(id)
-  if (!review) throw new ReviewNotFound(id)
+  if (!review) throw new AppError(`Review not found with id of ${id}`, 404)
   return review
 }

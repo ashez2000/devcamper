@@ -1,21 +1,21 @@
 import { Schema, model, Types, Model } from 'mongoose'
-import Bootcamp from './bootcamp.model'
+import { updateBootcampById } from '../bootcamp/bootcamp.service'
 
 interface IReview {
-  text: string
+  content: string
   rating: number
-  bootcamp?: Types.ObjectId
-  user?: Types.ObjectId
+  bootcamp: Types.ObjectId
+  user: Types.ObjectId
 }
 
 interface IReviewModel extends Model<IReview> {
   getAverageRating: (bootcampId: string) => Promise<void>
 }
 
-const ReviewSchema = new Schema<IReview>({
-  text: {
+const ReviewSchema = new Schema<IReview, IReviewModel>({
+  content: {
     type: String,
-    required: true,
+    required: [true, 'Please provide some content'],
   },
   rating: {
     type: Number,
@@ -24,19 +24,19 @@ const ReviewSchema = new Schema<IReview>({
     max: 10,
   },
   bootcamp: {
-    type: Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'Bootcamp',
     required: true,
   },
   user: {
-    type: Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'User',
     required: true,
   },
 })
 
 // Prevent user from submitting more than one review per bootcamp
-ReviewSchema.index({ bootcamp: 1, user: 1 }, { unique: true })
+// ReviewSchema.index({ bootcamp: 1, user: 1 }, { unique: true })
 
 // Static method to get avg rating and save
 ReviewSchema.statics.getAverageRating = async function (bootcampId) {
@@ -52,23 +52,19 @@ ReviewSchema.statics.getAverageRating = async function (bootcampId) {
     },
   ])
 
-  try {
-    await Bootcamp.findByIdAndUpdate(bootcampId, {
-      averageRating: obj[0].averageRating,
-    })
-  } catch (err) {
-    console.error(err)
-  }
+  await updateBootcampById(bootcampId, {
+    averageRating: obj[0].averageRating,
+  })
 }
 
 // Call getAverageRating after save
 ReviewSchema.post('save', function () {
-  Review.getAverageRating(this.bootcamp?.toString() || '')
+  Review.getAverageRating(this.bootcamp.toString())
 })
 
 // Call getAverageRating before remove
 ReviewSchema.pre('remove', function () {
-  Review.getAverageRating(this.bootcamp?.toString() || '')
+  Review.getAverageRating(this.bootcamp.toString())
 })
 
 const Review = model<IReview, IReviewModel>('Review', ReviewSchema)
