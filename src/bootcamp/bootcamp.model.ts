@@ -8,7 +8,7 @@ export interface IBootcamp {
   photo?: string
   averageCost: number
   averageRating: number
-  user?: Types.ObjectId
+  user: Types.ObjectId
 }
 
 const BootcampSchema = new Schema<IBootcamp>({
@@ -31,7 +31,7 @@ const BootcampSchema = new Schema<IBootcamp>({
   slug: String,
   photo: String,
   user: {
-    type: Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'User',
     required: true,
   },
