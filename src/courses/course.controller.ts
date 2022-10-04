@@ -1,159 +1,96 @@
 import { RequestHandler } from 'express'
 
-import ErrorResponse from '../utils/app-error'
-import * as courseService from '../services/courses.service'
-import * as bootcampService from '../bootcamps/bootcamps.service'
+import AppError from '../utils/app-error'
+import asyncHandler from '../utils/async-handler'
+import { isAuthorized } from '../auth/auth.utils'
+import {
+  findAllCourseForBootcamp,
+  findCourseById,
+  createCourse,
+  updateCourseById,
+  deleteCourseById,
+} from './courses.service'
+import { findBootcampById } from '../bootcamp/bootcamp.service'
 
 /**
  * Get all courses associated with a bootcamp
- * @route GET /api/v1/bootcamps/:bootcampId/courses
- * @access Public
  */
-export const getAllCourse: RequestHandler = async (req, res, next) => {
-  try {
-    const courses = await courseService.findCourses(req.params.bootcampId)
+export const getAllCourseForBootcampHandler: RequestHandler = asyncHandler(
+  async (req, res, next) => {
+    const courses = await findAllCourseForBootcamp(req.params.bootcampId)
 
     res.status(200).json({
       results: courses.length,
       courses,
     })
-  } catch (error) {
-    next(error)
   }
-}
+)
 
 /**
  * Get single course
- * @route GET /api/v1/courses/:id
- * @access Public
  */
-export const getCourseById: RequestHandler = async (req, res, next) => {
-  try {
-    const course = await courseService.findCourseById(req.params.id)
+export const getCourseByIdHandler: RequestHandler = asyncHandler(
+  async (req, res, next) => {
+    const course = await findCourseById(req.params.id)
 
     res.status(200).json({
       course,
     })
-  } catch (error) {
-    next(error)
   }
-}
+)
 
 /**
  * Create a new course
- * @route POST /api/v1/bootcamps/:bootcampId/courses
- * @access Private
  */
-export const createCourse: RequestHandler = async (req, res, next) => {
-  try {
+export const createCourseHandler: RequestHandler = asyncHandler(
+  async (req, res, next) => {
     req.body.bootcamp = req.params.bootcampId
     req.body.user = res.locals.user.id
 
-    const bootcamp = await bootcampService.findBootcampById(
-      req.params.bootcampId
-    )
+    await findBootcampById(req.params.bootcampId)
 
-    if (!bootcamp.user) {
-      return next(
-        new ErrorResponse(
-          `Bootcamp not found with id of ${req.params.bootcampId}`,
-          404
-        )
-      )
-    }
-
-    if (
-      bootcamp.user.toString() !== res.locals.user.id &&
-      res.locals.user.role !== 'admin'
-    ) {
-      return next(
-        new ErrorResponse(
-          `User ${res.locals.user.id} is not authorized to update this bootcamp`,
-          401
-        )
-      )
-    }
-
-    const course = await courseService.createCourse(req.body)
+    const course = await createCourse(req.body)
 
     res.status(201).json({
       course,
     })
-  } catch (error) {
-    next(error)
   }
-}
+)
 
 /**
- * Update a course
- * @route PUT /api/v1/courses/:id
- * @access Private
+ * Update course by id
  */
-export const updateCourse: RequestHandler = async (req, res, next) => {
-  try {
-    let course = await courseService.findCourseById(req.params.id)
+export const updateCourseByIdHandler: RequestHandler = asyncHandler(
+  async (req, res, next) => {
+    let course = await findCourseById(req.params.id)
 
-    if (!course.user) {
-      return next(
-        new ErrorResponse(`You are not authorized to delete this course`, 401)
-      )
+    if (!isAuthorized(course.user, res.locals.user.id)) {
+      return next(new AppError('Not authorized to update this course', 401))
     }
 
-    if (
-      course.user.toString() !== res.locals.user.id &&
-      res.locals.user.role !== 'admin'
-    ) {
-      return next(
-        new ErrorResponse(
-          `User ${res.locals.user.id} is not authorized to update this bootcamp`,
-          401
-        )
-      )
-    }
-
-    course = await courseService.updateCourse(req.params.id, req.body)
+    course = await updateCourseById(req.params.id, req.body)
 
     res.status(200).json({
       course,
     })
-  } catch (error) {
-    next(error)
   }
-}
+)
 
 /**
- * @desc  Delete a course
- * @route DELETE /api/v1/courses/:id
- * @access Private
+ * Delete course by id
  */
-export const deleteCourse: RequestHandler = async (req, res, next) => {
-  try {
-    let course = await courseService.findCourseById(req.params.id)
+export const deleteCourseByIdHandler: RequestHandler = asyncHandler(
+  async (req, res, next) => {
+    let course = await findCourseById(req.params.id)
 
-    if (!course.user) {
-      return next(
-        new ErrorResponse(`You are not authorized to delete this course`, 401)
-      )
+    if (!isAuthorized(course.user, res.locals.user)) {
+      return next(new AppError('Not authorized to delete this course', 401))
     }
 
-    if (
-      course.user.toString() !== res.locals.user.id &&
-      res.locals.user.role !== 'admin'
-    ) {
-      return next(
-        new ErrorResponse(
-          `User ${res.locals.user.id} is not authorized to update this bootcamp`,
-          401
-        )
-      )
-    }
-
-    course = await courseService.deleteCourse(req.params.id)
+    course = await deleteCourseById(req.params.id)
 
     res.status(200).json({
       course,
     })
-  } catch (error) {
-    next(error)
   }
-}
+)

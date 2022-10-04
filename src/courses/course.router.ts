@@ -1,18 +1,38 @@
 import express from 'express'
-import * as courseCtrl from '../controllers/course.controller'
-import { protect, restrictTo } from '../middlewares/auth.middleware'
+import { protect, restrictTo } from '../auth/auth.controller'
+import {
+  getAllCourseForBootcampHandler,
+  getCourseByIdHandler,
+  createCourseHandler,
+  updateCourseByIdHandler,
+  deleteCourseByIdHandler,
+} from './course.controller'
 
-const router = express.Router({ mergeParams: true })
+const router = express.Router()
 
-router
-  .route('/')
-  .get(courseCtrl.getAllCourse)
-  .post(protect, restrictTo('admin', 'publisher'), courseCtrl.createCourse)
+router.get('/:bootcampId/courses', getAllCourseForBootcampHandler)
 
-router
-  .route('/:id')
-  .get(courseCtrl.getAllCourse)
-  .put(protect, restrictTo('admin', 'publisher'), courseCtrl.updateCourse)
-  .delete(protect, restrictTo('admin', 'publisher'), courseCtrl.deleteCourse)
+router.get('/courses/:id', getCourseByIdHandler)
+
+router.post(
+  '/:bootcampId/courses',
+  protect,
+  restrictTo('publisher', 'admin'),
+  createCourseHandler
+)
+
+router.put(
+  '/courses/:id',
+  protect,
+  restrictTo('publisher', 'admin'),
+  updateCourseByIdHandler
+)
+
+router.patch(
+  '/courses/:id',
+  protect,
+  restrictTo('publisher', 'admin'),
+  updateCourseByIdHandler
+)
 
 export default router

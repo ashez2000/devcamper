@@ -1,53 +1,51 @@
-import Course from '../models/course.model'
-import ErrorResponse from '../utils/app-error'
-import type { CourseInputData } from '../schemas/course.schema'
+import Course from './course.model'
+import AppError from '../utils/app-error'
 
-class CourseNotFound extends ErrorResponse {
-  constructor(id: string) {
-    super(`Course with id ${id} not found`, 404)
-  }
-}
+import { CreateCourseDto } from './course.dto'
 
 /**
- * Get all Courses associated with a bootcamp
+ * Find all Courses associated with a bootcamp
  */
-export const findCourses = async (bootcampId: string) => {
-  const bootcamps = await Course.find({ bootcamp: bootcampId })
-  return bootcamps
+export const findAllCourseForBootcamp = async (bootcampId: string) => {
+  const courses = await Course.find({ bootcamp: bootcampId })
+  return courses
 }
 
 /**
- * Get a course by id
+ * Find a course by id
  */
 export const findCourseById = async (id: string) => {
   const course = await Course.findById(id)
-  if (!course) throw new CourseNotFound(id)
+  if (!course) throw new AppError(`No course with id ${id}`, 404)
   return course
 }
 
 /**
  * Create a new course
  */
-export const createCourse = async (data: CourseInputData) => {
+export const createCourse = async (data: CreateCourseDto) => {
   const course = await Course.create(data)
   return course
 }
 
 /**
- * Update a course
+ * Update a course by id
  */
-export const updateCourse = async (id: string, data: any) => {
+export const updateCourseById = async (id: string, data: any) => {
   const opt = { new: true, runValidators: true }
+
   const course = await Course.findByIdAndUpdate(id, data, opt)
-  if (!course) throw new CourseNotFound(id)
+  if (!course) throw new AppError(`No course with id ${id}`, 404)
+
   return course
 }
 
 /**
- * Delete a course
+ * Delete a course by id
  */
-export const deleteCourse = async (id: string) => {
+export const deleteCourseById = async (id: string) => {
   const course = await Course.findByIdAndDelete(id)
-  if (!course) throw new CourseNotFound(id)
+  if (!course) throw new AppError(`No course with id ${id}`, 404)
+
   return course
 }

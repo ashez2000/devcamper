@@ -1,46 +1,47 @@
-import { Schema, model, Types, Model } from 'mongoose'
-import Bootcamp from './bootcamp.model'
+import { Schema, model, Model, Types } from 'mongoose'
+import { updateBootcampById } from '../bootcamp/bootcamp.service'
 
-interface ICourse {
+export interface ICourse {
   title: string
   description: string
   tuition: number
-  bootcamp?: Types.ObjectId
-  user?: Types.ObjectId
+  bootcamp: Types.ObjectId
+  user: Types.ObjectId
 }
 
 interface ICourseModel extends Model<ICourse> {
-  getAverageCost: (bootcampId: string) => Promise<void>
+  getAverageCost(bootcampIdd: string): Promise<void>
 }
 
-const CourseSchema = new Schema<ICourse>({
+// User Schema
+const CourseSchema = new Schema<ICourse, ICourseModel>({
   title: {
     type: String,
-    required: true,
+    required: [true, 'Please provide a course title'],
     unique: true,
   },
   description: {
     type: String,
-    required: true,
+    required: [true, 'Please provide a course description'],
   },
   tuition: {
     type: Number,
-    required: true,
+    required: [true, 'Please provide a course tuition amount'],
   },
   bootcamp: {
-    type: Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'Bootcamp',
     required: true,
   },
   user: {
-    type: Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: 'User',
     required: true,
   },
 })
 
 // Static method to get avg of course tuitions
-CourseSchema.statics.getAverageCost = async function (bootcampId) {
+CourseSchema.statics.getAverageCost = async function (bootcampId: string) {
   const obj = await this.aggregate([
     {
       $match: { bootcamp: bootcampId },
@@ -53,25 +54,21 @@ CourseSchema.statics.getAverageCost = async function (bootcampId) {
     },
   ])
 
-  try {
-    await Bootcamp.findByIdAndUpdate(bootcampId, {
-      averageCost: Math.ceil(obj[0].averageCost / 10) * 10,
-    })
-  } catch (err) {
-    console.error(err)
-  }
+  await updateBootcampById(bootcampId, {
+    averageCost: Math.ceil(obj[0].averageCost / 10) * 10,
+  })
 }
+
+const Course = model<ICourse, ICourseModel>('Course', CourseSchema)
 
 // Call getAverageCost after save
 CourseSchema.post('save', function () {
-  Course.getAverageCost(this.bootcamp?.toString() || '')
+  Course.getAverageCost(this.bootcamp.toString())
 })
 
 // Call getAverageCost before remove
 CourseSchema.pre('remove', function () {
-  Course.getAverageCost(this.bootcamp?.toString() || '')
+  Course.getAverageCost(this.bootcamp.toString())
 })
-
-const Course = model<ICourse, ICourseModel>('Course', CourseSchema)
 
 export default Course

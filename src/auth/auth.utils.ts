@@ -26,9 +26,8 @@ export const verifyToken = (token: string) => {
 }
 
 export const isAuthorized = (
-  ownerId: Types.ObjectId | undefined,
+  ownerId: Types.ObjectId,
   currentUser: { id: string; role: string }
 ) => {
-  if (!ownerId) return false
   return ownerId.toString() === currentUser.id || currentUser.role === 'admin'
 }
