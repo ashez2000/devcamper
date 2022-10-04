@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express'
 import jwt from 'jsonwebtoken'
-import ErrorResponse from '../utils/error.util'
+import ErrorResponse from '../utils/app-error'
 
 export const protect: RequestHandler = (req, res, next) => {
   let token =

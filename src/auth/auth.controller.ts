@@ -1,74 +1,87 @@
 import { RequestHandler } from 'express'
-import * as userService from '../users/users.service'
-import { SignupSchema, SigninSchema } from '../users/users.validator'
 
-const cookieOptions = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
-}
+import { getSignedToken, cookieOptions, verifyToken } from './auth.utils'
+import { getUserByCredentials } from './auth.service'
+
+import AppError from '../utils/app-error'
+import asyncHandler from '../utils/async-handler'
+import { serializeUser } from '../users/user.utils'
+import { createUser, getUserById } from '../users/users.service'
 
 /**
- * Signup a user
- * @route POST /api/v1/auth/signup
- * @access Public
+ * User signup controller
  */
-export const signup: RequestHandler = async (req, res, next) => {
-  try {
-    const data = SignupSchema.parse(req.body)
-    const user = await userService.createUser(data)
+export const signup: RequestHandler = asyncHandler(async (req, res, next) => {
+  const { name, email, password } = req.body
 
-    res.cookie('token', user.getJWT(), cookieOptions)
-    return res.status(201).json({
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-      },
-      token: user.getJWT(),
-    })
-  } catch (error) {
-    return next(error)
+  const user = await createUser({ name, email, password })
+  const token = getSignedToken({ id: user._id, role: user.role })
+
+  res.cookie('token', token, cookieOptions)
+  return res.status(201).json({
+    token,
+  })
+})
+
+/**
+ * User signin controller
+ */
+export const signin: RequestHandler = asyncHandler(async (req, res, next) => {
+  const { email, password } = req.body
+
+  const user = await getUserByCredentials({ email, password })
+  const token = getSignedToken({ id: user._id, role: user.role })
+
+  res.cookie('token', token, cookieOptions)
+  return res.status(200).json({
+    token,
+  })
+})
+
+/**
+ * Get user profile controller
+ */
+export const user: RequestHandler = asyncHandler(async (req, res, next) => {
+  const u = await getUserById(res.locals.user.id)
+  const user = serializeUser(u)
+
+  return res.status(200).json({
+    user,
+  })
+})
+
+/**
+ * Authencation middleware
+ */
+export const protect: RequestHandler = (req, res, next) => {
+  let token =
+    (req.headers.authorization || '').replace(/^Bearer\s/, '') ||
+    req.cookies.token
+
+  if (!token) {
+    return next(
+      new AppError('You are not logged in! Please log in to get access.', 401)
+    )
   }
+
+  const decoded = verifyToken(token)
+  res.locals.user = decoded
+
+  next()
 }
 
 /**
- * Signin a user
- * @route POST /api/v1/auth/signin
- * @access Public
+ * Role authorization middleware
  */
-export const signin: RequestHandler = async (req, res, next) => {
-  try {
-    const data = SigninSchema.parse(req.body)
-    const user = await userService.findByUserCredential(data)
+export const restrictTo = (...roles: string[]): RequestHandler => {
+  return (req, res, next) => {
+    // roles ['admin', 'publisher', 'user']
+    if (!roles.includes(res.locals.user.role)) {
+      return next(
+        new AppError('You do not have permission to perform this action', 403)
+      )
+    }
 
-    res.cookie('token', user.getJWT(), cookieOptions)
-    return res.status(200).json({
-      user: user.toJSON(),
-      token: user.getJWT(),
-    })
-  } catch (err) {
-    return next(err)
-  }
-}
-
-/**
- * Get signed in user
- * @route GET /api/v1/auth/user
- * @access Private
- */
-export const getUser: RequestHandler = async (req, res, next) => {
-  try {
-    const user = await userService.findUserById(res.locals.user.id)
-
-    return res.status(200).json({
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-      },
-    })
-  } catch (err) {
-    return next(err)
+    next()
   }
 }

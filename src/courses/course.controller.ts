@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express'
 
-import ErrorResponse from '../utils/error.util'
+import ErrorResponse from '../utils/app-error'
 import * as courseService from '../services/courses.service'
 import * as bootcampService from '../bootcamps/bootcamps.service'
 

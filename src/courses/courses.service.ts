@@ -1,5 +1,5 @@
 import Course from '../models/course.model'
-import ErrorResponse from '../utils/error.util'
+import ErrorResponse from '../utils/app-error'
 import type { CourseInputData } from '../schemas/course.schema'
 
 class CourseNotFound extends ErrorResponse {

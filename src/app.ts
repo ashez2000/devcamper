@@ -9,12 +9,11 @@ import cookieParser from 'cookie-parser'
 import mongoSanitize from 'express-mongo-sanitize'
 
 import ratelimit from './utils/ratelimit.util'
-import errorHandler from './middlewares/error.middleware'
-import ErrorResponse from './utils/error.util'
+import { errorHandler, notFoundHandler } from './utils/error-handler'
 
-import course from './courses/course.router'
-import review from './reviews/review.router'
-import bootcamp from './bootcamps/bootcamp.router'
+// import course from './courses/course.router'
+// import review from './reviews/review.router'
+// import bootcamp from './bootcamps/bootcamp.router'
 import authRouter from './auth/auth.router'
 
 const app = express()
@@ -34,16 +33,11 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/v1/auth', authRouter)
-app.use('/api/v1/bootcamps', bootcamp)
-app.use('/api/v1/courses', course)
-app.use('/api/v1/reviews', review)
+// app.use('/api/v1/bootcamps', bootcamp)
+// app.use('/api/v1/courses', course)
+// app.use('/api/v1/reviews', review)
 
-app.all('*', (req, res, next) => {
-  return next(
-    new ErrorResponse(`Can't find ${req.originalUrl} on this server!`, 404)
-  )
-})
-
+app.use(notFoundHandler)
 app.use(errorHandler)
 
 export default app

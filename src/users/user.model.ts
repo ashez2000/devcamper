@@ -1,40 +1,26 @@
-import jwt from 'jsonwebtoken'
 import argon from 'argon2'
-import { Schema, model, Model, HydratedDocument } from 'mongoose'
-import ErrorResponse from '../utils/error.util'
-import * as config from '../config'
+import { Schema, model } from 'mongoose'
 
-interface IUser {
+export interface IUser {
   name: string
   email: string
   password: string
   role: string
 }
 
-interface IUserMethods {
-  getJWT: () => string
-}
-
-interface IUserModel extends Model<IUser, {}, IUserMethods> {
-  findByCredentials: (
-    email: string,
-    password: string
-  ) => Promise<HydratedDocument<IUser, IUserMethods>>
-}
-
 const UserSchema = new Schema<IUser>({
   name: {
     type: String,
-    required: true,
+    required: [true, 'Please provide a name'],
   },
   email: {
     type: String,
-    required: true,
+    required: [true, 'Please provide an email'],
     unique: true,
   },
   password: {
     type: String,
-    required: true,
+    required: [true, 'Please provide a password'],
   },
   role: {
     type: String,
@@ -51,29 +37,6 @@ UserSchema.pre('save', async function (next) {
   next()
 })
 
-// sign token
-UserSchema.methods.getJWT = function () {
-  const user = {
-    id: this._id,
-    role: this.role,
-  }
-
-  return jwt.sign(user, config.jwtSecret, {
-    expiresIn: config.jwtExpiration,
-  })
-}
-
-// find user with email and password
-UserSchema.statics.findByCredentials = async function (email, password) {
-  const user = await this.findOne({ email }).select('+password')
-  if (!user) throw new ErrorResponse('Invalid credentials', 401)
-
-  const isMatch = await argon.verify(user.password, password)
-  if (!isMatch) throw new ErrorResponse('Invalid credentials', 401)
-
-  return user
-}
-
-const User = model<IUser, IUserModel>('User', UserSchema)
+const User = model<IUser>('User', UserSchema)
 
 export default User

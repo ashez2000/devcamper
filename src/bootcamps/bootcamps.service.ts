@@ -1,5 +1,5 @@
 import Bootcamp from '../models/bootcamp.model'
-import ErrorResponse from '../utils/error.util'
+import ErrorResponse from '../utils/app-error'
 import type { CreateBootcampData } from './bootcamps.validator'
 
 class BootcampNotFound extends ErrorResponse {

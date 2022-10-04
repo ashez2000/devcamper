@@ -1,0 +1,25 @@
+import jwt from 'jsonwebtoken'
+import argon from 'argon2'
+import { CookieOptions } from 'express'
+
+import config from '../config'
+
+export const getSignedToken = (data: any) => {
+  return jwt.sign(data, config.JWT_SECRET, {
+    expiresIn: config.JWT_EXPIRE,
+  })
+}
+
+export const cookieOptions: CookieOptions = {
+  httpOnly: true,
+  secure: config.NODE_ENV === 'production',
+  expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+}
+
+export const verifyPassword = (password: string, hashedPassword: string) => {
+  return argon.verify(hashedPassword, password)
+}
+
+export const verifyToken = (token: string) => {
+  return jwt.verify(token, config.JWT_SECRET)
+}

@@ -1,11 +1,11 @@
 import express from 'express'
+
+import { signin, signup, user, protect } from './auth.controller'
+
 const router = express.Router()
 
-import * as authCtrl from './auth.controller'
-import { protect } from '../middlewares/auth.middleware'
-
-router.route('/signup').post(authCtrl.signup)
-router.route('/signin').post(authCtrl.signin)
-router.route('/user').get(protect, authCtrl.getUser)
+router.route('/signup').post(signup)
+router.route('/signin').post(signin)
+router.route('/user').get(protect, user)
 
 export default router

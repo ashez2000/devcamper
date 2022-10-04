@@ -1,21 +1,13 @@
 import User from './user.model'
-import ErrorResponse from '../utils/error.util'
-import { SigninData, SignupData } from './users.validator'
+import AppError from '../utils/app-error'
+import { CreateUserDto } from './user.dto'
 
-export const createUser = async (data: SigninData) => {
+export const createUser = async (data: CreateUserDto) => {
   return await User.create(data)
 }
 
-export const findUserById = async (id: string) => {
+export const getUserById = async (id: string) => {
   const user = await User.findById(id)
-
-  if (!user) {
-    throw new ErrorResponse('User not found', 404)
-  }
-
-  return user
-}
-export const findByUserCredential = async (data: SigninData) => {
-  const user = await User.findByCredentials(data.email, data.password)
+  if (!user) throw new AppError('User not found', 404)
   return user
 }

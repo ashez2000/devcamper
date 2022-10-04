@@ -1,5 +1,5 @@
 import Review from '../models/review.model'
-import ErrorResponse from '../utils/error.util'
+import ErrorResponse from '../utils/app-error'
 import type { ReviewInputData } from '../schemas/review.schema'
 
 class ReviewNotFound extends ErrorResponse {

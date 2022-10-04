@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express'
 import * as bootcampService from './bootcamps.service'
-import ErrorResponse from '../utils/error.util'
+import ErrorResponse from '../utils/app-error'
 
 /**
  * Get all bootcamps
