@@ -3,6 +3,7 @@ import argon from 'argon2'
 import { CookieOptions } from 'express'
 
 import config from '../config'
+import { Types } from 'mongoose'
 
 export const getSignedToken = (data: any) => {
   return jwt.sign(data, config.JWT_SECRET, {
@@ -22,4 +23,12 @@ export const verifyPassword = (password: string, hashedPassword: string) => {
 
 export const verifyToken = (token: string) => {
   return jwt.verify(token, config.JWT_SECRET)
+}
+
+export const isAuthorized = (
+  ownerId: Types.ObjectId | undefined,
+  currentUser: { id: string; role: string }
+) => {
+  if (!ownerId) return false
+  return ownerId.toString() === currentUser.id || currentUser.role === 'admin'
 }
