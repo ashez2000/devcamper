@@ -1,18 +1,14 @@
-import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 
-dotenv.config()
-import * as config from './config'
 import app from './app'
+import config from './config'
 
 mongoose
-  .connect(config.mongouri)
+  .connect(config.MONGO_URI)
   .then((conn) => console.log(`mongodb : ${conn.connection.host}`))
 
-const port = config.port
-
-const server = app.listen(port, () => {
-  console.log(`server running on port ${port}`)
+const server = app.listen(config.PORT, () => {
+  console.log(`server running on port ${config.PORT}`)
 })
 
 process.on('unhandledRejection', (err) => {
