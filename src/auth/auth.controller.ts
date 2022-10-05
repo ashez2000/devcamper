@@ -12,9 +12,9 @@ import { createUser, getUserById } from '../users/users.service'
  * User signup controller
  */
 export const signup: RequestHandler = asyncHandler(async (req, res, next) => {
-  const { name, email, password } = req.body
+  const { name, email, password, role } = req.body
 
-  const user = await createUser({ name, email, password })
+  const user = await createUser({ name, email, password, role })
   const token = getSignedToken({ id: user._id, role: user.role })
 
   res.cookie('token', token, cookieOptions)

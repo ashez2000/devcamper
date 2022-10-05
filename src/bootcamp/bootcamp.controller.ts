@@ -67,7 +67,7 @@ export const updateBootcampByIdHandler: RequestHandler = asyncHandler(
     let bootcamp = await findBootcampById(req.params.id)
 
     if (!isAuthorized(bootcamp.user, currentUser)) {
-      return next(new AppError(`User:${currentUser} is not authorized`, 401))
+      return next(new AppError(`User:${currentUser.id} is not authorized`, 401))
     }
 
     bootcamp = await updateBootcampById(req.params.id, req.body)
