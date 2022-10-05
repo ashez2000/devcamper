@@ -11,10 +11,10 @@ import mongoSanitize from 'express-mongo-sanitize'
 import ratelimit from './utils/ratelimit.util'
 import { errorHandler, notFoundHandler } from './utils/error-handler'
 
-// import course from './courses/course.router'
-// import review from './reviews/review.router'
-// import bootcamp from './bootcamps/bootcamp.router'
 import authRouter from './auth/auth.router'
+import courseRouter from './courses/course.router'
+import reviewRouter from './reviews/review.router'
+import bootcampRouter from './bootcamp/bootcamp.router'
 
 const app = express()
 
@@ -33,9 +33,9 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/v1/auth', authRouter)
-// app.use('/api/v1/bootcamps', bootcamp)
-// app.use('/api/v1/courses', course)
-// app.use('/api/v1/reviews', review)
+app.use('/api/v1/bootcamps', bootcampRouter)
+app.use('/api/v1/courses', courseRouter)
+app.use('/api/v1/reviews', reviewRouter)
 
 app.use(notFoundHandler)
 app.use(errorHandler)
