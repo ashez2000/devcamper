@@ -9,7 +9,7 @@ import cookieParser from 'cookie-parser'
 import mongoSanitize from 'express-mongo-sanitize'
 
 import ratelimit from './utils/ratelimit.util'
-import { errorHandler, notFoundHandler } from './utils/error-handler'
+import { errorHandler, notFoundHandler } from './error/error.controller'
 
 import authRouter from './auth/auth.router'
 import courseRouter from './courses/course.router'
