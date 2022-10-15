@@ -1,6 +1,7 @@
 import express from 'express'
 import { protect, restrictTo } from '../auth/auth.controller'
 import {
+  getAllCourseHandler,
   getAllCourseForBootcampHandler,
   getCourseByIdHandler,
   createCourseHandler,
@@ -9,6 +10,8 @@ import {
 } from './course.controller'
 
 const router = express.Router()
+
+router.get('/', getAllCourseHandler)
 
 router.get('/:bootcampId/courses', getAllCourseForBootcampHandler)
 

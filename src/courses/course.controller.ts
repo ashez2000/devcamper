@@ -4,6 +4,7 @@ import AppError from '../utils/app-error'
 import asyncHandler from '../utils/async-handler'
 import { isAuthorized } from '../auth/auth.utils'
 import {
+  findAllCourse,
   findAllCourseForBootcamp,
   findCourseById,
   createCourse,
@@ -11,6 +12,20 @@ import {
   deleteCourseById,
 } from './courses.service'
 import { findBootcampById } from '../bootcamp/bootcamp.service'
+
+/** Get all courses Handler */
+export const getAllCourseHandler: RequestHandler = asyncHandler(
+  async (req, res, next) => {
+    const q = req.query as any
+
+    const courses = await findAllCourse(q)
+
+    res.status(200).json({
+      results: courses.length,
+      courses,
+    })
+  }
+)
 
 /**
  * Get all courses associated with a bootcamp

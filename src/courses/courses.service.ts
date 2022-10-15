@@ -2,6 +2,22 @@ import Course from './course.model'
 import AppError from '../utils/app-error'
 
 import { CreateCourseDto } from './course.dto'
+import { Query, filter, sort, select, paginate } from '../utils/query-builder'
+
+export const findAllCourse = async (query: Query) => {
+  const filterQuery = filter(query)
+  const sortFields = sort(query)
+  const selectFields = select(query)
+  const { limit, skip } = paginate(query)
+
+  const courses = await Course.find(filterQuery)
+    .select(selectFields)
+    .sort(sortFields)
+    .skip(skip)
+    .limit(limit)
+
+  return courses
+}
 
 /**
  * Find all Courses associated with a bootcamp
