@@ -1,27 +1,21 @@
 import fs from 'fs'
 import mongoose from 'mongoose'
 
-import config from '../config'
+import config from '../src/config'
 
-import User from '../users/user.model'
-import Bootcamp from '../bootcamp/bootcamp.model'
-import Course from '../courses/course.model'
-import Review from '../reviews/review.model'
+import User from '../src/users/user.model'
+import Bootcamp from '../src/bootcamp/bootcamp.model'
+import Course from '../src/courses/course.model'
+import Review from '../src/reviews/review.model'
 
 mongoose.connect(config.MONGO_URI).then(() => {
   console.log('MongoDB Connected')
 })
 
 const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf-8'))
-const bootcamps = JSON.parse(
-  fs.readFileSync(`${__dirname}/bootcamps.json`, 'utf-8')
-)
-const courses = JSON.parse(
-  fs.readFileSync(`${__dirname}/courses.json`, 'utf-8')
-)
-const reviews = JSON.parse(
-  fs.readFileSync(`${__dirname}/reviews.json`, 'utf-8')
-)
+const bootcamps = JSON.parse(fs.readFileSync(`${__dirname}/bootcamps.json`, 'utf-8'))
+const courses = JSON.parse(fs.readFileSync(`${__dirname}/courses.json`, 'utf-8'))
+const reviews = JSON.parse(fs.readFileSync(`${__dirname}/reviews.json`, 'utf-8'))
 
 // Import into DB
 const importData = async () => {
