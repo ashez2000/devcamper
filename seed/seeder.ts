@@ -13,9 +13,15 @@ mongoose.connect(config.MONGO_URI).then(() => {
 })
 
 const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf-8'))
-const bootcamps = JSON.parse(fs.readFileSync(`${__dirname}/bootcamps.json`, 'utf-8'))
-const courses = JSON.parse(fs.readFileSync(`${__dirname}/courses.json`, 'utf-8'))
-const reviews = JSON.parse(fs.readFileSync(`${__dirname}/reviews.json`, 'utf-8'))
+const bootcamps = JSON.parse(
+  fs.readFileSync(`${__dirname}/bootcamps.json`, 'utf-8')
+)
+const courses = JSON.parse(
+  fs.readFileSync(`${__dirname}/courses.json`, 'utf-8')
+)
+const reviews = JSON.parse(
+  fs.readFileSync(`${__dirname}/reviews.json`, 'utf-8')
+)
 
 // Import into DB
 const importData = async () => {
@@ -23,7 +29,7 @@ const importData = async () => {
     await User.create(users)
     await Bootcamp.create(bootcamps)
     await Course.create(courses)
-    await Review.create(reviews)
+    // await Review.create(reviews)
     console.log('Data Imported')
     process.exit()
   } catch (err) {
