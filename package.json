@@ -9,7 +9,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "node build/main.js",
-    "build": "tsc .",
+    "build": "tsc",
     "dev": "nodemon --exec ts-node src/main.ts",
     "data:im": "ts-node ./seed/seeder.ts -i",
     "data:ds": "ts-node ./seed/seeder.ts -d",
