@@ -2,8 +2,8 @@
   "name": "devcamper-api",
   "version": "1.0.0",
   "engines": {
-    "node": ">= 8.0.0",
-    "npm": ">= 5.0.0"
+    "node": "v16.17.1",
+    "npm": "8.15.0"
   },
   "description": "Devcamper API is a backend service for online educational bootcamps.",
   "type": "commonjs",
