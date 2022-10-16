@@ -1,14 +1,19 @@
 {
-  "name": "bootcamp-api",
+  "name": "devcamper-api",
   "version": "1.0.0",
-  "description": "Bootcamp API is a backend service for online bootcamps.",
+  "engines": {
+    "node": ">= 8.0.0",
+    "npm": ">= 5.0.0"
+  },
+  "description": "Devcamper API is a backend service for online educational bootcamps.",
   "type": "commonjs",
   "scripts": {
     "start": "node build/main.js",
+    "build": "tsc .",
     "dev": "nodemon --exec ts-node src/main.ts",
-    "test": "vitest",
     "data:im": "ts-node ./seed/seeder.ts -i",
-    "data:ds": "ts-node ./seed/seeder.ts -d"
+    "data:ds": "ts-node ./seed/seeder.ts -d",
+    "postinstall": "npm run build"
   },
   "author": "Aswin Gangadharan",
   "license": "MIT",
