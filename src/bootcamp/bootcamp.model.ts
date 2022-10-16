@@ -1,15 +1,17 @@
 import { Schema, model, Types } from 'mongoose'
 import slugify from 'slugify'
 
+import geocoder from '../utils/geocoder'
+
 interface Location {
   type: string
-  coordinates: number[]
-  formattedAddress: string
-  street: string
-  city: string
-  state: string
-  zipcode: string
-  country: string
+  coordinates: Array<number | undefined>
+  formattedAddress?: string
+  street?: string
+  city?: string
+  state?: string
+  zipcode?: string
+  country?: string
 }
 
 export interface IBootcamp {
@@ -147,6 +149,22 @@ BootcampSchema.pre('save', function (next) {
   }
 
   this.slug = slugify(this.name, { lower: true })
+  next()
+})
+
+BootcampSchema.pre('save', async function (next) {
+  const loc = await geocoder.geocode(this.address)
+  this.location = {
+    type: 'Point',
+    coordinates: [loc[0].longitude, loc[0].latitude],
+    formattedAddress: loc[0].formattedAddress,
+    street: loc[0].streetName,
+    city: loc[0].city,
+    state: loc[0].stateCode,
+    zipcode: loc[0].zipcode,
+    country: loc[0].countryCode,
+  }
+
   next()
 })
 
