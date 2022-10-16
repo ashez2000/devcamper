@@ -9,6 +9,7 @@ import cookieParser from 'cookie-parser'
 import mongoSanitize from 'express-mongo-sanitize'
 
 import ratelimit from './utils/ratelimit.util'
+import { swaggerServe, swaggerUi } from './utils/swagger'
 import { errorHandler, notFoundHandler } from './error/error.controller'
 
 import authRouter from './auth/auth.router'
@@ -28,8 +29,10 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, '..', 'public')))
 app.use(express.json())
 
+app.use('/api/v1/docs', swaggerServe, swaggerUi)
+
 app.get('/', (req, res) => {
-  res.send('Welcome to Devcamper')
+  res.redirect('/api/v1/docs')
 })
 
 app.use('/api/v1/auth', authRouter)

@@ -10,9 +10,31 @@ import {
 
 const router = express.Router()
 
+/**
+ * @openapi
+ * /api/v1/bootcamps:
+ *  get:
+ *    tags:
+ *      - Bootcamps
+ */
 router.get('/', getAllBootcampHandler)
+
+/**
+ * @openapi
+ * /api/v1/bootcamps/{id}:
+ *  get:
+ *    tags:
+ *      - Bootcamps
+ */
 router.get('/:id', getBootcampByIdHandler)
 
+/**
+ * @openapi
+ * /api/v1/bootcamps:
+ *  post:
+ *    tags:
+ *      - Bootcamps
+ */
 router.post(
   '/',
   protect,
@@ -20,6 +42,13 @@ router.post(
   createBootcampHandler
 )
 
+/**
+ * @openapi
+ * /api/v1/bootcamps/{id}:
+ *  put:
+ *    tags:
+ *      - Bootcamps
+ */
 router.put(
   '/:id',
   protect,
