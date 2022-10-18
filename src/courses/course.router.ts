@@ -11,12 +11,31 @@ import {
 
 const router = express.Router()
 
+/**
+ * @openapi
+ * /api/v1/courses:
+ *  get:
+ *    tags:
+ *      - Courses
+ */
 router.get('/', getAllCourseHandler)
 
-router.get('/:bootcampId/courses', getAllCourseForBootcampHandler)
+/**
+ * @openapi
+ * /api/v1/courses/{id}:
+ *  get:
+ *    tags:
+ *      - Courses
+ */
+router.get('/:id', getCourseByIdHandler)
 
-router.get('/courses/:id', getCourseByIdHandler)
-
+/**
+ * @openapi
+ * /api/v1/courses/{id}:
+ *  post:
+ *    tags:
+ *      - Courses
+ */
 router.post(
   '/:bootcampId/courses',
   protect,
@@ -24,18 +43,32 @@ router.post(
   createCourseHandler
 )
 
+/**
+ * @openapi
+ * /api/v1/courses/{id}:
+ *  put:
+ *    tags:
+ *      - Courses
+ */
 router.put(
-  '/courses/:id',
-  protect,
-  restrictTo('publisher', 'admin'),
+  '/:id',
+  // protect,
+  // restrictTo('publisher', 'admin'),
   updateCourseByIdHandler
 )
 
-router.patch(
-  '/courses/:id',
-  protect,
-  restrictTo('publisher', 'admin'),
-  updateCourseByIdHandler
+/**
+ * @openapi
+ * /api/v1/courses/{id}:
+ *  delete:
+ *    tags:
+ *      - Courses
+ */
+router.delete(
+  '/:id',
+  // protect,
+  // restrictTo('publisher', 'admin'),
+  deleteCourseByIdHandler
 )
 
 export default router
