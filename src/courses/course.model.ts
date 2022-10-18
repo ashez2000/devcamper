@@ -4,9 +4,13 @@ import { updateBootcampById } from '../bootcamp/bootcamp.service'
 export interface ICourse {
   title: string
   description: string
+  weeks: string
   tuition: number
+  minimumSkill: 'beginner' | 'intermediate' | 'advanced'
+  scholarshipAvailable: boolean
+  createdAt: Date
   bootcamp: Types.ObjectId
-  user: Types.ObjectId
+  // user: Types.ObjectId
 }
 
 interface ICourseModel extends Model<ICourse> {
@@ -17,27 +21,44 @@ interface ICourseModel extends Model<ICourse> {
 const CourseSchema = new Schema<ICourse, ICourseModel>({
   title: {
     type: String,
-    required: [true, 'Please provide a course title'],
-    unique: true,
+    trim: true,
+    required: [true, 'Please add a course title'],
   },
   description: {
     type: String,
-    required: [true, 'Please provide a course description'],
+    required: [true, 'Please add a description'],
+  },
+  weeks: {
+    type: String,
+    required: [true, 'Please add number of weeks'],
   },
   tuition: {
     type: Number,
-    required: [true, 'Please provide a course tuition amount'],
+    required: [true, 'Please add a tuition cost'],
+  },
+  minimumSkill: {
+    type: String,
+    required: [true, 'Please add a minimum skill'],
+    enum: ['beginner', 'intermediate', 'advanced'],
+  },
+  scholarshipAvailable: {
+    type: Boolean,
+    default: false,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
   bootcamp: {
     type: Schema.Types.ObjectId,
     ref: 'Bootcamp',
     required: true,
   },
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
+  // user: {
+  //   type: Schema.Types.ObjectId,
+  //   ref: 'User',
+  //   required: true,
+  // },
 })
 
 // Static method to get avg of course tuitions

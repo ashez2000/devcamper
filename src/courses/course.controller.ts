@@ -13,7 +13,7 @@ import {
 } from './courses.service'
 import { findBootcampById } from '../bootcamp/bootcamp.service'
 
-/** Get all courses Handler */
+/** Get courses Handler */
 export const getAllCourseHandler: RequestHandler = asyncHandler(
   async (req, res, next) => {
     const q = req.query as any
@@ -27,9 +27,7 @@ export const getAllCourseHandler: RequestHandler = asyncHandler(
   }
 )
 
-/**
- * Get all courses associated with a bootcamp
- */
+/** Get courses associated with a bootcamp Handler */
 export const getAllCourseForBootcampHandler: RequestHandler = asyncHandler(
   async (req, res, next) => {
     const courses = await findAllCourseForBootcamp(req.params.bootcampId)
@@ -41,9 +39,7 @@ export const getAllCourseForBootcampHandler: RequestHandler = asyncHandler(
   }
 )
 
-/**
- * Get single course
- */
+/** Get course by id Handler */
 export const getCourseByIdHandler: RequestHandler = asyncHandler(
   async (req, res, next) => {
     const course = await findCourseById(req.params.id)
@@ -54,13 +50,11 @@ export const getCourseByIdHandler: RequestHandler = asyncHandler(
   }
 )
 
-/**
- * Create a new course
- */
+/** Create a new course Handler */
 export const createCourseHandler: RequestHandler = asyncHandler(
   async (req, res, next) => {
     req.body.bootcamp = req.params.bootcampId
-    req.body.user = res.locals.user.id
+    // req.body.user = res.locals.user.id
 
     await findBootcampById(req.params.bootcampId)
 
@@ -72,16 +66,14 @@ export const createCourseHandler: RequestHandler = asyncHandler(
   }
 )
 
-/**
- * Update course by id
- */
+/** Update course by id Handler */
 export const updateCourseByIdHandler: RequestHandler = asyncHandler(
   async (req, res, next) => {
     let course = await findCourseById(req.params.id)
 
-    if (!isAuthorized(course.user, res.locals.user.id)) {
-      return next(new AppError('Not authorized to update this course', 401))
-    }
+    // if (!isAuthorized(course.user, res.locals.user.id)) {
+    //   return next(new AppError('Not authorized to update this course', 401))
+    // }
 
     course = await updateCourseById(req.params.id, req.body)
 
@@ -91,16 +83,14 @@ export const updateCourseByIdHandler: RequestHandler = asyncHandler(
   }
 )
 
-/**
- * Delete course by id
- */
+/** Delete course by id handler */
 export const deleteCourseByIdHandler: RequestHandler = asyncHandler(
   async (req, res, next) => {
     let course = await findCourseById(req.params.id)
 
-    if (!isAuthorized(course.user, res.locals.user)) {
-      return next(new AppError('Not authorized to delete this course', 401))
-    }
+    // if (!isAuthorized(course.user, res.locals.user)) {
+    //   return next(new AppError('Not authorized to delete this course', 401))
+    // }
 
     course = await deleteCourseById(req.params.id)
 
