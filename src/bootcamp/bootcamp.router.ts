@@ -7,6 +7,7 @@ import {
   getBootcampWithinRadiusHandler,
   createBootcampHandler,
   updateBootcampByIdHandler,
+  deleteBootcampByIdHandler,
 } from './bootcamp.controller'
 
 const router = express.Router()
@@ -47,8 +48,8 @@ router.get('/radius/:zipcode/:distance', getBootcampWithinRadiusHandler)
  */
 router.post(
   '/',
-  protect,
-  restrictTo('admin', 'publisher'),
+  // protect,
+  // restrictTo('admin', 'publisher'),
   createBootcampHandler
 )
 
@@ -61,9 +62,23 @@ router.post(
  */
 router.put(
   '/:id',
-  protect,
-  restrictTo('admin', 'publisher'),
+  // protect,
+  // restrictTo('admin', 'publisher'),
   updateBootcampByIdHandler
+)
+
+/**
+ * @openapi
+ * /api/v1/bootcamps/{id}:
+ *  delete:
+ *    tags:
+ *      - Bootcamps
+ */
+router.delete(
+  '/:id',
+  // protect,
+  // restrictTo('admin', 'publisher'),
+  deleteBootcampByIdHandler
 )
 
 export default router

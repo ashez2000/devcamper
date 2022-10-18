@@ -8,6 +8,7 @@ import {
   findBootcampWithinRadius,
   createBootcamp,
   updateBootcampById,
+  deleteBootcampById,
 } from './bootcamp.service'
 import { isAuthorized } from '../auth/auth.utils'
 
@@ -57,12 +58,10 @@ export const getBootcampWithinRadiusHandler: RequestHandler = asyncHandler(
   }
 )
 
-/**
- * Create bootcamp handler
- */
+/** Create bootcamp handler */
 export const createBootcampHandler: RequestHandler = async (req, res, next) => {
   try {
-    req.body.user = res.locals.user.id
+    // req.body.user = res.locals.user.id
     const bootcamp = await createBootcamp(req.body)
 
     return res.status(201).json({
@@ -73,19 +72,34 @@ export const createBootcampHandler: RequestHandler = async (req, res, next) => {
   }
 }
 
-/**
- * Update bootcamp handler
- */
+/** Update bootcamp handler */
 export const updateBootcampByIdHandler: RequestHandler = asyncHandler(
   async (req, res, next) => {
-    const currentUser = res.locals.user
+    // const currentUser = res.locals.user
     let bootcamp = await findBootcampById(req.params.id)
 
-    if (!isAuthorized(bootcamp.user, currentUser)) {
-      return next(new AppError(`User:${currentUser.id} is not authorized`, 401))
-    }
+    // if (!isAuthorized(bootcamp.user, currentUser)) {
+    //   return next(new AppError(`User:${currentUser.id} is not authorized`, 401))
+    // }
 
     bootcamp = await updateBootcampById(req.params.id, req.body)
+
+    return res.status(200).json({
+      bootcamp,
+    })
+  }
+)
+
+export const deleteBootcampByIdHandler: RequestHandler = asyncHandler(
+  async (req, res, next) => {
+    // const currentUser = res.locals.user
+    let bootcamp = await findBootcampById(req.params.id)
+
+    // if (!isAuthorized(bootcamp.user, currentUser)) {
+    //   return next(new AppError(`User:${currentUser.id} is not authorized`, 401))
+    // }
+
+    bootcamp = await deleteBootcampById(req.params.id)
 
     return res.status(200).json({
       bootcamp,

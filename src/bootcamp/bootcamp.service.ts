@@ -59,3 +59,11 @@ export const updateBootcampById = async (id: string, data: any) => {
 
   return bootcamp
 }
+
+export const deleteBootcampById = async (id: string) => {
+  const bootcamp = await Bootcamp.findByIdAndDelete(id)
+
+  if (!bootcamp) throw new AppError(`Bootcamp not found with id of ${id}`, 404)
+
+  return bootcamp
+}
