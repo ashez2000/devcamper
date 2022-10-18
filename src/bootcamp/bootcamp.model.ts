@@ -152,6 +152,17 @@ BootcampSchema.pre('save', function (next) {
   next()
 })
 
+BootcampSchema.virtual('courses', {
+  ref: 'Course',
+  localField: '_id',
+  foreignField: 'bootcamp',
+})
+
+BootcampSchema.pre('remove', async function (next) {
+  await this.$model('Course').deleteMany({ bootcamp: this._id })
+  next()
+})
+
 BootcampSchema.pre('save', async function (next) {
   const loc = await geocoder.geocode(this.address)
   this.location = {

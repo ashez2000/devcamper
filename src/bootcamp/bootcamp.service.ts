@@ -12,6 +12,7 @@ export const findAllBootcamp = async (query: Query) => {
   const { limit, skip } = paginate(query)
 
   const bootcamps = await Bootcamp.find(filterQuery)
+    .populate('courses')
     .select(selectFields)
     .sort(sortFields)
     .skip(skip)
@@ -61,9 +62,10 @@ export const updateBootcampById = async (id: string, data: any) => {
 }
 
 export const deleteBootcampById = async (id: string) => {
-  const bootcamp = await Bootcamp.findByIdAndDelete(id)
-
+  const bootcamp = await Bootcamp.findById(id)
   if (!bootcamp) throw new AppError(`Bootcamp not found with id of ${id}`, 404)
+
+  await bootcamp.remove()
 
   return bootcamp
 }

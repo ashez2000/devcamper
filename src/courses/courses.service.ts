@@ -11,6 +11,10 @@ export const findAllCourse = async (query: Query) => {
   const { limit, skip } = paginate(query)
 
   const courses = await Course.find(filterQuery)
+    .populate({
+      path: 'bootcamp',
+      select: 'name description',
+    })
     .select(selectFields)
     .sort(sortFields)
     .skip(skip)

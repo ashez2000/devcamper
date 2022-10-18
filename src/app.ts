@@ -34,7 +34,7 @@ app.get('/', (req, res) => {
 
 // app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/bootcamps', bootcampRouter)
-// app.use('/api/v1/courses', courseRouter)
+app.use('/api/v1/courses', courseRouter)
 // app.use('/api/v1/reviews', reviewRouter)
 
 app.use(notFoundHandler)
