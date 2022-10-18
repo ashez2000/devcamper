@@ -1,5 +1,3 @@
-import path from 'path'
-
 import hpp from 'hpp'
 import cors from 'cors'
 import morgan from 'morgan'
@@ -26,7 +24,6 @@ app.use(hpp())
 app.use(cors())
 app.use(morgan('dev'))
 app.use(cookieParser())
-app.use(express.static(path.join(__dirname, '..', 'public')))
 app.use(express.json())
 
 app.use('/api/v1/docs', swaggerServe, swaggerUi)
@@ -35,10 +32,10 @@ app.get('/', (req, res) => {
   res.redirect('/api/v1/docs')
 })
 
-app.use('/api/v1/auth', authRouter)
+// app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/bootcamps', bootcampRouter)
-app.use('/api/v1/courses', courseRouter)
-app.use('/api/v1/reviews', reviewRouter)
+// app.use('/api/v1/courses', courseRouter)
+// app.use('/api/v1/reviews', reviewRouter)
 
 app.use(notFoundHandler)
 app.use(errorHandler)

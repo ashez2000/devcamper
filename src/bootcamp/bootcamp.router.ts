@@ -4,6 +4,7 @@ import { protect, restrictTo } from '../auth/auth.controller'
 import {
   getAllBootcampHandler,
   getBootcampByIdHandler,
+  getBootcampWithinRadiusHandler,
   createBootcampHandler,
   updateBootcampByIdHandler,
 } from './bootcamp.controller'
@@ -27,6 +28,15 @@ router.get('/', getAllBootcampHandler)
  *      - Bootcamps
  */
 router.get('/:id', getBootcampByIdHandler)
+
+/**
+ * @openapi
+ * /api/v1/bootcamps/radius/{zipcode}/{distance}:
+ *  get:
+ *    tags:
+ *      - Bootcamps
+ */
+router.get('/radius/:zipcode/:distance', getBootcampWithinRadiusHandler)
 
 /**
  * @openapi

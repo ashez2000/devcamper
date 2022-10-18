@@ -5,14 +5,13 @@ import AppError from '../utils/app-error'
 import {
   findAllBootcamp,
   findBootcampById,
+  findBootcampWithinRadius,
   createBootcamp,
   updateBootcampById,
 } from './bootcamp.service'
 import { isAuthorized } from '../auth/auth.utils'
 
-/**
- * Get all bootcamps handler
- */
+/** Get all bootcamps handler */
 export const getAllBootcampHandler: RequestHandler = asyncHandler(
   async (req, res, next) => {
     const bootcamps = await findAllBootcamp()
@@ -24,9 +23,7 @@ export const getAllBootcampHandler: RequestHandler = asyncHandler(
   }
 )
 
-/**
- * Get single bootcamp handler
- */
+/** Get single bootcamp handler */
 export const getBootcampByIdHandler: RequestHandler = async (
   req,
   res,
@@ -41,6 +38,23 @@ export const getBootcampByIdHandler: RequestHandler = async (
     next(error)
   }
 }
+
+/** Get Bootcamps within radius */
+export const getBootcampWithinRadiusHandler: RequestHandler = asyncHandler(
+  async (req, res, next) => {
+    const { zipcode, distance } = req.params
+
+    const bootcamps = await findBootcampWithinRadius(
+      zipcode,
+      parseInt(distance)
+    )
+
+    return res.status(200).json({
+      results: bootcamps.length,
+      bootcamps,
+    })
+  }
+)
 
 /**
  * Create bootcamp handler

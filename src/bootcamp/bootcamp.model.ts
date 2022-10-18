@@ -130,11 +130,11 @@ const BootcampSchema = new Schema<IBootcamp>(
       type: Date,
       default: Date.now,
     },
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-    },
+    // user: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: 'User',
+    //   required: true,
+    // },
   },
   {
     toJSON: { virtuals: true },
