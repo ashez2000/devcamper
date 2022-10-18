@@ -14,7 +14,8 @@ import { isAuthorized } from '../auth/auth.utils'
 /** Get all bootcamps handler */
 export const getAllBootcampHandler: RequestHandler = asyncHandler(
   async (req, res, next) => {
-    const bootcamps = await findAllBootcamp()
+    const q = req.query as any
+    const bootcamps = await findAllBootcamp(q)
 
     return res.status(200).json({
       results: bootcamps.length,

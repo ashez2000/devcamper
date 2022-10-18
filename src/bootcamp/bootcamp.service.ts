@@ -3,9 +3,20 @@ import AppError from '../utils/app-error'
 import geocoder from '../utils/geocoder'
 
 import { CreateBootcampDto } from './bootcamp.dto'
+import { Query, filter, sort, select, paginate } from '../utils/query-builder'
 
-export const findAllBootcamp = async () => {
-  const bootcamps = await Bootcamp.find()
+export const findAllBootcamp = async (query: Query) => {
+  const filterQuery = filter(query)
+  const sortFields = sort(query)
+  const selectFields = select(query)
+  const { limit, skip } = paginate(query)
+
+  const bootcamps = await Bootcamp.find(filterQuery)
+    .select(selectFields)
+    .sort(sortFields)
+    .skip(skip)
+    .limit(limit)
+
   return bootcamps
 }
 
