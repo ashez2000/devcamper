@@ -61,11 +61,11 @@ const CourseSchema = new Schema<ICourse, ICourseModel>({
   // },
 })
 
-// Static method to get avg of course tuitions
-CourseSchema.statics.getAverageCost = async function (bootcampId: string) {
-  const obj = await this.aggregate([
+// Call getAverageCost after save
+CourseSchema.post('save', async function () {
+  const obj = await this.$model('Course').aggregate([
     {
-      $match: { bootcamp: bootcampId },
+      $match: { bootcamp: this.bootcamp },
     },
     {
       $group: {
@@ -75,21 +75,42 @@ CourseSchema.statics.getAverageCost = async function (bootcampId: string) {
     },
   ])
 
-  await updateBootcampById(bootcampId, {
-    averageCost: Math.ceil(obj[0].averageCost / 10) * 10,
-  })
-}
-
-const Course = model<ICourse, ICourseModel>('Course', CourseSchema)
-
-// Call getAverageCost after save
-CourseSchema.post('save', function () {
-  Course.getAverageCost(this.bootcamp.toString())
+  if (obj.length > 0) {
+    try {
+      await this.$model('Bootcamp').findByIdAndUpdate(this.bootcamp, {
+        averageCost: Math.ceil(obj[0].averageCost / 10) * 10,
+      })
+    } catch (err) {
+      console.error(err)
+    }
+  }
 })
 
 // Call getAverageCost before remove
-CourseSchema.pre('remove', function () {
-  Course.getAverageCost(this.bootcamp.toString())
+CourseSchema.post('remove', async function () {
+  const obj = await this.$model('Course').aggregate([
+    {
+      $match: { bootcamp: this.bootcamp },
+    },
+    {
+      $group: {
+        _id: '$bootcamp',
+        averageCost: { $avg: '$tuition' },
+      },
+    },
+  ])
+
+  if (obj.length > 0) {
+    try {
+      await this.$model('Bootcamp').findByIdAndUpdate(this.bootcamp, {
+        averageCost: Math.ceil(obj[0].averageCost / 10) * 10,
+      })
+    } catch (err) {
+      console.error(err)
+    }
+  }
 })
+
+const Course = model<ICourse, ICourseModel>('Course', CourseSchema)
 
 export default Course

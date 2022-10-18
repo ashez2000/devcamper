@@ -10,6 +10,11 @@ import {
   deleteBootcampByIdHandler,
 } from './bootcamp.controller'
 
+import {
+  createCourseHandler,
+  getAllCourseForBootcampHandler,
+} from '../courses/course.controller'
+
 const router = express.Router()
 
 /**
@@ -29,6 +34,8 @@ router.get('/', getAllBootcampHandler)
  *      - Bootcamps
  */
 router.get('/:id', getBootcampByIdHandler)
+
+router.get('/:bootcampId/courses', getAllCourseForBootcampHandler)
 
 /**
  * @openapi
@@ -51,6 +58,13 @@ router.post(
   // protect,
   // restrictTo('admin', 'publisher'),
   createBootcampHandler
+)
+
+router.post(
+  '/:bootcampId/courses',
+  // protect,
+  // restrictTo('admin', 'publisher'),
+  createCourseHandler
 )
 
 /**

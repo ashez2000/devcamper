@@ -92,7 +92,7 @@ export const deleteCourseByIdHandler: RequestHandler = asyncHandler(
     //   return next(new AppError('Not authorized to delete this course', 401))
     // }
 
-    course = await deleteCourseById(req.params.id)
+    await deleteCourseById(req.params.id)
 
     res.status(200).json({
       course,
