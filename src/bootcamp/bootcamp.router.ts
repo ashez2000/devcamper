@@ -1,19 +1,5 @@
 import express from 'express'
-
-import { protect, restrictTo } from '../auth/auth.controller'
-import {
-  getAllBootcampHandler,
-  getBootcampByIdHandler,
-  getBootcampWithinRadiusHandler,
-  createBootcampHandler,
-  updateBootcampByIdHandler,
-  deleteBootcampByIdHandler,
-} from './bootcamp.controller'
-
-import {
-  createCourseHandler,
-  getAllCourseForBootcampHandler,
-} from '../courses/course.controller'
+import * as bootcamp from './bootcamp.controller'
 
 const router = express.Router()
 
@@ -24,7 +10,7 @@ const router = express.Router()
  *    tags:
  *      - Bootcamps
  */
-router.get('/', getAllBootcampHandler)
+router.get('/', bootcamp.getAllBootcamps)
 
 /**
  * @openapi
@@ -33,18 +19,7 @@ router.get('/', getAllBootcampHandler)
  *    tags:
  *      - Bootcamps
  */
-router.get('/:id', getBootcampByIdHandler)
-
-router.get('/:bootcampId/courses', getAllCourseForBootcampHandler)
-
-/**
- * @openapi
- * /api/v1/bootcamps/radius/{zipcode}/{distance}:
- *  get:
- *    tags:
- *      - Bootcamps
- */
-router.get('/radius/:zipcode/:distance', getBootcampWithinRadiusHandler)
+router.get('/:id', bootcamp.getBootcamp)
 
 /**
  * @openapi
@@ -53,19 +28,7 @@ router.get('/radius/:zipcode/:distance', getBootcampWithinRadiusHandler)
  *    tags:
  *      - Bootcamps
  */
-router.post(
-  '/',
-  // protect,
-  // restrictTo('admin', 'publisher'),
-  createBootcampHandler
-)
-
-router.post(
-  '/:bootcampId/courses',
-  // protect,
-  // restrictTo('admin', 'publisher'),
-  createCourseHandler
-)
+router.post('/', bootcamp.createBootcamp)
 
 /**
  * @openapi
@@ -74,12 +37,7 @@ router.post(
  *    tags:
  *      - Bootcamps
  */
-router.put(
-  '/:id',
-  // protect,
-  // restrictTo('admin', 'publisher'),
-  updateBootcampByIdHandler
-)
+router.put('/:id', bootcamp.updateBootcamp)
 
 /**
  * @openapi
@@ -88,11 +46,6 @@ router.put(
  *    tags:
  *      - Bootcamps
  */
-router.delete(
-  '/:id',
-  // protect,
-  // restrictTo('admin', 'publisher'),
-  deleteBootcampByIdHandler
-)
+router.delete('/:id', bootcamp.deleteBootcamp)
 
 export default router

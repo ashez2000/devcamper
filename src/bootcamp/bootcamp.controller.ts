@@ -1,108 +1,103 @@
 import { RequestHandler } from 'express'
 
+import prisma from '../utils/prisma'
 import asyncHandler from '../utils/async-handler'
 import AppError from '../utils/app-error'
-import {
-  findAllBootcamp,
-  findBootcampById,
-  findBootcampWithinRadius,
-  createBootcamp,
-  updateBootcampById,
-  deleteBootcampById,
-} from './bootcamp.service'
-import { isAuthorized } from '../auth/auth.utils'
 
-/** Get all bootcamps handler */
-export const getAllBootcampHandler: RequestHandler = asyncHandler(
-  async (req, res, next) => {
-    const q = req.query as any
-    const bootcamps = await findAllBootcamp(q)
+/**
+ * @desc    Get all bootcamps
+ * @route   GET /api/v1/bootcamps
+ */
+export const getAllBootcamps: RequestHandler = asyncHandler(
+  async (req, res) => {
+    const bootcamps = await prisma.bootcamp.findMany()
 
-    return res.status(200).json({
+    res.status(200).json({
+      status: 'success',
       results: bootcamps.length,
-      bootcamps,
+      data: bootcamps,
     })
   }
 )
 
-/** Get single bootcamp handler */
-export const getBootcampByIdHandler: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
-  try {
-    const bootcamp = await findBootcampById(req.params.id)
-    return res.status(200).json({
-      bootcamp,
-    })
-  } catch (error) {
-    next(error)
-  }
-}
-
-/** Get Bootcamps within radius */
-export const getBootcampWithinRadiusHandler: RequestHandler = asyncHandler(
+/**
+ * @desc    Get a single bootcamp
+ * @route   GET /api/v1/bootcamps/:id
+ */
+export const getBootcamp: RequestHandler = asyncHandler(
   async (req, res, next) => {
-    const { zipcode, distance } = req.params
+    const bootcamp = await prisma.bootcamp.findUnique({
+      where: { id: req.params.id },
+    })
 
-    const bootcamps = await findBootcampWithinRadius(
-      zipcode,
-      parseInt(distance)
-    )
+    if (!bootcamp) {
+      return next(new AppError(`No bootcamp with id ${req.params.id}`, 404))
+    }
 
     return res.status(200).json({
-      results: bootcamps.length,
-      bootcamps,
+      status: 'success',
+      data: bootcamp,
     })
   }
 )
 
-/** Create bootcamp handler */
-export const createBootcampHandler: RequestHandler = async (req, res, next) => {
-  try {
-    // req.body.user = res.locals.user.id
-    const bootcamp = await createBootcamp(req.body)
+/**
+ * @desc    Create a new bootcamp
+ * @route   POST /api/v1/bootcamps
+ */
+export const createBootcamp: RequestHandler = asyncHandler(async (req, res) => {
+  const bootcamp = await prisma.bootcamp.create({
+    data: req.body,
+  })
 
-    return res.status(201).json({
-      bootcamp,
-    })
-  } catch (error) {
-    next(error)
-  }
-}
+  return res.status(201).json({
+    status: 'success',
+    message: 'Bootcamp created',
+    data: bootcamp,
+  })
+})
 
-/** Update bootcamp handler */
-export const updateBootcampByIdHandler: RequestHandler = asyncHandler(
+/**
+ * @desc    Update a bootcamp
+ * @route   PUT /api/v1/bootcamps/:id
+ */
+export const updateBootcamp: RequestHandler = asyncHandler(
   async (req, res, next) => {
-    // const currentUser = res.locals.user
-    let bootcamp = await findBootcampById(req.params.id)
+    const bootcamp = await prisma.bootcamp.update({
+      where: { id: req.params.id },
+      data: req.body,
+    })
 
-    // if (!isAuthorized(bootcamp.user, currentUser)) {
-    //   return next(new AppError(`User:${currentUser.id} is not authorized`, 401))
-    // }
-
-    bootcamp = await updateBootcampById(req.params.id, req.body)
+    if (!bootcamp) {
+      return next(new AppError(`No bootcamp with id ${req.params.id}`, 404))
+    }
 
     return res.status(200).json({
-      bootcamp,
+      status: 'success',
+      message: 'Bootcamp updated',
+      data: bootcamp,
     })
   }
 )
 
-export const deleteBootcampByIdHandler: RequestHandler = asyncHandler(
+/**
+ * @desc    Delete a bootcamp
+ * @route   DELETE /api/v1/bootcamps/:id
+ */
+export const deleteBootcamp: RequestHandler = asyncHandler(
   async (req, res, next) => {
-    // const currentUser = res.locals.user
-    let bootcamp = await findBootcampById(req.params.id)
+    const bootcamp = await prisma.bootcamp.delete({
+      where: { id: req.params.id },
+    })
 
-    // if (!isAuthorized(bootcamp.user, currentUser)) {
-    //   return next(new AppError(`User:${currentUser.id} is not authorized`, 401))
-    // }
-
-    bootcamp = await deleteBootcampById(req.params.id)
+    if (!bootcamp) {
+      return next(new AppError(`No bootcamp with id ${req.params.id}`, 404))
+    }
 
     return res.status(200).json({
-      bootcamp,
+      status: 'success',
+      message: 'Bootcamp deleted',
+      data: bootcamp,
     })
   }
 )

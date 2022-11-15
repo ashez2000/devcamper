@@ -11,9 +11,9 @@ import { swaggerServe, swaggerUi } from './utils/swagger'
 import { errorHandler, notFoundHandler } from './error/error.controller'
 
 import authRouter from './auth/auth.router'
+import bootcampRouter from './bootcamp/bootcamp.router'
 // import courseRouter from './courses/course.router'
 // import reviewRouter from './reviews/review.router'
-// import bootcampRouter from './bootcamp/bootcamp.router'
 
 const app = express()
 
@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/v1/auth', authRouter)
-// app.use('/api/v1/bootcamps', bootcampRouter)
+app.use('/api/v1/bootcamps', bootcampRouter)
 // app.use('/api/v1/courses', courseRouter)
 // app.use('/api/v1/reviews', reviewRouter)
 
