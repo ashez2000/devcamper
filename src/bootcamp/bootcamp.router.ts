@@ -1,4 +1,5 @@
 import express from 'express'
+import { protect } from '../auth/auth.controller'
 import * as bootcamp from './bootcamp.controller'
 
 const router = express.Router()
@@ -28,7 +29,7 @@ router.get('/:id', bootcamp.getBootcamp)
  *    tags:
  *      - Bootcamps
  */
-router.post('/', bootcamp.createBootcamp)
+router.post('/', protect, bootcamp.createBootcamp)
 
 /**
  * @openapi
@@ -37,7 +38,7 @@ router.post('/', bootcamp.createBootcamp)
  *    tags:
  *      - Bootcamps
  */
-router.put('/:id', bootcamp.updateBootcamp)
+router.put('/:id', protect, bootcamp.updateBootcamp)
 
 /**
  * @openapi
@@ -46,6 +47,6 @@ router.put('/:id', bootcamp.updateBootcamp)
  *    tags:
  *      - Bootcamps
  */
-router.delete('/:id', bootcamp.deleteBootcamp)
+router.delete('/:id', protect, bootcamp.deleteBootcamp)
 
 export default router

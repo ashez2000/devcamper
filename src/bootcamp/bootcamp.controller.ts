@@ -46,6 +46,8 @@ export const getBootcamp: RequestHandler = asyncHandler(
  * @route   POST /api/v1/bootcamps
  */
 export const createBootcamp: RequestHandler = asyncHandler(async (req, res) => {
+  req.body.userId = res.locals.user.id
+
   const bootcamp = await prisma.bootcamp.create({
     data: req.body,
   })
