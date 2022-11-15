@@ -27,16 +27,14 @@
     "helmet": "^5.1.1",
     "hpp": "^0.2.3",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.5.1",
     "morgan": "^1.10.0",
-    "node-geocoder": "^4.2.0",
-    "slugify": "^1.4.6",
     "swagger-jsdoc": "^6.2.5",
     "swagger-ui-express": "^4.5.0"
   },
   "devDependencies": {
     "@tsconfig/node16": "^1.0.3",
     "@types/argon2": "^0.15.0",
+    "@types/compression": "^1.7.2",
     "@types/cookie-parser": "^1.4.3",
     "@types/cors": "^2.8.12",
     "@types/dotenv": "^8.2.0",
