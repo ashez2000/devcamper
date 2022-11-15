@@ -1,27 +1,52 @@
 import express = require('express')
-import { protect, restrictTo } from '../auth/auth.controller'
-import {
-  getReviewsForBootcampHandler,
-  createReviewHandler,
-  deleteReviewHandler,
-} from './review.controller'
+import { protect } from '../auth/auth.controller'
+import * as review from './review.controller'
 
 const router = express.Router()
 
-router.get('/bootcamps/:bootcampId/reviews', getReviewsForBootcampHandler)
+/**
+ * @openapi
+ * /api/v1/reviews:
+ *  get:
+ *    tags:
+ *      - Reviews
+ */
+router.get('/', review.getAllReviews)
 
-router.post(
-  '/bootcamps/:bootcampId/reviews',
-  protect,
-  restrictTo('user'),
-  createReviewHandler
-)
+/**
+ * @openapi
+ * /api/v1/reviews/{id}:
+ *  get:
+ *    tags:
+ *      - Reviews
+ */
+router.get('/:id', review.getReview)
 
-router.delete(
-  '/reviews/:id',
-  protect,
-  restrictTo('user', 'admin'),
-  deleteReviewHandler
-)
+/**
+ * @openapi
+ * /api/v1/bootcamps/{bootcampId}/reviews:
+ *  get:
+ *    tags:
+ *      - Bootcamps
+ */
+router.post('/', protect, review.createReview)
+
+/**
+ * @openapi
+ * /api/v1/reviews:
+ *  put:
+ *    tags:
+ *      - Reviews
+ */
+router.put('/:id', protect, review.updateReview)
+
+/**
+ * @openapi
+ * /api/v1/reviews:
+ *  delete:
+ *    tags:
+ *      - Reviews
+ */
+router.delete('/:id', protect, review.deleteReview)
 
 export default router

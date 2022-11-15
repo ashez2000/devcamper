@@ -25,6 +25,7 @@ model User {
 
   bootcamp Bootcamp[]
   Course   Course[]
+  Review   Review[]
 }
 
 model Bootcamp {
@@ -43,6 +44,7 @@ model Bootcamp {
   user   User     @relation(fields: [userId], references: [id])
   userId String
   Course Course[]
+  Review Review[]
 }
 
 model Course {
@@ -53,6 +55,22 @@ model Course {
   tuition              Int
   minimumSkill         String
   scholarshipAvailable Boolean
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  bootcamp   Bootcamp @relation(fields: [bootcampId], references: [id])
+  bootcampId String
+}
+
+model Review {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  title  String
+  text   String
+  rating Int
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

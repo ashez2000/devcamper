@@ -1,59 +1,133 @@
 import { RequestHandler } from 'express'
 
+import prisma from '../utils/prisma'
 import AppError from '../utils/app-error'
 import asyncHandler from '../utils/async-handler'
-import {
-  findReviewsForBootcamp,
-  createReview,
-  findReviewById,
-  deleteReviewById,
-} from './review.service'
-import { isAuthorized } from '../auth/auth.utils'
+import { Review } from '@prisma/client'
 
 /**
- * Get all reviews for bootcamp handler
+ * @desc    Get all reviews
+ * @route   GET /api/v1/reviews OR /api/v1/bootcamps/:bootcampId/reviews
  */
-export const getReviewsForBootcampHandler: RequestHandler = asyncHandler(
-  async (req, res, next) => {
-    const reviews = await findReviewsForBootcamp(req.params.bootcampId)
+export const getAllReviews: RequestHandler = asyncHandler(async (req, res) => {
+  let reviews: Review[]
 
-    res.status(200).json({
+  if (req.params.bootcampId) {
+    reviews = await prisma.review.findMany({
+      where: {
+        bootcampId: req.params.bootcampId,
+      },
+    })
+  } else {
+    reviews = await prisma.review.findMany()
+  }
+
+  res.status(200).json({
+    status: 'success',
+    results: reviews.length,
+    data: {
       reviews,
-    })
-  }
-)
+    },
+  })
+})
 
 /**
- * Create new review for bootcamp handler
+ * @desc    Get single review
+ * @route   GET /api/v1/reviews/:id
  */
-export const createReviewHandler: RequestHandler = asyncHandler(
+export const getReview: RequestHandler = asyncHandler(
   async (req, res, next) => {
-    req.body.bootcamp = req.params.bootcampId
-    req.body.user = res.locals.user.id
-
-    const review = await createReview(req.body)
-
-    res.status(201).json({
-      review,
+    const review = await prisma.review.findUnique({
+      where: {
+        id: req.params.id,
+      },
     })
-  }
-)
 
-/**
- * Delete a review by id handler
- */
-export const deleteReviewHandler: RequestHandler = asyncHandler(
-  async (req, res, next) => {
-    let review = await findReviewById(req.params.id)
-
-    if (!isAuthorized(review.user, res.locals.user)) {
-      throw new AppError('Not authorized to delete this review', 401)
+    if (!review) {
+      return next(new AppError('No review found with that ID', 404))
     }
 
-    review = await deleteReviewById(req.params.id)
+    res.status(200).json({
+      status: 'success',
+      data: {
+        review,
+      },
+    })
+  }
+)
+
+/**
+ * @desc    Create review
+ * @route   POST /api/v1/bootcamps/:bootcampId/reviews
+ */
+export const createReview: RequestHandler = asyncHandler(async (req, res) => {
+  req.body.bootcampId = req.params.bootcampId
+  req.body.user = res.locals.user.id
+
+  const review = await prisma.review.create({
+    data: req.body,
+  })
+
+  res.status(201).json({
+    status: 'success',
+    message: 'Review created successfully',
+    data: {
+      review,
+    },
+  })
+})
+
+/**
+ * @desc    Update review
+ * @route   PUT /api/v1/reviews/:id
+ */
+export const updateReview: RequestHandler = asyncHandler(
+  async (req, res, next) => {
+    const review = await prisma.review.findUnique({
+      where: {
+        id: req.params.id,
+      },
+    })
+
+    if (!review) {
+      return next(new AppError('No review found with that ID', 404))
+    }
 
     res.status(200).json({
-      review,
+      status: 'success',
+      message: 'Review updated successfully',
+      data: {
+        review,
+      },
+    })
+  }
+)
+
+/**
+ * @desc    Delete review
+ * @route   DELETE /api/v1/reviews/:id
+ */
+export const deleteReview: RequestHandler = asyncHandler(
+  async (req, res, next) => {
+    const review = await prisma.review.findUnique({
+      where: {
+        id: req.params.id,
+      },
+    })
+
+    if (!review) {
+      return next(new AppError('No review found with that ID', 404))
+    }
+
+    await prisma.review.delete({
+      where: {
+        id: req.params.id,
+      },
+    })
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Review deleted successfully',
     })
   }
 )
