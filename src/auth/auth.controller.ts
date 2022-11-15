@@ -5,8 +5,8 @@ import { getUserByCredentials } from './auth.service'
 
 import AppError from '../utils/app-error'
 import asyncHandler from '../utils/async-handler'
-import { serializeUser } from '../users/user.utils'
-import { createUser, getUserById } from '../users/users.service'
+import { serializeUser } from '../user/user.utils'
+import { createUser, getUserById } from '../user/user.service'
 
 /**
  * User signup controller
