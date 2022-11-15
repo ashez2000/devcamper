@@ -65,11 +65,35 @@ export const signin: RequestHandler = asyncHandler(async (req, res, next) => {
   })
 })
 
+/**
+ * @desc    Current user
+ * @route   GET /api/v1/auth/profile
+ */
+export const profile: RequestHandler = asyncHandler(async (req, res) => {
+  const user = await prisma.user.findUnique({
+    where: { id: res.locals.user.id },
+  })
+
+  res.status(200).json({
+    status: 'success',
+    data: user,
+  })
+})
+
 /** Authencation middleware */
 export const protect: RequestHandler = (req, res, next) => {
   const token = req.cookies.token
 
   if (!token) {
+    return next(
+      new AppError('You are not logged in! Please log in to get access.', 401)
+    )
+  }
+
+  try {
+    const decoded = jwt.verify(token, config.JWT_SECRET)
+    res.locals.user = decoded
+  } catch (err) {
     return next(
       new AppError('You are not logged in! Please log in to get access.', 401)
     )
