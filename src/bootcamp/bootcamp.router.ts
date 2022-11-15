@@ -1,8 +1,11 @@
 import express from 'express'
 import { protect } from '../auth/auth.controller'
 import * as bootcamp from './bootcamp.controller'
+import courseRouter from '../course/course.router'
 
 const router = express.Router()
+
+router.use('/:bootcampId/courses', courseRouter)
 
 /**
  * @openapi
