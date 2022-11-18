@@ -9,6 +9,11 @@ const config = {
   JWT_SECRET: process.env.JWT_SECRET || 'secret',
   JWT_EXPIRE: process.env.JWT_EXPIRE || '30d',
   GEOCODER_API_KEY: process.env.GEOCODER_API_KEY || 'YOUR_API_KEY',
+  COOKIE_CONFIG: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
+  },
 }
 
 export default config

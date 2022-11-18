@@ -1,5 +1,6 @@
 import express from 'express'
 import * as auth from './auth.controller'
+import { protect } from '../auth/auth.util'
 
 const router = express.Router()
 
@@ -28,6 +29,6 @@ router.post('/signin', auth.signin)
  *    tags:
  *      - Auth
  */
-router.get('/profile', auth.protect, auth.profile)
+router.get('/profile', protect, auth.profile)
 
 export default router

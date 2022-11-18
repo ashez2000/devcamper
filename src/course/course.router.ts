@@ -1,5 +1,5 @@
 import express from 'express'
-import { protect } from '../auth/auth.controller'
+import { protect } from '../auth/auth.util'
 import * as course from './course.controller'
 
 const router = express.Router({ mergeParams: true })

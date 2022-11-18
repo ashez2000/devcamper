@@ -1,5 +1,5 @@
 import express = require('express')
-import { protect } from '../auth/auth.controller'
+import { protect } from '../auth/auth.util'
 import * as review from './review.controller'
 
 const router = express.Router()

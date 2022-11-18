@@ -1,5 +1,6 @@
 import express from 'express'
-import { protect } from '../auth/auth.controller'
+import { Role } from '@prisma/client'
+import { protect, restrictTo } from '../auth/auth.util'
 import * as bootcamp from './bootcamp.controller'
 import courseRouter from '../course/course.router'
 
@@ -32,7 +33,12 @@ router.get('/:id', bootcamp.getBootcamp)
  *    tags:
  *      - Bootcamps
  */
-router.post('/', protect, bootcamp.createBootcamp)
+router.post(
+  '/',
+  protect,
+  restrictTo(Role.PUBLISHER, Role.ADMIN),
+  bootcamp.createBootcamp
+)
 
 /**
  * @openapi
@@ -41,7 +47,12 @@ router.post('/', protect, bootcamp.createBootcamp)
  *    tags:
  *      - Bootcamps
  */
-router.put('/:id', protect, bootcamp.updateBootcamp)
+router.put(
+  '/:id',
+  protect,
+  restrictTo(Role.PUBLISHER, Role.ADMIN),
+  bootcamp.updateBootcamp
+)
 
 /**
  * @openapi
@@ -50,6 +61,11 @@ router.put('/:id', protect, bootcamp.updateBootcamp)
  *    tags:
  *      - Bootcamps
  */
-router.delete('/:id', protect, bootcamp.deleteBootcamp)
+router.delete(
+  '/:id',
+  protect,
+  restrictTo(Role.PUBLISHER, Role.ADMIN),
+  bootcamp.deleteBootcamp
+)
 
 export default router
