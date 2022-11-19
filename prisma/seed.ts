@@ -6,8 +6,13 @@ const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf-8'))
 const bootcamps = JSON.parse(
   fs.readFileSync(`${__dirname}/bootcamps.json`, 'utf-8')
 )
+
 const courses = JSON.parse(
   fs.readFileSync(`${__dirname}/courses.json`, 'utf-8')
+)
+
+const reviews = JSON.parse(
+  fs.readFileSync(`${__dirname}/reviews.json`, 'utf-8')
 )
 
 async function importData() {
@@ -23,12 +28,17 @@ async function importData() {
     data: courses,
   })
 
+  await prisma.review.createMany({
+    data: reviews,
+  })
+
   console.log('Data Imported')
 }
 
 async function deleteData() {
-  await prisma.bootcamp.deleteMany()
+  await prisma.review.deleteMany()
   await prisma.course.deleteMany()
+  await prisma.bootcamp.deleteMany()
   await prisma.user.deleteMany()
 
   console.log('Data Destroyed')
