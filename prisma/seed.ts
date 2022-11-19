@@ -3,28 +3,34 @@ import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 const users = JSON.parse(fs.readFileSync(`${__dirname}/users.json`, 'utf-8'))
+const bootcamps = JSON.parse(
+  fs.readFileSync(`${__dirname}/bootcamps.json`, 'utf-8')
+)
 
 async function importData() {
   await prisma.user.createMany({
     data: users,
   })
 
-  console.log('Data Destroyed')
-  process.exit()
+  await prisma.bootcamp.createMany({
+    data: bootcamps,
+  })
+
+  console.log('Data Imported')
 }
 
 async function deleteData() {
   await prisma.user.deleteMany()
+  await prisma.bootcamp.deleteMany()
+
   console.log('Data Destroyed')
-  process.exit()
 }
 
 async function main() {
-  if (process.argv[2] === '-i') {
-    await importData()
-  } else if (process.argv[2] === '-d') {
-    await deleteData()
-  }
+  await deleteData()
+  await importData()
+
+  prisma.$disconnect()
 }
 
 main()

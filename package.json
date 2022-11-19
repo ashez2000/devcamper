@@ -10,8 +10,7 @@
     "start": "node dist/main.js",
     "build": "rimraf build && tsc",
     "dev": "nodemon --exec ts-node src/main.ts",
-    "data:im": "ts-node ./seed/seeder.ts -i",
-    "data:ds": "ts-node ./seed/seeder.ts -d"
+    "seed": "ts-node ./prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^4.6.1",
