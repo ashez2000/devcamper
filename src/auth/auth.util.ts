@@ -1,3 +1,4 @@
+import { Role } from '@prisma/client'
 import { RequestHandler } from 'express'
 import jwt from 'jsonwebtoken'
 
@@ -40,6 +41,7 @@ export const restrictTo = (...roles: string[]): RequestHandler => {
   }
 }
 
+/** Sign JWT Token */
 export const signToken = (payload: { id: string; role: string }): string => {
   return jwt.sign(payload, config.JWT_SECRET, {
     expiresIn: config.JWT_EXPIRE,

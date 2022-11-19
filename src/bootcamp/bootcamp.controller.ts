@@ -1,3 +1,4 @@
+import { Role } from '@prisma/client'
 import { RequestHandler } from 'express'
 
 import prisma from '../utils/prisma'
@@ -15,7 +16,7 @@ export const getAllBootcamps: RequestHandler = asyncHandler(
     res.status(200).json({
       status: 'success',
       results: bootcamps.length,
-      data: bootcamps,
+      data: { bootcamps },
     })
   }
 )
@@ -36,7 +37,7 @@ export const getBootcamp: RequestHandler = asyncHandler(
 
     return res.status(200).json({
       status: 'success',
-      data: bootcamp,
+      data: { bootcamp },
     })
   }
 )
@@ -55,7 +56,7 @@ export const createBootcamp: RequestHandler = asyncHandler(async (req, res) => {
   return res.status(201).json({
     status: 'success',
     message: 'Bootcamp created',
-    data: bootcamp,
+    data: { bootcamp },
   })
 })
 
@@ -65,19 +66,27 @@ export const createBootcamp: RequestHandler = asyncHandler(async (req, res) => {
  */
 export const updateBootcamp: RequestHandler = asyncHandler(
   async (req, res, next) => {
-    const bootcamp = await prisma.bootcamp.update({
+    const bootcamp = await prisma.bootcamp.findUnique({
       where: { id: req.params.id },
-      data: req.body,
     })
 
     if (!bootcamp) {
       return next(new AppError(`No bootcamp with id ${req.params.id}`, 404))
     }
 
+    if (!isAuthorized(bootcamp.userId, res.locals.user)) {
+      return next(new AppError('Not authorized to update this bootcamp', 401))
+    }
+
+    const updatedBootcamp = await prisma.bootcamp.update({
+      where: { id: req.params.id },
+      data: req.body,
+    })
+
     return res.status(200).json({
       status: 'success',
-      message: 'Bootcamp updated',
-      data: bootcamp,
+      message: 'Bootcamp updated successfully',
+      data: { bootcamp: updatedBootcamp },
     })
   }
 )
@@ -88,7 +97,7 @@ export const updateBootcamp: RequestHandler = asyncHandler(
  */
 export const deleteBootcamp: RequestHandler = asyncHandler(
   async (req, res, next) => {
-    const bootcamp = await prisma.bootcamp.delete({
+    const bootcamp = await prisma.bootcamp.findUnique({
       where: { id: req.params.id },
     })
 
@@ -96,10 +105,25 @@ export const deleteBootcamp: RequestHandler = asyncHandler(
       return next(new AppError(`No bootcamp with id ${req.params.id}`, 404))
     }
 
+    if (!isAuthorized(bootcamp.userId, res.locals.user)) {
+      return next(new AppError('Not authorized to update this bootcamp', 401))
+    }
+
+    const deletedBootcamp = await prisma.bootcamp.delete({
+      where: { id: req.params.id },
+    })
+
     return res.status(200).json({
       status: 'success',
-      message: 'Bootcamp deleted',
-      data: bootcamp,
+      message: 'Bootcamp deleted successfully',
+      data: { bootcamp: deletedBootcamp },
     })
   }
 )
+
+const isAuthorized = (
+  bootcampUserId: string,
+  currentUser: { id: string; role: Role }
+) => {
+  return bootcampUserId === currentUser.id || currentUser.role === 'ADMIN'
+}
