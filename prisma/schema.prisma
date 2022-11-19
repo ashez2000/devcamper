@@ -13,6 +13,12 @@ enum Role {
   ADMIN
 }
 
+enum Skill {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
 model User {
   id       String @id @default(auto()) @map("_id") @db.ObjectId
   name     String
@@ -48,13 +54,13 @@ model Bootcamp {
 }
 
 model Course {
-  id                   String  @id @default(auto()) @map("_id") @db.ObjectId
-  title                String
-  description          String
-  weeks                Int
-  tuition              Int
-  minimumSkill         String
-  scholarshipAvailable Boolean
+  id                    String  @id @default(auto()) @map("_id") @db.ObjectId
+  title                 String
+  description           String
+  weeks                 Int
+  tuition               Int
+  minimumSkill          Skill
+  scholarshipsAvailable Boolean
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
