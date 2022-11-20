@@ -71,6 +71,18 @@ export const createCourse: RequestHandler = asyncHandler(
       )
     }
 
+    if (
+      bootcamp.userId !== res.locals.user.id &&
+      res.locals.user.role !== 'admin'
+    ) {
+      return next(
+        new AppError(
+          `User ${res.locals.user.id} is not authorized to add a course to bootcamp ${req.params.bootcampId}`,
+          401
+        )
+      )
+    }
+
     const course = await prisma.course.create({
       data: req.body,
     })
@@ -89,9 +101,8 @@ export const createCourse: RequestHandler = asyncHandler(
  */
 export const updateCourse: RequestHandler = asyncHandler(
   async (req, res, next) => {
-    const course = await prisma.course.update({
+    const course = await prisma.course.findUnique({
       where: { id: req.params.id },
-      data: req.body,
     })
 
     if (!course) {
@@ -100,10 +111,27 @@ export const updateCourse: RequestHandler = asyncHandler(
       )
     }
 
+    if (
+      course.userId !== res.locals.user.id &&
+      res.locals.user.role !== 'admin'
+    ) {
+      return next(
+        new AppError(
+          `User ${res.locals.user.id} is not authorized to update course ${req.params.id}`,
+          401
+        )
+      )
+    }
+
+    const updatedCourse = await prisma.course.update({
+      where: { id: req.params.id },
+      data: req.body,
+    })
+
     res.status(200).json({
       status: 'success',
       message: 'Course updated successfully',
-      data: course,
+      data: { course: updatedCourse },
     })
   }
 )
@@ -114,7 +142,7 @@ export const updateCourse: RequestHandler = asyncHandler(
  */
 export const deleteCourse: RequestHandler = asyncHandler(
   async (req, res, next) => {
-    const course = await prisma.course.delete({
+    const course = await prisma.course.findUnique({
       where: { id: req.params.id },
     })
 
@@ -124,10 +152,26 @@ export const deleteCourse: RequestHandler = asyncHandler(
       )
     }
 
+    if (
+      course.userId !== res.locals.user.id &&
+      res.locals.user.role !== 'admin'
+    ) {
+      return next(
+        new AppError(
+          `User ${res.locals.user.id} is not authorized to update course ${req.params.id}`,
+          401
+        )
+      )
+    }
+
+    const deletedCourse = await prisma.course.delete({
+      where: { id: req.params.id },
+    })
+
     res.status(200).json({
       status: 'success',
-      message: 'Course deleted successfully',
-      data: course,
+      message: 'Course updated successfully',
+      data: { course: deletedCourse },
     })
   }
 )
