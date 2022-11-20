@@ -1,9 +1,9 @@
 import { RequestHandler } from 'express'
+import { Review } from '@prisma/client'
 
 import prisma from '../utils/prisma'
 import AppError from '../utils/app-error'
 import asyncHandler from '../utils/async-handler'
-import { Review } from '@prisma/client'
 
 /**
  * @desc    Get all reviews
@@ -93,12 +93,21 @@ export const updateReview: RequestHandler = asyncHandler(
       return next(new AppError('No review found with that ID', 404))
     }
 
+    if (review.userId !== res.locals.user.id) {
+      return next(new AppError('Not authorized to update this review', 401))
+    }
+
+    const updatedReview = await prisma.review.update({
+      where: {
+        id: req.params.id,
+      },
+      data: req.body,
+    })
+
     res.status(200).json({
       status: 'success',
       message: 'Review updated successfully',
-      data: {
-        review,
-      },
+      data: { review: updatedReview },
     })
   }
 )
@@ -119,7 +128,14 @@ export const deleteReview: RequestHandler = asyncHandler(
       return next(new AppError('No review found with that ID', 404))
     }
 
-    await prisma.review.delete({
+    if (
+      review.userId !== res.locals.user.id ||
+      res.locals.user.role !== 'admin'
+    ) {
+      return next(new AppError('Not authorized to delete this review', 401))
+    }
+
+    const deletedReview = await prisma.review.delete({
       where: {
         id: req.params.id,
       },
@@ -128,6 +144,7 @@ export const deleteReview: RequestHandler = asyncHandler(
     res.status(200).json({
       status: 'success',
       message: 'Review deleted successfully',
+      data: { review: deletedReview },
     })
   }
 )

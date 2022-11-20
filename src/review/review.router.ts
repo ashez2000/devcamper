@@ -1,5 +1,7 @@
 import express = require('express')
-import { protect } from '../auth/auth.util'
+import { Role } from '@prisma/client'
+
+import { protect, restrictTo } from '../auth/auth.util'
 import * as review from './review.controller'
 
 const router = express.Router()
@@ -25,11 +27,11 @@ router.get('/:id', review.getReview)
 /**
  * @openapi
  * /api/v1/bootcamps/{bootcampId}/reviews:
- *  get:
+ *  post:
  *    tags:
  *      - Bootcamps
  */
-router.post('/', protect, review.createReview)
+router.post('/', protect, restrictTo(Role.USER), review.createReview)
 
 /**
  * @openapi
