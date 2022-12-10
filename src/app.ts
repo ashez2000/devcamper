@@ -6,6 +6,7 @@ import express from 'express'
 import cookieParser from 'cookie-parser'
 import mongoSanitize from 'express-mongo-sanitize'
 import compression from 'compression'
+import 'express-async-errors'
 
 import ratelimit from './utils/ratelimit'
 import { swaggerServe, swaggerUi } from './utils/swagger'

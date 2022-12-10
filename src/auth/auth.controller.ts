@@ -1,45 +1,36 @@
 import { RequestHandler } from 'express'
 import argon from 'argon2'
-import jwt from 'jsonwebtoken'
 
-import { signToken } from './auth.util'
+import { signToken, getCurrentUser } from './auth.util'
+import * as userService from '../user/user.service'
 import config from '../config'
-import prisma from '../utils/prisma'
 import AppError from '../utils/app-error'
-import asyncHandler from '../utils/async-handler'
 
 /**
  * @desc    User signup
  * @route   POST /api/v1/auth/signup
  */
-export const signup: RequestHandler = asyncHandler(async (req, res) => {
-  const { name, email, password, role } = req.body
-
-  const hashedPassword = await argon.hash(password)
-  const user = await prisma.user.create({
-    data: { name, email, password: hashedPassword, role },
-    select: { id: true, name: true, email: true, role: true },
-  })
+export const signup: RequestHandler = async (req, res) => {
+  const user = await userService.createUser(req.body)
 
   const token = signToken({ id: user.id, role: user.role })
-
   res.cookie('token', token, config.COOKIE_CONFIG)
+
   res.status(201).json({
-    status: 'success',
-    message: 'User created successfully',
-    data: { user, token },
+    data: { token },
   })
-})
+}
 
 /**
  * @desc    User signin
  * @route   POST /api/v1/auth/signin
  */
-export const signin: RequestHandler = asyncHandler(async (req, res, next) => {
+export const signin: RequestHandler = async (req, res, next) => {
   const { email, password } = req.body
-  const user = await prisma.user.findUnique({ where: { email } })
+
+  const user = await userService.getUserByEmail(email)
   if (!user) {
-    return next(new AppError('Invalid credentials', 401))
+    throw new AppError('Invalid credentials', 401)
   }
 
   const isMatch = await argon.verify(user.password, password)
@@ -48,27 +39,28 @@ export const signin: RequestHandler = asyncHandler(async (req, res, next) => {
   }
 
   const token = signToken({ id: user.id, role: user.role })
-
   res.cookie('token', token, config.COOKIE_CONFIG)
+
   res.status(200).json({
-    status: 'success',
-    message: 'User logged in successfully',
-    data: { user, token },
+    data: { token },
   })
-})
+}
 
 /**
  * @desc    Current user
  * @route   GET /api/v1/auth/profile
  */
-export const profile: RequestHandler = asyncHandler(async (req, res) => {
-  const user = await prisma.user.findUnique({
-    where: { id: res.locals.user.id },
-    select: { id: true, name: true, email: true, role: true },
-  })
+export const profile: RequestHandler = async (req, res) => {
+  const currentUser = getCurrentUser(req)
+  if (!currentUser) {
+    throw new AppError('Not Authorized', 403)
+  }
+
+  const data = await userService.getUserById(currentUser.id)
 
   res.status(200).json({
-    status: 'success',
-    data: user,
+    data: {
+      user: data,
+    },
   })
-})
+}

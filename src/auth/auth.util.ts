@@ -1,9 +1,9 @@
-import { Role } from '@prisma/client'
-import { RequestHandler } from 'express'
+import { Request, RequestHandler } from 'express'
 import jwt from 'jsonwebtoken'
 
 import config from '../config'
 import AppError from '../utils/app-error'
+import { AuthPayload } from './auth.schema'
 
 /** Authencation middleware */
 export const protect: RequestHandler = (req, res, next) => {
@@ -46,4 +46,10 @@ export const signToken = (payload: { id: string; role: string }): string => {
   return jwt.sign(payload, config.JWT_SECRET, {
     expiresIn: config.JWT_EXPIRE,
   })
+}
+/** Authencation middleware */
+export const getCurrentUser = (req: Request) => {
+  const token = req.cookies.token
+  if (!token) return null
+  return jwt.verify(token, config.JWT_SECRET) as AuthPayload
 }

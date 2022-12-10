@@ -1,6 +1,5 @@
 import express from 'express'
 import * as auth from './auth.controller'
-import { protect } from '../auth/auth.util'
 import { validator } from '../utils/validator'
 import { SignInSchema, SignUpSchema } from './auth.schema'
 
@@ -31,6 +30,6 @@ router.post('/signin', validator(SignInSchema), auth.signin)
  *    tags:
  *      - Auth
  */
-router.get('/profile', protect, auth.profile)
+router.get('/profile', auth.profile)
 
 export default router

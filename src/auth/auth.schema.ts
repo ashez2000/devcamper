@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { Role } from '@prisma/client'
 
 export const SignInSchema = z.object({
   email: z
@@ -24,6 +25,11 @@ export const SignUpSchema = z
     }),
   })
   .merge(SignInSchema)
+
+export type AuthPayload = {
+  id: string
+  role: Role
+}
 
 export type SignInData = z.TypeOf<typeof SignInSchema>
 export type SignUpData = z.TypeOf<typeof SignUpSchema>
