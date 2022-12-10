@@ -1,6 +1,8 @@
 import express from 'express'
 import * as auth from './auth.controller'
 import { protect } from '../auth/auth.util'
+import { validator } from '../utils/validator'
+import { SignInSchema, SignUpSchema } from './auth.schema'
 
 const router = express.Router()
 
@@ -11,7 +13,7 @@ const router = express.Router()
  *    tags:
  *      - Auth
  */
-router.post('/signup', auth.signup)
+router.post('/signup', validator(SignUpSchema), auth.signup)
 
 /**
  * @openapi
@@ -20,7 +22,7 @@ router.post('/signup', auth.signup)
  *    tags:
  *      - Auth
  */
-router.post('/signin', auth.signin)
+router.post('/signin', validator(SignInSchema), auth.signin)
 
 /**
  * @openapi
