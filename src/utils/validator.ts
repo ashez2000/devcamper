@@ -1,16 +1,21 @@
-import { RequestHandler } from 'express'
-import { ZodSchema } from 'zod'
-import AppError from './app-error'
+import { RequestHandler } from 'express';
+import { ZodSchema } from 'zod';
+import AppError from './app-error';
 
-export const validator = (schema: ZodSchema): RequestHandler => {
-  return (req, res, next) => {
-    const data = schema.safeParse(req.body)
-    if (!data.success) {
-      const message = data.error.issues.map((issue) => issue.message).join(', ')
-      return next(new AppError(message, 400))
-    }
+export const schemaValidator = (schema: ZodSchema, obj: any) => {
+  const data = schema.safeParse(obj);
+  if (data.success) return { data, error: '' };
 
-    req.body = data.data
-    next()
-  }
-}
+  const error = data.error.issues.map((issue) => issue.message).join(', ');
+  return { data: null, error: error };
+};
+
+/** zod validator middleware */
+export const validator =
+  (schema: ZodSchema): RequestHandler =>
+  (req, res, next) => {
+    const { data, error } = schemaValidator(schema, req.body);
+    if (!data) throw new AppError(error, 400);
+    req.body = data.data;
+    next();
+  };

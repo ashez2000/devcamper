@@ -1,19 +1,21 @@
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
 
-dotenv.config()
+dotenv.config();
 
 const config = {
-  PORT: parseInt(process.env.PORT || '3000', 10),
-  NODE_ENV: process.env.NODE_ENV || 'development',
-  MONGO_URI: process.env.MONGO_URI || 'mongodb://localhost:27017/devcamper',
-  JWT_SECRET: process.env.JWT_SECRET || 'secret',
-  JWT_EXPIRE: process.env.JWT_EXPIRE || '30d',
-  GEOCODER_API_KEY: process.env.GEOCODER_API_KEY || 'YOUR_API_KEY',
-  COOKIE_CONFIG: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
-  },
+  PORT: process.env.PORT as any as number,
+  NODE_ENV: process.env.NODE_ENV as string,
+  DATABASE_URL: process.env.DATABASE_URL as string,
+  JWT_SECRET: process.env.JWT_SECRET as string,
+  JWT_EXPIRE: process.env.JWT_EXPIRE as string,
+};
+
+function validate(config: any) {
+  for (let k of Object.keys(config)) {
+    if (config[k] === undefined) throw new Error(`ENV: ${k}, not found!`);
+  }
 }
 
-export default config
+validate(config);
+
+export default config;
