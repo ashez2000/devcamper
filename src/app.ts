@@ -24,7 +24,7 @@ const app = express();
 
 app.use(morgan('dev'));
 app.use(express.json());
-// app.use(cookieParser());
+app.use(cookieParser());
 
 // API ROUTES
 // app.get('/', (req, res) => res.redirect('/api/v1/docs'));

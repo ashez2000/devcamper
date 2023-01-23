@@ -13,6 +13,7 @@ export const signup: RequestHandler = async (req, res) => {
   const user = await userService.createUser(req.body);
   const token = signToken({ id: user.id, role: user.role });
 
+  res.cookie('token', token);
   res.status(201).json({
     data: { token },
   });
@@ -33,6 +34,7 @@ export const signin: RequestHandler = async (req, res, next) => {
 
   const token = signToken({ id: user.id, role: user.role });
 
+  res.cookie('token', token);
   res.status(200).json({
     data: { token },
   });
