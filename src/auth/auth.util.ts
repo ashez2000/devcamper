@@ -47,3 +47,6 @@ export const getCurrentUser = (req: Request) => {
 
   return jwt.verify(token, config.JWT_SECRET) as AuthPayload;
 };
+
+export const isAuthorized = (resourceId: string, user: AuthPayload) =>
+  resourceId === user.id || user.role === 'ADMIN';

@@ -1,177 +1,101 @@
-import { RequestHandler } from 'express'
-import { Course } from '@prisma/client'
-
-import prisma from '../utils/prisma'
-import asyncHandler from '../utils/async-handler'
-import AppError from '../utils/app-error'
+import { RequestHandler } from 'express';
+import * as courseService from './course.service';
+import * as bootcampService from '../bootcamp/bootcamp.service';
+import { getCurrentUser, isAuthorized } from '../auth/auth.util';
+import AppError from '../utils/app-error';
 
 /**
  * @desc    Get all courses
  * @route   GET /api/v1/courses OR /api/v1/bootcamps/:bootcampId/courses
  */
-export const getAllCourse: RequestHandler = asyncHandler(async (req, res) => {
-  let courses: Course[]
-
+export const getAllCourse: RequestHandler = async (req, res) => {
   if (req.params.bootcampId) {
-    courses = await prisma.course.findMany({
-      where: {
-        bootcampId: req.params.bootcampId,
-      },
-    })
-  } else {
-    courses = await prisma.course.findMany()
+    const courses = await courseService.getCoursesForBootcamp(
+      req.params.bootcampId
+    );
+
+    return res.status(200).json({ data: { courses } });
   }
 
-  res.status(200).json({
-    success: true,
-    results: courses.length,
-    data: courses,
-  })
-})
+  const courses = await courseService.getAllCourses();
+  return res.status(200).json({ data: { courses } });
+};
 
 /**
  * @desc    Get a single course
  * @route   GET /api/v1/courses/:id
  */
-export const getCourse: RequestHandler = asyncHandler(
-  async (req, res, next) => {
-    const course = await prisma.course.findUnique({
-      where: { id: req.params.id },
-    })
+export const getCourse: RequestHandler = async (req, res) => {
+  const course = await courseService.getCourse(req.params.id);
+  if (!course)
+    throw new AppError(`Course not found with id ${req.params.id}`, 404);
 
-    if (!course) {
-      return next(
-        new AppError(`Course not found with id ${req.params.id}`, 404)
-      )
-    }
-
-    res.status(200).json({
-      status: 'success',
-      data: course,
-    })
-  }
-)
+  return res.status(200).json({ data: { course } });
+};
 
 /**
  * @desc    Create a course
  * @route   POST /api/v1/bootcamps/:bootcampId/courses
  */
-export const createCourse: RequestHandler = asyncHandler(
-  async (req, res, next) => {
-    req.body.bootcampId = req.params.bootcampId
-    req.body.userId = res.locals.user.id
+export const createCourse: RequestHandler = async (req, res, next) => {
+  const currentUser = getCurrentUser(req);
 
-    const bootcamp = await prisma.bootcamp.findUnique({
-      where: { id: req.params.bootcampId },
-    })
+  req.body.userId = currentUser.id;
+  req.body.bootcampId = req.params.bootcampId;
 
-    if (!bootcamp) {
-      return next(
-        new AppError(`Bootcamp not found with id ${req.params.bootcampId}`, 404)
-      )
-    }
+  const bootcamp = await bootcampService.getBootcamp(req.params.bootcampId);
+  if (!bootcamp)
+    throw new AppError(
+      `Bootcamp not found with id ${req.params.bootcampId}`,
+      404
+    );
 
-    if (
-      bootcamp.userId !== res.locals.user.id &&
-      res.locals.user.role !== 'admin'
-    ) {
-      return next(
-        new AppError(
-          `User ${res.locals.user.id} is not authorized to add a course to bootcamp ${req.params.bootcampId}`,
-          401
-        )
-      )
-    }
+  if (isAuthorized(bootcamp.userId, currentUser))
+    throw new AppError(
+      `Not authorized to add a course to bootcamp ${req.params.bootcampId}`,
+      401
+    );
 
-    const course = await prisma.course.create({
-      data: req.body,
-    })
-
-    res.status(201).json({
-      status: 'success',
-      message: 'Course created successfully',
-      data: course,
-    })
-  }
-)
+  const course = await courseService.createCourse(req.body);
+  return res.status(201).json({ data: { course } });
+};
 
 /**
  * @desc    Update a course
  * @route   PUT /api/v1/courses/:id
  */
-export const updateCourse: RequestHandler = asyncHandler(
-  async (req, res, next) => {
-    const course = await prisma.course.findUnique({
-      where: { id: req.params.id },
-    })
+export const updateCourse: RequestHandler = async (req, res, next) => {
+  const currentUser = getCurrentUser(req);
 
-    if (!course) {
-      return next(
-        new AppError(`Course not found with id ${req.params.id}`, 404)
-      )
-    }
+  const course = await courseService.getCourse(req.params.id);
+  if (!course)
+    throw new AppError(`Course not found with id ${req.params.id}`, 404);
 
-    if (
-      course.userId !== res.locals.user.id &&
-      res.locals.user.role !== 'admin'
-    ) {
-      return next(
-        new AppError(
-          `User ${res.locals.user.id} is not authorized to update course ${req.params.id}`,
-          401
-        )
-      )
-    }
+  if (isAuthorized(course.userId, currentUser))
+    throw new AppError(`Not authorized to update course ${req.params.id}`, 401);
 
-    const updatedCourse = await prisma.course.update({
-      where: { id: req.params.id },
-      data: req.body,
-    })
+  const updatedCourse = await courseService.updateCourse(
+    req.params.id,
+    req.body
+  );
 
-    res.status(200).json({
-      status: 'success',
-      message: 'Course updated successfully',
-      data: { course: updatedCourse },
-    })
-  }
-)
+  return res.status(200).json({ data: { course: updatedCourse } });
+};
 
 /**
  * @desc    Delete a course
  * @route   DELETE /api/v1/courses/:id
  */
-export const deleteCourse: RequestHandler = asyncHandler(
-  async (req, res, next) => {
-    const course = await prisma.course.findUnique({
-      where: { id: req.params.id },
-    })
+export const deleteCourse: RequestHandler = async (req, res, next) => {
+  const currentUser = getCurrentUser(req);
 
-    if (!course) {
-      return next(
-        new AppError(`Course not found with id ${req.params.id}`, 404)
-      )
-    }
+  const course = await courseService.getCourse(req.params.id);
+  if (!course)
+    throw new AppError(`Course not found with id ${req.params.id}`, 404);
 
-    if (
-      course.userId !== res.locals.user.id &&
-      res.locals.user.role !== 'admin'
-    ) {
-      return next(
-        new AppError(
-          `User ${res.locals.user.id} is not authorized to update course ${req.params.id}`,
-          401
-        )
-      )
-    }
+  if (isAuthorized(course.userId, currentUser))
+    throw new AppError(`Not authorized to update course ${req.params.id}`, 401);
 
-    const deletedCourse = await prisma.course.delete({
-      where: { id: req.params.id },
-    })
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Course updated successfully',
-      data: { course: deletedCourse },
-    })
-  }
-)
+  await courseService.deleteCourse(req.params.id);
+  return res.status(200).json({ data: {} });
+};
