@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import * as bootcampService from './bootcamp.service';
 import asyncHandler from '../utils/async-handler';
 import AppError from '../utils/app-error';
-import { AuthPayload } from '../auth/auth.schema';
+import { getCurrentUser, isAuthorized } from '../auth/auth.util';
 
 /**
  * @desc    Get all bootcamps
@@ -10,10 +10,7 @@ import { AuthPayload } from '../auth/auth.schema';
  */
 export const getAllBootcamps: RequestHandler = async (req, res) => {
   const bootcamps = await bootcampService.getAllBootcamps();
-
-  res.status(200).json({
-    data: { bootcamps },
-  });
+  res.status(200).json({ data: { bootcamps } });
 };
 
 /**
@@ -22,13 +19,10 @@ export const getAllBootcamps: RequestHandler = async (req, res) => {
  */
 export const getBootcamp: RequestHandler = async (req, res) => {
   const bootcamp = await bootcampService.getBootcamp(req.params.id);
-
   if (!bootcamp)
     throw new AppError(`No bootcamp with id ${req.params.id}`, 404);
 
-  return res.status(200).json({
-    data: { bootcamp },
-  });
+  return res.status(200).json({ data: { bootcamp } });
 };
 
 /**
@@ -36,12 +30,11 @@ export const getBootcamp: RequestHandler = async (req, res) => {
  * @route   POST /api/v1/bootcamps
  */
 export const createBootcamp: RequestHandler = asyncHandler(async (req, res) => {
-  req.body.userId = res.locals.user.id;
-  const bootcamp = await bootcampService.createBootcamp(req.body);
+  const currentUser = getCurrentUser(req);
+  req.body.userId = currentUser.id;
 
-  return res.status(201).json({
-    data: { bootcamp },
-  });
+  const bootcamp = await bootcampService.createBootcamp(req.body);
+  return res.status(201).json({ data: { bootcamp } });
 });
 
 /**
@@ -49,12 +42,13 @@ export const createBootcamp: RequestHandler = asyncHandler(async (req, res) => {
  * @route   PUT /api/v1/bootcamps/:id
  */
 export const updateBootcamp: RequestHandler = async (req, res, next) => {
-  const bootcamp = await bootcampService.getBootcamp(req.params.id);
+  const currentUser = getCurrentUser(req);
 
+  const bootcamp = await bootcampService.getBootcamp(req.params.id);
   if (!bootcamp)
     throw new AppError(`No bootcamp with id ${req.params.id}`, 404);
 
-  if (!isAuthorized(bootcamp.userId, res.locals.user))
+  if (!isAuthorized(bootcamp.userId, currentUser))
     return new AppError('Not authorized to update this bootcamp', 401);
 
   const updatedBootcamp = await bootcampService.updateBootcamp(
@@ -62,9 +56,7 @@ export const updateBootcamp: RequestHandler = async (req, res, next) => {
     req.body
   );
 
-  return res.status(200).json({
-    data: { bootcamp: updatedBootcamp },
-  });
+  return res.status(200).json({ data: { bootcamp: updatedBootcamp } });
 };
 
 /**
@@ -72,20 +64,15 @@ export const updateBootcamp: RequestHandler = async (req, res, next) => {
  * @route   DELETE /api/v1/bootcamps/:id
  */
 export const deleteBootcamp: RequestHandler = async (req, res, next) => {
-  const bootcamp = await bootcampService.getBootcamp(req.params.id);
+  const currentUser = getCurrentUser(req);
 
+  const bootcamp = await bootcampService.getBootcamp(req.params.id);
   if (!bootcamp)
     throw new AppError(`No bootcamp with id ${req.params.id}`, 404);
 
-  if (!isAuthorized(bootcamp.userId, res.locals.user))
+  if (!isAuthorized(bootcamp.userId, currentUser))
     return new AppError('Not authorized to update this bootcamp', 401);
 
   await bootcampService.deleteBootcamp(req.params.id);
-
-  return res.status(200).json({
-    data: {},
-  });
+  return res.status(200).json({ data: {} });
 };
-
-const isAuthorized = (bootcampUserId: string, currentUser: AuthPayload) =>
-  bootcampUserId === currentUser.id || currentUser.role === 'ADMIN';
