@@ -1,6 +1,7 @@
 import argon from 'argon2';
+
 import { SignUpData } from '../auth/auth.schema';
-import prisma from '../utils/prisma';
+import prisma, { sel } from '../utils/prisma';
 
 export const createUser = async (data: SignUpData) => {
   const { password } = data;
@@ -8,7 +9,7 @@ export const createUser = async (data: SignUpData) => {
 
   const user = await prisma.user.create({
     data: { ...data, password: hashedPassword },
-    select: s('id', 'name', 'email', 'role'),
+    select: sel('id', 'name', 'email', 'role'),
   });
 
   return user;
@@ -22,11 +23,5 @@ export const getUserByEmail = async (email: string) =>
 export const getUserById = async (id: string) =>
   prisma.user.findUnique({
     where: { id },
-    select: s('id', 'name', 'email', 'role'),
+    select: sel('id', 'name', 'email', 'role'),
   });
-
-const s = (...fields: string[]) =>
-  fields.reduce<any>((acc, curr) => {
-    acc[curr] = true;
-    return acc;
-  }, {});
