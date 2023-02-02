@@ -1,150 +1,84 @@
-import { RequestHandler } from 'express'
-import { Review } from '@prisma/client'
+import { RequestHandler } from 'express';
 
-import prisma from '../utils/prisma'
-import AppError from '../utils/app-error'
-import asyncHandler from '../utils/async-handler'
+import * as reviewService from './review.service';
+import { getCurrentUser, isAuthorized } from '../auth/auth.util';
+import AppError from '../utils/app-error';
 
 /**
  * @desc    Get all reviews
  * @route   GET /api/v1/reviews OR /api/v1/bootcamps/:bootcampId/reviews
  */
-export const getAllReviews: RequestHandler = asyncHandler(async (req, res) => {
-  let reviews: Review[]
-
-  if (req.params.bootcampId) {
-    reviews = await prisma.review.findMany({
-      where: {
-        bootcampId: req.params.bootcampId,
-      },
-    })
-  } else {
-    reviews = await prisma.review.findMany()
+export const getAllReviews: RequestHandler = async (req, res) => {
+  const { bootcampId } = req.params;
+  if (bootcampId) {
+    const reviews = await reviewService.getReviewsForBootcamp(bootcampId);
+    return res.status(200).json({ data: { reviews } });
   }
 
-  res.status(200).json({
-    status: 'success',
-    results: reviews.length,
-    data: {
-      reviews,
-    },
-  })
-})
+  const reviews = await reviewService.getAllReviews();
+  return res.status(200).json({ data: { reviews } });
+};
 
 /**
  * @desc    Get single review
  * @route   GET /api/v1/reviews/:id
  */
-export const getReview: RequestHandler = asyncHandler(
-  async (req, res, next) => {
-    const review = await prisma.review.findUnique({
-      where: {
-        id: req.params.id,
-      },
-    })
+export const getReview: RequestHandler = async (req, res, next) => {
+  const { id } = req.params;
 
-    if (!review) {
-      return next(new AppError('No review found with that ID', 404))
-    }
+  const review = await reviewService.getReview(id);
+  if (!review) throw new AppError('No review found with that ID', 404);
 
-    res.status(200).json({
-      status: 'success',
-      data: {
-        review,
-      },
-    })
-  }
-)
+  return res.status(200).json({ data: { review } });
+};
 
 /**
  * @desc    Create review
  * @route   POST /api/v1/bootcamps/:bootcampId/reviews
  */
-export const createReview: RequestHandler = asyncHandler(async (req, res) => {
-  req.body.bootcampId = req.params.bootcampId
-  req.body.user = res.locals.user.id
+export const createReview: RequestHandler = async (req, res) => {
+  const currentUser = getCurrentUser(req);
+  req.body.bootcampId = req.params.bootcampId;
+  req.body.user = currentUser.id;
 
-  const review = await prisma.review.create({
-    data: req.body,
-  })
+  const review = await reviewService.createReview(req.body);
 
-  res.status(201).json({
-    status: 'success',
-    message: 'Review created successfully',
-    data: {
-      review,
-    },
-  })
-})
+  return res.status(201).json({ data: { review } });
+};
 
 /**
  * @desc    Update review
  * @route   PUT /api/v1/reviews/:id
  */
-export const updateReview: RequestHandler = asyncHandler(
-  async (req, res, next) => {
-    const review = await prisma.review.findUnique({
-      where: {
-        id: req.params.id,
-      },
-    })
+export const updateReview: RequestHandler = async (req, res, next) => {
+  const { id } = req.params;
+  const currentUser = getCurrentUser(req);
 
-    if (!review) {
-      return next(new AppError('No review found with that ID', 404))
-    }
+  const review = await reviewService.getReview(id);
+  if (!review) throw new AppError('No review found with that ID', 404);
 
-    if (review.userId !== res.locals.user.id) {
-      return next(new AppError('Not authorized to update this review', 401))
-    }
+  if (!isAuthorized(review.userId, currentUser))
+    throw new AppError('Not authorized to update this review', 401);
 
-    const updatedReview = await prisma.review.update({
-      where: {
-        id: req.params.id,
-      },
-      data: req.body,
-    })
+  const updatedReview = await reviewService.updateReview(id, req.body);
 
-    res.status(200).json({
-      status: 'success',
-      message: 'Review updated successfully',
-      data: { review: updatedReview },
-    })
-  }
-)
+  return res.status(200).json({ data: { review: updatedReview } });
+};
 
 /**
  * @desc    Delete review
  * @route   DELETE /api/v1/reviews/:id
  */
-export const deleteReview: RequestHandler = asyncHandler(
-  async (req, res, next) => {
-    const review = await prisma.review.findUnique({
-      where: {
-        id: req.params.id,
-      },
-    })
+export const deleteReview: RequestHandler = async (req, res) => {
+  const { id } = req.params;
+  const currentUser = getCurrentUser(req);
 
-    if (!review) {
-      return next(new AppError('No review found with that ID', 404))
-    }
+  const review = await reviewService.getReview(id);
+  if (!review) throw new AppError('No review found with that ID', 404);
 
-    if (
-      review.userId !== res.locals.user.id ||
-      res.locals.user.role !== 'admin'
-    ) {
-      return next(new AppError('Not authorized to delete this review', 401))
-    }
+  if (!isAuthorized(review.userId, currentUser))
+    throw new AppError('Not authorized to update this review', 401);
 
-    const deletedReview = await prisma.review.delete({
-      where: {
-        id: req.params.id,
-      },
-    })
-
-    res.status(200).json({
-      status: 'success',
-      message: 'Review deleted successfully',
-      data: { review: deletedReview },
-    })
-  }
-)
+  await reviewService.deleteReview(id);
+  return res.status(200).json({ data: {} });
+};
