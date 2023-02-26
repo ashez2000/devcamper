@@ -17,23 +17,23 @@ import reviewRouter from './review/review.router';
 
 const app = express();
 
-// app.use(helmet());
-// app.use(mongoSanitize());
-// app.use(hpp());
-// app.use(cors());
+app.use(helmet());
+app.use(mongoSanitize());
+app.use(hpp());
+app.use(cors());
 
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(cookieParser());
 
 // API ROUTES
-// app.get('/', (req, res) => res.redirect('/api/v1/docs'));
-// app.use('/api/v1/docs', swaggerServe, swaggerUi);
+app.get('/', (req, res) => res.redirect('/api/v1/docs'));
+app.use('/api/v1/docs', swaggerServe, swaggerUi);
 
 app.use('/api/v1/auth', authRouter);
-// app.use('/api/v1/bootcamps', bootcampRouter);
-// app.use('/api/v1/courses', courseRouter);
-// app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/bootcamps', bootcampRouter);
+app.use('/api/v1/courses', courseRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

@@ -50,7 +50,7 @@ export const createCourse: RequestHandler = async (req, res, next) => {
       404
     );
 
-  if (isAuthorized(bootcamp.userId, currentUser))
+  if (!isAuthorized(bootcamp.userId, currentUser))
     throw new AppError(
       `Not authorized to add a course to bootcamp ${req.params.bootcampId}`,
       401
@@ -71,7 +71,7 @@ export const updateCourse: RequestHandler = async (req, res, next) => {
   if (!course)
     throw new AppError(`Course not found with id ${req.params.id}`, 404);
 
-  if (isAuthorized(course.userId, currentUser))
+  if (!isAuthorized(course.userId, currentUser))
     throw new AppError(`Not authorized to update course ${req.params.id}`, 401);
 
   const updatedCourse = await courseService.updateCourse(
@@ -93,7 +93,7 @@ export const deleteCourse: RequestHandler = async (req, res, next) => {
   if (!course)
     throw new AppError(`Course not found with id ${req.params.id}`, 404);
 
-  if (isAuthorized(course.userId, currentUser))
+  if (!isAuthorized(course.userId, currentUser))
     throw new AppError(`Not authorized to update course ${req.params.id}`, 401);
 
   await courseService.deleteCourse(req.params.id);

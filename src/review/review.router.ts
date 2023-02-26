@@ -1,10 +1,10 @@
-import express = require('express')
-import { Role } from '@prisma/client'
+import express = require('express');
+import { Role } from '@prisma/client';
 
-import { protect, restrictTo } from '../auth/auth.util'
-import * as review from './review.controller'
+import { protect, restrictTo } from '../auth/auth.util';
+import * as review from './review.controller';
 
-const router = express.Router()
+const router = express.Router({ mergeParams: true });
 
 /**
  * @openapi
@@ -13,7 +13,7 @@ const router = express.Router()
  *    tags:
  *      - Reviews
  */
-router.get('/', review.getAllReviews)
+router.get('/', review.getAllReviews);
 
 /**
  * @openapi
@@ -22,7 +22,7 @@ router.get('/', review.getAllReviews)
  *    tags:
  *      - Reviews
  */
-router.get('/:id', review.getReview)
+router.get('/:id', review.getReview);
 
 /**
  * @openapi
@@ -31,7 +31,7 @@ router.get('/:id', review.getReview)
  *    tags:
  *      - Bootcamps
  */
-router.post('/', protect, restrictTo(Role.USER), review.createReview)
+router.post('/', protect, restrictTo(Role.USER), review.createReview);
 
 /**
  * @openapi
@@ -40,7 +40,7 @@ router.post('/', protect, restrictTo(Role.USER), review.createReview)
  *    tags:
  *      - Reviews
  */
-router.put('/:id', protect, review.updateReview)
+router.put('/:id', protect, restrictTo(Role.USER), review.updateReview);
 
 /**
  * @openapi
@@ -49,6 +49,11 @@ router.put('/:id', protect, review.updateReview)
  *    tags:
  *      - Reviews
  */
-router.delete('/:id', protect, review.deleteReview)
+router.delete(
+  '/:id',
+  protect,
+  restrictTo(Role.USER, Role.ADMIN),
+  review.deleteReview
+);
 
-export default router
+export default router;

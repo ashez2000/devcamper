@@ -1,12 +1,14 @@
-import express from 'express'
-import { Role } from '@prisma/client'
-import { protect, restrictTo } from '../auth/auth.util'
-import * as bootcamp from './bootcamp.controller'
-import courseRouter from '../course/course.router'
+import express from 'express';
+import { Role } from '@prisma/client';
+import { protect, restrictTo } from '../auth/auth.util';
+import * as bootcamp from './bootcamp.controller';
+import courseRouter from '../course/course.router';
+import reviewRouter from '../review/review.router';
 
-const router = express.Router()
+const router = express.Router();
 
-router.use('/:bootcampId/courses', courseRouter)
+router.use('/:bootcampId/courses', courseRouter);
+router.use('/:bootcampId/reviews', reviewRouter);
 
 /**
  * @openapi
@@ -15,7 +17,7 @@ router.use('/:bootcampId/courses', courseRouter)
  *    tags:
  *      - Bootcamps
  */
-router.get('/', bootcamp.getAllBootcamps)
+router.get('/', bootcamp.getAllBootcamps);
 
 /**
  * @openapi
@@ -24,7 +26,7 @@ router.get('/', bootcamp.getAllBootcamps)
  *    tags:
  *      - Bootcamps
  */
-router.get('/:id', bootcamp.getBootcamp)
+router.get('/:id', bootcamp.getBootcamp);
 
 /**
  * @openapi
@@ -38,7 +40,7 @@ router.post(
   protect,
   restrictTo(Role.PUBLISHER, Role.ADMIN),
   bootcamp.createBootcamp
-)
+);
 
 /**
  * @openapi
@@ -52,7 +54,7 @@ router.put(
   protect,
   restrictTo(Role.PUBLISHER, Role.ADMIN),
   bootcamp.updateBootcamp
-)
+);
 
 /**
  * @openapi
@@ -66,6 +68,6 @@ router.delete(
   protect,
   restrictTo(Role.PUBLISHER, Role.ADMIN),
   bootcamp.deleteBootcamp
-)
+);
 
-export default router
+export default router;
