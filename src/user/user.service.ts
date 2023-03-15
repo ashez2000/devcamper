@@ -1,27 +1,25 @@
 import argon from 'argon2';
 
 import { SignUpData } from '../auth/auth.schema';
-import prisma, { sel } from '../utils/prisma';
+import prisma from '../utils/prisma';
 
-export const createUser = async (data: SignUpData) => {
-  const { password } = data;
-  const hashedPassword = await argon.hash(password);
+export async function createUser(data: SignUpData) {
+  const { name, email, password, role } = data;
+  const hash = await argon.hash(password);
 
-  const user = await prisma.user.create({
-    data: { ...data, password: hashedPassword },
-    select: sel('id', 'name', 'email', 'role'),
+  return prisma.user.create({
+    data: { name, email, password: hash, role },
   });
+}
 
-  return user;
-};
+export async function getUserByEmail(email: string) {
+  return prisma.user.findUnique({ where: { email } });
+}
 
-export const getUserByEmail = async (email: string) =>
-  prisma.user.findUnique({
-    where: { email },
-  });
+export async function getUserById(id: string) {
+  return prisma.user.findUnique({ where: { id } });
+}
 
-export const getUserById = async (id: string) =>
-  prisma.user.findUnique({
-    where: { id },
-    select: sel('id', 'name', 'email', 'role'),
-  });
+export async function cmpPassword(hash: string, password: string) {
+  return argon.verify(hash, password);
+}

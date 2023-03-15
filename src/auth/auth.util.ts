@@ -1,4 +1,5 @@
-import { Request, RequestHandler } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import { Role } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 
 import config from '../config';
@@ -6,7 +7,7 @@ import AppError from '../utils/app-error';
 import { AuthPayload } from './auth.schema';
 
 /** Authencation middleware */
-export const protect: RequestHandler = (req, res, next) => {
+export function protect(req: Request, res: Response, next: NextFunction) {
   const token = req.cookies.token;
   if (!token) throw new AppError('You are not logged in!', 401);
 
@@ -18,27 +19,29 @@ export const protect: RequestHandler = (req, res, next) => {
   }
 
   next();
-};
+}
 
 /** Role authorization middleware */
-export const restrictTo =
-  (...roles: string[]): RequestHandler =>
-  (req, res, next) => {
-    // roles ['ADMIN', 'PUBLISHER', 'USER']
-    if (!roles.includes(res.locals.user.role)) {
-      return next(
-        new AppError('You do not have permission to perform this action', 403)
-      );
+export function restrictTo(...roles: Role[]) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const user = res.locals.user as AuthPayload;
+    if (!roles.includes(user.role)) {
+      throw new AppError('You are not authorized to perform this action', 403);
     }
-
     next();
   };
+}
 
 /** Sign JWT Token */
-export const signToken = (payload: AuthPayload): string =>
-  jwt.sign(payload, config.JWT_SECRET, {
-    expiresIn: config.JWT_EXPIRE,
-  });
+export function signToken(payload: AuthPayload) {
+  const opt = { expiresIn: config.JWT_EXPIRE };
+  return jwt.sign(payload, config.JWT_SECRET, opt);
+}
+
+/** Source authorization */
+export function isAuthorized(sourceUserId: string, user: AuthPayload) {
+  return sourceUserId === user.id || user.role === Role.ADMIN;
+}
 
 /** Authencation middleware */
 export const getCurrentUser = (req: Request) => {
@@ -47,6 +50,3 @@ export const getCurrentUser = (req: Request) => {
 
   return jwt.verify(token, config.JWT_SECRET) as AuthPayload;
 };
-
-export const isAuthorized = (resourceUserId: string, user: AuthPayload) =>
-  resourceUserId === user.id || user.role === 'ADMIN';

@@ -1,6 +1,8 @@
 import express from 'express';
+
 import * as auth from './auth.controller';
-import { validator } from '../utils/validator';
+import { protect } from './auth.util';
+import { validate } from '../utils/validator';
 import { SignInSchema, SignUpSchema } from './auth.schema';
 
 const router = express.Router();
@@ -12,7 +14,7 @@ const router = express.Router();
  *    tags:
  *      - Auth
  */
-router.post('/signup', validator(SignUpSchema), auth.signup);
+router.post('/signup', validate(SignUpSchema), auth.signUp);
 
 /**
  * @openapi
@@ -21,7 +23,7 @@ router.post('/signup', validator(SignUpSchema), auth.signup);
  *    tags:
  *      - Auth
  */
-router.post('/signin', validator(SignInSchema), auth.signin);
+router.post('/signin', validate(SignInSchema), auth.signin);
 
 /**
  * @openapi
@@ -30,6 +32,6 @@ router.post('/signin', validator(SignInSchema), auth.signin);
  *    tags:
  *      - Auth
  */
-router.get('/profile', auth.profile);
+router.get('/profile', protect, auth.profile);
 
 export default router;
