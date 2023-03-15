@@ -1,7 +1,11 @@
 import express from 'express';
 import { Role } from '@prisma/client';
-import { protect, restrictTo } from '../auth/auth.util';
+
 import * as bootcamp from './bootcamp.controller';
+import { CreateBootcampSchema } from './bootcamp.schema';
+import { validate } from '../utils/validator';
+import { protect, restrictTo } from '../auth/auth.util';
+
 import courseRouter from '../course/course.router';
 import reviewRouter from '../review/review.router';
 
@@ -17,7 +21,7 @@ router.use('/:bootcampId/reviews', reviewRouter);
  *    tags:
  *      - Bootcamps
  */
-router.get('/', bootcamp.getAllBootcamps);
+router.get('/', bootcamp.getBootcamps);
 
 /**
  * @openapi
@@ -39,6 +43,7 @@ router.post(
   '/',
   protect,
   restrictTo(Role.PUBLISHER, Role.ADMIN),
+  validate(CreateBootcampSchema),
   bootcamp.createBootcamp
 );
 

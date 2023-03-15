@@ -1,14 +1,22 @@
 import prisma from '../utils/prisma';
+import { CreateBootcampData } from './bootcamp.schema';
 
-export const getAllBootcamps = () => prisma.bootcamp.findMany();
+export async function getBootcamps() {
+  return prisma.bootcamp.findMany();
+}
 
-export const createBootcamp = (data: any) => prisma.bootcamp.create({ data });
+export async function getBootcamp(id: string) {
+  return prisma.bootcamp.findUnique({ where: { id } });
+}
 
-export const getBootcamp = (id: string) =>
-  prisma.bootcamp.findUnique({ where: { id } });
+export async function createBootcamp(data: CreateBootcampData, userId: string) {
+  const slug = data.name.toLowerCase().replace(/ /g, '-');
+  return prisma.bootcamp.create({ data: { ...data, slug, userId } });
+}
 
-export const updateBootcamp = (id: string, data: any) =>
-  prisma.bootcamp.update({ where: { id }, data });
+// TODO: update bootcamp impl
+export async function updateBootcamp() {}
 
-export const deleteBootcamp = (id: string) =>
-  prisma.bootcamp.delete({ where: { id } });
+export async function deleteBootcamp(id: string) {
+  return prisma.bootcamp.delete({ where: { id } });
+}

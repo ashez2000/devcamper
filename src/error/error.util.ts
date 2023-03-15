@@ -1,1 +1,14 @@
+export class AppError extends Error {
+  constructor(public message: string, public statusCode: number) {
+    super(message);
+    this.statusCode = statusCode;
 
+    Object.setPrototypeOf(this, AppError.prototype);
+  }
+}
+
+export class NotAuthorizedError extends AppError {
+  constructor() {
+    super('Not Authorized', 403);
+  }
+}
