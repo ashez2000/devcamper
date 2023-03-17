@@ -9,8 +9,8 @@ import { NotAuthorizedError, AppError } from '../error/error.util';
  * @route   GET /api/v1/bootcamps
  */
 export async function getBootcamps(req: Request, res: Response) {
-  const bootcamps = await bootcampService.getBootcamps();
-  res.status(200).json({ data: { bootcamps } });
+  const data = await bootcampService.getBootcamps(req.query);
+  res.status(200).json({ data: data.bootcamps, pagination: data.pagination });
 }
 
 /**
