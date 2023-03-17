@@ -17,7 +17,7 @@ export const getAllCourse: RequestHandler = async (req, res) => {
     return res.status(200).json({ data: { courses } });
   }
 
-  const courses = await courseService.getAllCourses();
+  const courses = await courseService.getCourses(req.query);
   return res.status(200).json({ data: { courses } });
 };
 

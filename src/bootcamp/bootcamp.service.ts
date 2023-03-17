@@ -1,29 +1,18 @@
 import prisma from '../utils/prisma';
+import { paginate } from '../utils/query';
 import { CreateBootcampData } from './bootcamp.schema';
 
 export async function getBootcamps(query: any) {
   // pagination
-  const page = parseInt(query.page) || 1;
-  const limit = parseInt(query.limit) || 10;
-  const startIndex = (page - 1) * limit;
-  const endIndex = page * limit;
   const docCount = await prisma.bootcamp.count();
-  const next = endIndex < docCount ? page + 1 : null;
-  const prev = startIndex > 0 ? page - 1 : null;
+  const { limit, startIndex, res } = paginate(query, docCount);
 
   const bootcamps = await prisma.bootcamp.findMany({
     take: limit,
     skip: startIndex,
   });
 
-  return {
-    bootcamps,
-    pagination: {
-      page,
-      prev,
-      next,
-    },
-  };
+  return { bootcamps, pagination: res };
 }
 
 export async function getBootcamp(id: string) {
