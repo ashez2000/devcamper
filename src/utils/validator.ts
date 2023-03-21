@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { ZodSchema } from 'zod';
-import AppError from './app-error';
+import { AppError } from '../error/error.util';
 
 function schemaValidator(schema: ZodSchema, obj: any) {
   const data = schema.safeParse(obj);

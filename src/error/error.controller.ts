@@ -1,17 +1,15 @@
-import { ErrorRequestHandler, RequestHandler } from 'express'
-import AppError from '../utils/app-error'
+import { ErrorRequestHandler, RequestHandler } from 'express';
+import { AppError } from './error.util';
 
 export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  console.log('Error Handler:', err.message)
-  console.log(err.stack)
+  console.log('Error Handler:', err);
 
-  const message = err.message || 'Server Error'
-  const statusCode = err.statusCode || 500
-  return res.status(statusCode).json({ error: message })
-}
+  const message = err.message || 'Server Error';
+  const statusCode = err.statusCode || 500;
 
-export const notFoundHandler: RequestHandler = (req, res, next) => {
-  return next(
-    new AppError(`Can't find ${req.originalUrl} on this server!`, 404)
-  )
-}
+  res.status(statusCode).json({ error: message });
+};
+
+export const notFoundHandler: RequestHandler = async (req, res) => {
+  throw new AppError(`Can't find ${req.originalUrl} on this server!`, 404);
+};

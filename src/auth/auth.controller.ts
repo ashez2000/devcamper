@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import { signToken } from './auth.util';
 import * as userService from '../user/user.service';
-import AppError from '../utils/app-error';
+import { AppError } from '../error/error.util';
 
 /**
  * @desc    User signup

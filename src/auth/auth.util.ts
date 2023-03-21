@@ -3,7 +3,7 @@ import { Role } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 
 import config from '../config';
-import AppError from '../utils/app-error';
+import { AppError } from '../error/error.util';
 import { AuthPayload } from './auth.schema';
 
 /** Authencation middleware */

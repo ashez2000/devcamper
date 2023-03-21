@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import * as courseService from './course.service';
 import * as bootcampService from '../bootcamp/bootcamp.service';
 import { getCurrentUser, isAuthorized } from '../auth/auth.util';
-import AppError from '../utils/app-error';
+import { AppError } from '../error/error.util';
 
 /**
  * @desc    Get all courses

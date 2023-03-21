@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 
 import * as reviewService from './review.service';
 import { getCurrentUser, isAuthorized } from '../auth/auth.util';
-import AppError from '../utils/app-error';
+import { AppError } from '../error/error.util';
 
 /**
  * @desc    Get all reviews
