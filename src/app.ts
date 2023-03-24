@@ -8,6 +8,7 @@ import mongoSanitize from 'express-mongo-sanitize';
 import 'express-async-errors';
 
 import { swaggerServe, swaggerUi } from './utils/swagger';
+import limitter from './utils/ratelimit';
 import { errorHandler, notFoundHandler } from './error/error.controller';
 
 import authRouter from './auth/auth.router';
@@ -21,6 +22,7 @@ app.use(helmet());
 app.use(mongoSanitize());
 app.use(hpp());
 app.use(cors());
+app.use(limitter);
 
 app.use(morgan('dev'));
 app.use(express.json());
