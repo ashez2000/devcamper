@@ -1,17 +1,31 @@
 import prisma from '../utils/prisma';
 
-export const getAllReviews = () => prisma.review.findMany();
+export async function getReviews() {
+  const reviews = prisma.review.findMany();
+  return reviews;
+}
 
-export const getReviewsForBootcamp = (bootcampId: string) =>
-  prisma.review.findMany({ where: { bootcampId } });
+export async function getReviewsForBootcamp(bootcampId: string) {
+  const reviews = await prisma.review.findMany({ where: { bootcampId } });
+  return reviews;
+}
 
-export const getReview = (id: string) =>
-  prisma.review.findUnique({ where: { id } });
+export async function getReview(id: string) {
+  const review = prisma.review.findUnique({ where: { id } });
+  return review;
+}
 
-export const createReview = (data: any) => prisma.review.create(data);
+export async function addReview(data: any) {
+  const review = await prisma.review.create({ data });
+  return review;
+}
 
-export const updateReview = (id: string, data: any) =>
-  prisma.review.update({ where: { id }, data });
+export async function updateReview(id: string, data: any) {
+  const review = prisma.review.update({ where: { id }, data });
+  return review;
+}
 
-export const deleteReview = (id: string) =>
-  prisma.review.delete({ where: { id } });
+export async function deleteReview(id: string) {
+  const review = prisma.review.delete({ where: { id } });
+  return review;
+}
