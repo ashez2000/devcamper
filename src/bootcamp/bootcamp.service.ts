@@ -10,6 +10,15 @@ export async function getBootcamps(query: any) {
   const bootcamps = await prisma.bootcamp.findMany({
     take: limit,
     skip: startIndex,
+    include: {
+      Course: {
+        select: {
+          id: true,
+          title: true,
+          description: true,
+        },
+      },
+    },
   });
 
   return { bootcamps, pagination: res };
