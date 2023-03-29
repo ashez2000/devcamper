@@ -1,8 +1,12 @@
-import express from 'express'
-import { protect } from '../auth/auth.util'
-import * as course from './course.controller'
+import express from 'express';
 
-const router = express.Router({ mergeParams: true })
+import { validate } from '../utils/validator';
+import { protect } from '../auth/auth.util';
+
+import { CreateCourseSchema } from './course.schema';
+import * as course from './course.controller';
+
+const router = express.Router({ mergeParams: true });
 
 /**
  * @openapi
@@ -11,7 +15,7 @@ const router = express.Router({ mergeParams: true })
  *    tags:
  *      - Courses
  */
-router.get('/', course.getAllCourse)
+router.get('/', course.getAllCourse);
 
 /**
  * @openapi
@@ -20,7 +24,7 @@ router.get('/', course.getAllCourse)
  *    tags:
  *      - Courses
  */
-router.get('/:id', course.getCourse)
+router.get('/:id', course.getCourse);
 
 /**
  * @openapi
@@ -29,7 +33,7 @@ router.get('/:id', course.getCourse)
  *    tags:
  *      - Bootcamps
  */
-router.post('/', protect, course.createCourse)
+router.post('/', protect, validate(CreateCourseSchema), course.createCourse);
 
 /**
  * @openapi
@@ -38,7 +42,7 @@ router.post('/', protect, course.createCourse)
  *    tags:
  *      - Courses
  */
-router.put('/:id', protect, course.updateCourse)
+router.put('/:id', protect, course.updateCourse);
 
 /**
  * @openapi
@@ -47,6 +51,6 @@ router.put('/:id', protect, course.updateCourse)
  *    tags:
  *      - Courses
  */
-router.delete('/:id', protect, course.deleteCourse)
+router.delete('/:id', protect, course.deleteCourse);
 
-export default router
+export default router;
