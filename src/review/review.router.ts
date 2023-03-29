@@ -1,6 +1,9 @@
 import express = require('express');
 import { Role } from '@prisma/client';
 
+import { validate } from '../utils/validator';
+import { CreateReviewSchema } from './review.schema';
+
 import { protect, restrictTo } from '../auth/auth.util';
 import * as review from './review.controller';
 
@@ -31,7 +34,13 @@ router.get('/:id', review.getReview);
  *    tags:
  *      - Bootcamps
  */
-router.post('/', protect, restrictTo(Role.USER), review.createReview);
+router.post(
+  '/',
+  protect,
+  restrictTo(Role.USER),
+  validate(CreateReviewSchema),
+  review.createReview
+);
 
 /**
  * @openapi
