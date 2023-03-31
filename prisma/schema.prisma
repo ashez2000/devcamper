@@ -44,7 +44,7 @@ model Bootcamp {
   email         String
   address       String
   careers       String[]
-  averageRating Float    @default(0)
+  averageRating Int      @default(0)
   averageCost   Int      @default(0)
   photo         String   @default("no-photo.jpg")
   housing       Boolean  @default(false)
