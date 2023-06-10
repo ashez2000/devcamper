@@ -2,6 +2,7 @@ import express from 'express'
 
 import { authRouter } from './app/api/routes/auth.router'
 import { bootcampRouter } from './app/api/routes/bootcamp.router'
+import { reviewRouter } from './app/api/routes/review.router'
 
 const app = express()
 
@@ -13,6 +14,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/bootcamps', bootcampRouter)
+app.use('/api/v1/reviews', reviewRouter)
 
 app.listen(3000, () => {
     console.log('Server listening on port 3000')

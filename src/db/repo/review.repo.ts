@@ -1,6 +1,6 @@
 import { db } from '../conn'
 
-export async function findAllByBoocampId(bootcampId: string) {
+export async function findAllByBootcampId(bootcampId: string) {
     return db.review.findMany({
         where: { bootcampId },
         include: { user: true },
