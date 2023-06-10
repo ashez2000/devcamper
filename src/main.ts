@@ -1,15 +1,11 @@
-import app from './app';
-import config from './config';
+import express from 'express'
 
-async function main() {
-  const server = app.listen(config.PORT, () => {
-    console.log(`server running on port ${config.PORT}`);
-  });
+const app = express()
 
-  process.on('SIGTERM', () => server.close());
-  process.on('unhandledRejection', (err) =>
-    console.log('Rejection Error :', err)
-  );
-}
+app.get('/', (req, res) => {
+    res.send('Hello World!')
+})
 
-main();
+app.listen(3000, () => {
+    console.log('Server listening on port 3000')
+})
