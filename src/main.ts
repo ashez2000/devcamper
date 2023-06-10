@@ -1,4 +1,5 @@
 import express from 'express'
+import cookieParser from 'cookie-parser'
 
 import { authRouter } from './app/api/routes/auth.router'
 import { bootcampRouter } from './app/api/routes/bootcamp.router'
@@ -7,6 +8,7 @@ import { reviewRouter } from './app/api/routes/review.router'
 const app = express()
 
 app.use(express.json())
+app.use(cookieParser())
 
 app.get('/', (req, res) => {
     res.send('Hello World!')

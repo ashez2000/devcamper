@@ -9,6 +9,7 @@ export async function signup(req: Request, res: Response) {
     const user = await userRepo.create(data)
     const token = generateToken(user)
 
+    res.cookie('token', token, { httpOnly: true })
     res.status(200).json({ token })
 }
 
@@ -28,6 +29,7 @@ export async function signin(req: Request, res: Response) {
 
     const token = generateToken(user)
 
+    res.cookie('token', token, { httpOnly: true })
     res.status(200).json({ token })
 }
 
