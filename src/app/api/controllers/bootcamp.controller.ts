@@ -32,12 +32,31 @@ export async function update(req: Request, res: Response) {
     const { id } = req.params
     const data = req.body
 
-    const bootcamp = await bootcampRepo.update(id, data)
-    res.status(200).json(bootcamp)
+    const bootcamp = await bootcampRepo.findById(id)
+    if (!bootcamp) {
+        return res.status(404).json({ message: 'Bootcamp not found' })
+    }
+
+    if (bootcamp.userId !== req.user?.id && req.user?.role !== 'admin') {
+        return res.status(403).json({ message: 'Not authorized' })
+    }
+
+    const updatedBootcamp = await bootcampRepo.update(id, data)
+    res.status(200).json(updatedBootcamp)
 }
 
 export async function remove(req: Request, res: Response) {
     const { id } = req.params
-    const bootcamp = await bootcampRepo.remove(id)
-    res.status(200).json(bootcamp)
+
+    const bootcamp = await bootcampRepo.findById(id)
+    if (!bootcamp) {
+        return res.status(404).json({ message: 'Bootcamp not found' })
+    }
+
+    if (bootcamp.userId !== req.user?.id && req.user?.role !== 'admin') {
+        return res.status(403).json({ message: 'Not authorized' })
+    }
+
+    const deletedBootcamp = await bootcampRepo.remove(id)
+    res.status(200).json(deletedBootcamp)
 }
