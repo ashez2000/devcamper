@@ -5,7 +5,12 @@ import * as reviewRepo from '../../../db/repo/review.repo'
 
 export async function findAllByBootcampId(req: Request, res: Response) {
     const { bootcampId } = req.params
-    const reviews = await reviewRepo.findAllByBootcampId(bootcampId)
+
+    const reviews = await reviewRepo.findAllByBootcampId(bootcampId, {
+        page: parseInt(req.query.page as string),
+        limit: parseInt(req.query.limit as string),
+    })
+
     res.status(200).json(reviews)
 }
 

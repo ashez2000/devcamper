@@ -1,9 +1,16 @@
 import { db } from '../conn'
 
-export async function findAllByBootcampId(bootcampId: string) {
-    return db.review.findMany({
+export async function findAllByBootcampId(
+    bootcampId: string,
+    { page = 1, limit = 10 }
+) {
+    const reviews = db.review.findMany({
         where: { bootcampId },
+        skip: (page - 1) * limit,
+        take: limit,
     })
+
+    return reviews
 }
 
 export async function findById(id: string) {

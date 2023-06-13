@@ -1,7 +1,11 @@
 import { db } from '../conn'
 
-export async function findAll() {
-    const bootcamps = await db.bootcamp.findMany()
+export async function findAll({ page = 1, limit = 10 }) {
+    const bootcamps = await db.bootcamp.findMany({
+        skip: (page - 1) * limit,
+        take: limit,
+    })
+
     return bootcamps
 }
 
