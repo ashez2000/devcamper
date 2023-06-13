@@ -1,4 +1,6 @@
 import { Request, Response } from 'express'
+
+import { createBootcampSchema } from '../../../db/schema/bootcamp.schema'
 import * as bootcampRepo from '../../../db/repo/bootcamp.repo'
 
 export async function findAll(req: Request, res: Response) {
@@ -13,8 +15,12 @@ export async function findById(req: Request, res: Response) {
 }
 
 export async function create(req: Request, res: Response) {
-    const data = req.body
-    const bootcamp = await bootcampRepo.create(data)
+    const parsedResult = createBootcampSchema.safeParse(req.body)
+    if (!parsedResult.success) {
+        return res.status(400).json({ message: parsedResult.error })
+    }
+
+    const bootcamp = await bootcampRepo.create(parsedResult.data)
     res.status(200).json(bootcamp)
 }
 
