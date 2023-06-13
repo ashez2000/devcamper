@@ -23,19 +23,16 @@ export function protect(req: Request, res: Response, next: NextFunction) {
         (req.cookies.token as string)
 
     if (!token) {
+        console.error('auth: token not found')
         return res.status(401).json({ message: 'Not authorized' })
     }
 
     try {
-        const payload = jwt.verify(
-            token,
-            process.env.JWT_SECRET!
-        ) as AuthPayload
-
+        const payload = jwt.verify(token, process.env.JWT_SECRET) as AuthPayload
         req.user = payload
-
         next()
     } catch (err) {
+        console.error('auth: token not valid')
         return res.status(401).json({ message: 'Not authorized' })
     }
 }

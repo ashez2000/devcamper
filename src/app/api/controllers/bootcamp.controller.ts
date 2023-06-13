@@ -20,7 +20,11 @@ export async function create(req: Request, res: Response) {
         return res.status(400).json({ message: parsedResult.error })
     }
 
-    const bootcamp = await bootcampRepo.create(parsedResult.data)
+    const bootcamp = await bootcampRepo.create({
+        ...parsedResult.data,
+        userId: req.user?.id,
+    })
+
     res.status(200).json(bootcamp)
 }
 
