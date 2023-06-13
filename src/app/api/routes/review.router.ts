@@ -3,16 +3,10 @@ import { Router } from 'express'
 import { protect, authorize } from '../middlewares/auth.middleware'
 import * as reviewCtrl from '../controllers/review.controller'
 
-const router = Router()
+const router = Router({ mergeParams: true })
 
-router.get('/bootcamps/:bootcampId/reviews', reviewCtrl.findAllByBootcampId)
-
-router.post(
-    '/bootcamps/:bootcampId/reviews',
-    protect,
-    authorize('user', 'admin'),
-    reviewCtrl.create
-)
+router.get('/', reviewCtrl.findAllByBootcampId)
+router.post('/', protect, authorize('user', 'admin'), reviewCtrl.create)
 
 router.put(
     '/reviews/:id',

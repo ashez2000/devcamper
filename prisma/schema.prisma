@@ -25,6 +25,7 @@ model Bootcamp {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
   name        String @unique
   description String
+  avgRating   Float  @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
