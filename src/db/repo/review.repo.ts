@@ -7,6 +7,10 @@ export async function findAllByBootcampId(bootcampId: string) {
     })
 }
 
+export async function findById(id: string) {
+    return db.review.findUnique({ where: { id } })
+}
+
 export async function create(data: any) {
     const review = await db.review.create({ data })
     return review

@@ -28,13 +28,31 @@ export async function update(req: Request, res: Response) {
     const { id } = req.params
     const data = req.body
 
-    const review = await reviewRepo.update(id, data)
-    res.status(200).json(review)
+    const review = await reviewRepo.findById(id)
+    if (!review) {
+        return res.status(404).json({ message: 'Review not found' })
+    }
+
+    if (review.userId !== req.user?.id) {
+        return res.status(403).json({ message: 'Not authorized' })
+    }
+
+    const updatedReview = await reviewRepo.update(id, data)
+    res.status(200).json(updatedReview)
 }
 
 export async function remove(req: Request, res: Response) {
     const { id } = req.params
 
-    const review = await reviewRepo.remove(id)
-    res.status(200).json(review)
+    const review = await reviewRepo.findById(id)
+    if (!review) {
+        return res.status(404).json({ message: 'Review not found' })
+    }
+
+    if (review.userId !== req.user?.id && req.user?.role !== 'admin') {
+        return res.status(403).json({ message: 'Not authorized' })
+    }
+
+    const deletedReview = await reviewRepo.remove(id)
+    res.status(200).json(deletedReview)
 }
