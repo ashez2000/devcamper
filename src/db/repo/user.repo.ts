@@ -1,5 +1,7 @@
 import argon from 'argon2'
+
 import { db } from '../conn'
+import { CreateUserInput } from '../schema/user.schema'
 
 export async function findById(id: string) {
     const user = await db.user.findUnique({ where: { id } })
@@ -11,7 +13,7 @@ export async function findByEmail(email: string) {
     return user
 }
 
-export async function create(data: any) {
+export async function create(data: CreateUserInput) {
     const { name, email, password, role } = data
     const hash = await argon.hash(password)
 
