@@ -10,7 +10,7 @@ router.get('/bootcamps/:bootcampId/reviews', reviewCtrl.findAllByBootcampId)
 router.post(
     '/bootcamps/:bootcampId/reviews',
     protect,
-    authorize('publisher', 'admin'),
+    authorize('user', 'admin'),
     reviewCtrl.create
 )
 
@@ -24,7 +24,7 @@ router.put(
 router.delete(
     '/reviews/:id',
     protect,
-    authorize('publisher', 'admin'),
+    authorize('user', 'admin'),
     reviewCtrl.remove
 )
 
