@@ -2,6 +2,7 @@ import argon from 'argon2'
 import jwt from 'jsonwebtoken'
 import { Request, Response } from 'express'
 
+import { AuthPayload, UserRoles } from '../middlewares/auth.middleware'
 import * as userRepo from '../../../db/repo/user.repo'
 import { SigninSchema, SignupSchema } from '../../../db/schema/user.schema'
 
@@ -12,7 +13,12 @@ export async function signup(req: Request, res: Response) {
     }
 
     const user = await userRepo.create(parsedResutlt.data)
-    const token = generateToken(user)
+
+    const token = generateToken({
+        id: user.id,
+        email: user.email,
+        role: user.role as UserRoles,
+    })
 
     res.cookie('token', token, { httpOnly: true })
     res.status(200).json({ token })
@@ -38,21 +44,19 @@ export async function signin(req: Request, res: Response) {
         return res.status(401).json({ message: 'Invalid credentials' })
     }
 
-    const token = generateToken(user)
+    const token = generateToken({
+        id: user.id,
+        email: user.email,
+        role: user.role as UserRoles,
+    })
 
     res.cookie('token', token, { httpOnly: true })
     res.status(200).json({ token })
 }
 
-function generateToken(user: any) {
-    const payload = {
-        id: user.id,
-        email: user.email,
-        role: user.role,
-    }
-
-    const token = jwt.sign(payload, process.env.JWT_SECRET!, {
-        expiresIn: '30d',
+function generateToken(payload: AuthPayload) {
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRES_IN,
     })
 
     return token
