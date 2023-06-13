@@ -3,10 +3,15 @@ import jwt from 'jsonwebtoken'
 import { Request, Response } from 'express'
 
 import * as userRepo from '../../../db/repo/user.repo'
+import { SigninSchema, SignupSchema } from '../../../db/schema/user.schema'
 
 export async function signup(req: Request, res: Response) {
-    const data = req.body
-    const user = await userRepo.create(data)
+    const parsedResutlt = SignupSchema.safeParse(req.body)
+    if (!parsedResutlt.success) {
+        return res.status(400).json({ message: parsedResutlt.error })
+    }
+
+    const user = await userRepo.create(parsedResutlt.data)
     const token = generateToken(user)
 
     res.cookie('token', token, { httpOnly: true })
@@ -14,7 +19,13 @@ export async function signup(req: Request, res: Response) {
 }
 
 export async function signin(req: Request, res: Response) {
-    const { email, password } = req.body
+    const parsedResutlt = SigninSchema.safeParse(req.body)
+    if (!parsedResutlt.success) {
+        return res.status(400).json({ message: parsedResutlt.error })
+    }
+
+    const { email, password } = parsedResutlt.data
+
     const user = await userRepo.findByEmail(email)
 
     if (!user) {
