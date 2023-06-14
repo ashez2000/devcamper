@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 
-import { createBootcampSchema } from '../../../db/schema/bootcamp.schema'
-import * as bootcampRepo from '../../../db/repo/bootcamp.repo'
+import { createBootcampSchema } from '../db/schema/bootcamp.schema'
+import * as bootcampRepo from '../db/repo/bootcamp.repo'
 
 export async function findAll(req: Request, res: Response) {
     const bootcamps = await bootcampRepo.findAll({

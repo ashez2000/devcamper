@@ -3,8 +3,8 @@ import jwt from 'jsonwebtoken'
 import { Request, Response } from 'express'
 
 import { AuthPayload, UserRoles } from '../middlewares/auth.middleware'
-import * as userRepo from '../../../db/repo/user.repo'
-import { SigninSchema, SignupSchema } from '../../../db/schema/user.schema'
+import * as userRepo from '../db/repo/user.repo'
+import { SigninSchema, SignupSchema } from '../db/schema/user.schema'
 
 export async function signup(req: Request, res: Response) {
     const parsedResutlt = SignupSchema.safeParse(req.body)

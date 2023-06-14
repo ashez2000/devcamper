@@ -3,11 +3,11 @@ import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 import 'express-async-errors'
 
-import { authRouter } from './app/api/routes/auth.router'
-import { bootcampRouter } from './app/api/routes/bootcamp.router'
-import { reviewRouter } from './app/api/routes/review.router'
+import { authRouter } from './routes/auth.router'
+import { bootcampRouter } from './routes/bootcamp.router'
+import { reviewRouter } from './routes/review.router'
 
-import * as error from './app/api/middlewares/error.middleware'
+import * as error from './middlewares/error.middleware'
 
 const app = express()
 
