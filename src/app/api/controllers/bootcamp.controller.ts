@@ -5,8 +5,8 @@ import * as bootcampRepo from '../../../db/repo/bootcamp.repo'
 
 export async function findAll(req: Request, res: Response) {
     const bootcamps = await bootcampRepo.findAll({
-        page: parseInt(req.query.page as string),
-        limit: parseInt(req.query.limit as string),
+        page: parseInt(req.query.page as string) || 1,
+        limit: parseInt(req.query.limit as string) || 10,
     })
 
     res.status(200).json(bootcamps)
