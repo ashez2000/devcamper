@@ -5,8 +5,8 @@
     "scripts": {
         "start": "node src/main.js",
         "dev": "nodemon src/main.ts",
-        "seed:i": "ts-node seeder/main.ts",
-        "seed:d": "ts-node seeder/main.ts -d"
+        "data:import": "ts-node seeder/main.ts",
+        "data:destroy": "ts-node seeder/main.ts -d"
     },
     "dependencies": {
         "@prisma/client": "^4.11.0",
