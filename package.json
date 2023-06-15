@@ -3,8 +3,10 @@
     "version": "1.0.0",
     "type": "commonjs",
     "scripts": {
-        "start": "node src/main.js",
+        "start": "node dist/main.js",
         "dev": "nodemon src/main.ts",
+        "build": "npm run prisma && tsc -p .",
+        "prisma": "prisma db push",
         "data:import": "ts-node seeder/main.ts",
         "data:destroy": "ts-node seeder/main.ts -d"
     },
