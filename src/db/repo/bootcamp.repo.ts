@@ -17,6 +17,14 @@ export async function findById(id: string) {
     return bootcamp
 }
 
+export async function findByName(name: string) {
+    const bootcamp = await db.bootcamp.findUnique({
+        where: { name },
+    })
+
+    return bootcamp
+}
+
 export async function create(data: any) {
     const bootcamp = await db.bootcamp.create({
         data,

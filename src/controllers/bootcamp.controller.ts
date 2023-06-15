@@ -24,6 +24,15 @@ export async function create(req: Request, res: Response) {
         return res.status(400).json({ message: parsedResult.error })
     }
 
+    const exist = await bootcampRepo.findByName(parsedResult.data.name)
+    if (exist) {
+        return res
+            .status(400)
+            .json({
+                message: `Bootcamp ${parsedResult.data.name} already exist`,
+            })
+    }
+
     const bootcamp = await bootcampRepo.create({
         ...parsedResult.data,
         userId: req.user?.id,

@@ -12,6 +12,11 @@ export async function signup(req: Request, res: Response) {
         return res.status(400).json({ message: parsedResutlt.error })
     }
 
+    const exist = await userRepo.findByEmail(parsedResutlt.data.email)
+    if (exist) {
+        return res.status(400).json({ message: 'Email already exist' })
+    }
+
     const user = await userRepo.create(parsedResutlt.data)
 
     const token = generateToken({

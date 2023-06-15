@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client'
 import { Request, Response, NextFunction } from 'express'
 
 export async function globalError(
@@ -6,7 +7,7 @@ export async function globalError(
     res: Response,
     next: NextFunction
 ) {
-    console.log(err.stack)
+    console.log('error:', err.message)
     res.status(500).json({ message: err.message })
 }
 
