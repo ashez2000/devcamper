@@ -1,10 +1,9 @@
 import argon from 'argon2'
-import jwt from 'jsonwebtoken'
 import { Request, Response } from 'express'
 
-import { AuthPayload, UserRoles } from '../middlewares/auth.middleware'
+import { generateToken } from '../utils/jwt.util'
 import * as userRepo from '../db/repo/user.repo'
-import { SigninSchema, SignupSchema } from '../db/schema/user.schema'
+import { SigninSchema, SignupSchema, UserRoles } from '../db/schema/user.schema'
 
 export async function signup(req: Request, res: Response) {
     const parsedResutlt = SignupSchema.safeParse(req.body)
@@ -57,12 +56,4 @@ export async function signin(req: Request, res: Response) {
 
     res.cookie('token', token, { httpOnly: true })
     res.status(200).json({ token })
-}
-
-function generateToken(payload: AuthPayload) {
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRES_IN,
-    })
-
-    return token
 }

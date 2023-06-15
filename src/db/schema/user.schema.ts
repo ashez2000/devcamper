@@ -13,3 +13,4 @@ export const SigninSchema = z.object({
 })
 
 export type CreateUserInput = z.infer<typeof SignupSchema>
+export type UserRoles = 'admin' | 'user' | 'publisher'

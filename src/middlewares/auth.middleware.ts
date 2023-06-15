@@ -1,6 +1,9 @@
 import jwt from 'jsonwebtoken'
 import { Request, Response, NextFunction } from 'express'
 
+import { UserRoles } from '../db/schema/user.schema'
+import { AuthPayload } from '../utils/jwt.util'
+
 declare global {
     namespace Express {
         interface Request {
@@ -8,14 +11,6 @@ declare global {
         }
     }
 }
-
-export type AuthPayload = {
-    id: string
-    email: string
-    role: UserRoles
-}
-
-export type UserRoles = 'user' | 'admin' | 'publisher'
 
 export function protect(req: Request, res: Response, next: NextFunction) {
     const token =
