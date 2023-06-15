@@ -1,15 +1,24 @@
 import express from 'express'
 import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
+import cors from 'cors'
+import helmet from 'helmet'
+import hpp from 'hpp'
 import 'express-async-errors'
 
 import { authRouter } from './routes/auth.router'
 import { bootcampRouter } from './routes/bootcamp.router'
 import { reviewRouter } from './routes/review.router'
 
+import limiter from './services/rate-limiter.service'
 import * as error from './middlewares/error.middleware'
 
 const app = express()
+
+app.use(cors())
+app.use(helmet())
+app.use(hpp())
+app.use(limiter)
 
 app.use(express.json())
 app.use(cookieParser())
