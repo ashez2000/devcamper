@@ -11,12 +11,7 @@ router.use('/:bootcampId/reviews', reviewRouter)
 router.get('/', bootcampCtrl.findAll)
 router.post('/', protect, authorize('publisher', 'admin'), bootcampCtrl.create)
 
-router.get(
-    '/:id',
-    protect,
-    authorize('publisher', 'admin'),
-    bootcampCtrl.findById
-)
+router.get('/:id', bootcampCtrl.findById)
 
 router.put(
     '/:id',
