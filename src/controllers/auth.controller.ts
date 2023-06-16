@@ -2,6 +2,7 @@ import crypto from 'crypto'
 import argon from 'argon2'
 import { Request, Response } from 'express'
 
+import { sendEmail } from '../services/email.service'
 import { generateToken } from '../utils/jwt.util'
 import * as userRepo from '../db/repo/user.repo'
 import { SigninSchema, SignupSchema, UserRoles } from '../db/schema/user.schema'
@@ -68,10 +69,35 @@ export async function forgotPassword(req: Request, res: Response) {
     }
 
     const resetPasswordToken = crypto.randomBytes(20).toString('hex')
-    const resetPasswordExpires = Date.now() + 10 * 60 * 1000 // 10 minutes
+    const resetPasswordExpire = Date.now() + 10 * 60 * 1000
+    const hashedToken = await argon.hash(resetPasswordToken)
 
     await userRepo.update(user.id, {
-        resetPasswordToken,
-        resetPasswordExpires,
+        resetPasswordToken: hashedToken,
+        resetPasswordExpire: new Date(resetPasswordExpire),
     })
+
+    const resetUrl = `${req.protocol}://${req.headers.host}/api/v1/auth/reset-password/${resetPasswordToken}`
+    const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetUrl}\nIf you didn't forget your password, please ignore this email!`
+
+    try {
+        await sendEmail({
+            email: user.email,
+            subject: 'Your password reset token (valid for 10 min)',
+            message,
+        })
+
+        res.status(200).json({
+            message: 'Email sent!',
+        })
+    } catch (err) {
+        await userRepo.update(user.id, {
+            resetPasswordToken: null,
+            resetPasswordExpire: null,
+        })
+
+        return res.status(500).json({
+            message: 'There was an error sending the email. Try again later!',
+        })
+    }
 }
