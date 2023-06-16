@@ -42,7 +42,7 @@ model Course {
   id                   String  @id @default(auto()) @map("_id") @db.ObjectId
   title                String
   description          String
-  weeks                String
+  weeks                Int
   tuition              Int
   minimumSkill         String
   scholarshipAvailable Boolean @default(false)

@@ -31,6 +31,18 @@ export type BootcampData = {
     acceptGi: boolean
 }
 
+export type CourseData = {
+    _id: string
+    title: string
+    description: string
+    weeks: number
+    tuition: number
+    minimumSkill: string
+    scholarshipAvailable: boolean
+    bootcamp: string
+    user: string
+}
+
 export type ReviewData = {
     _id: string
     title: string
@@ -42,4 +54,5 @@ export type ReviewData = {
 
 export const users = JSON.parse(read('users')) as Array<UserData>
 export const bootcamps = JSON.parse(read('bootcamps')) as Array<BootcampData>
+export const courses = JSON.parse(read('courses')) as Array<CourseData>
 export const reviews = JSON.parse(read('reviews')) as Array<ReviewData>

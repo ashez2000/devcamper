@@ -1,12 +1,13 @@
 import argon from 'argon2'
 import { PrismaClient } from '@prisma/client'
-import { users, bootcamps, reviews } from './loader'
+import { users, bootcamps, courses, reviews } from './loader'
 
 const prisma = new PrismaClient()
 
 async function deleteData() {
     await prisma.review.deleteMany()
     await prisma.bootcamp.deleteMany()
+    await prisma.course.deleteMany()
     await prisma.user.deleteMany()
 
     console.log('seeder: data deleted')
@@ -59,6 +60,24 @@ async function seedBootcamps() {
     await prisma.bootcamp.createMany({ data: dbBootcamps })
 }
 
+async function seedCourses() {
+    const dbCourses = courses.map((course) => {
+        return {
+            id: course._id,
+            title: course.title,
+            description: course.description,
+            weeks: course.weeks,
+            tuition: course.tuition,
+            minimumSkill: course.minimumSkill,
+            scholarshipAvailable: course.scholarshipAvailable,
+            bootcampId: course.bootcamp,
+            userId: course.user,
+        }
+    })
+
+    await prisma.course.createMany({ data: dbCourses })
+}
+
 async function seedReviews() {
     const dbReviews = await Promise.all(
         reviews.map((review) => {
@@ -81,6 +100,7 @@ async function importData() {
 
     await seedUsers()
     await seedBootcamps()
+    await seedCourses()
     await seedReviews()
 
     console.log('seeder: data imported')
