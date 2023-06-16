@@ -47,11 +47,38 @@ async function seedBootcamps() {
                     return acc
                 }, 0)
 
+            const avgCost =
+                courses.reduce((acc, course) => {
+                    if (course.bootcamp === bootcamp._id) {
+                        return acc + course.tuition
+                    }
+                    return acc
+                }, 0) /
+                courses.reduce((acc, course) => {
+                    if (course.bootcamp === bootcamp._id) {
+                        return acc + 1
+                    }
+                    return acc
+                }, 0)
+
             return {
                 id: bootcamp._id,
                 name: bootcamp.name,
                 description: bootcamp.description,
+                website: bootcamp.website,
+                phone: bootcamp.phone,
+                email: bootcamp.email,
+                address: bootcamp.address,
+
+                careers: bootcamp.careers,
+                housing: bootcamp.housing,
+                jobAssistance: bootcamp.jobAssistance,
+                jobGuarantee: bootcamp.jobGuarantee,
+                acceptGi: bootcamp.acceptGi,
+
                 avgRating: parseFloat(avgRating.toFixed(1)),
+                avgCost: parseFloat(avgCost.toFixed(1)),
+
                 userId: bootcamp.user,
             }
         })
