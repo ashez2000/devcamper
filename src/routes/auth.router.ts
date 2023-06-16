@@ -5,6 +5,8 @@ const router = Router()
 
 router.post('/signup', authCtrl.signup)
 router.post('/signin', authCtrl.signin)
+
 router.post('/forgot-password', authCtrl.forgotPassword)
+router.put('/reset-password', authCtrl.resetPassword)
 
 export { router as authRouter }

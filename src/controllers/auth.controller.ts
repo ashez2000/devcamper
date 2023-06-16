@@ -77,8 +77,7 @@ export async function forgotPassword(req: Request, res: Response) {
         resetPasswordExpire: new Date(resetPasswordExpire),
     })
 
-    const resetUrl = `${req.protocol}://${req.headers.host}/api/v1/auth/reset-password/${resetPasswordToken}`
-    const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetUrl}\nIf you didn't forget your password, please ignore this email!`
+    const message = `Reset password token: ${resetPasswordToken}`
 
     try {
         await sendEmail({
@@ -100,4 +99,36 @@ export async function forgotPassword(req: Request, res: Response) {
             message: 'There was an error sending the email. Try again later!',
         })
     }
+}
+
+export async function resetPassword(req: Request, res: Response) {
+    const { resetToken, email, password } = req.body
+
+    const user = await userRepo.findByEmail(email)
+    if (!user) {
+        return res.status(400).json({ message: 'User does not exist' })
+    }
+
+    if (!user.resetPasswordToken || !user.resetPasswordExpire) {
+        return res.status(400).json({ message: 'Invalid reset token' })
+    }
+
+    const isMatch = await argon.verify(user.resetPasswordToken, resetToken)
+    if (!isMatch) {
+        return res.status(400).json({ message: 'Invalid reset token' })
+    }
+
+    if (user.resetPasswordExpire < new Date()) {
+        return res.status(400).json({ message: 'Reset token has expired' })
+    }
+
+    const hashedPassword = await argon.hash(password)
+
+    await userRepo.update(user.id, {
+        password: hashedPassword,
+        resetPasswordToken: null,
+        resetPasswordExpire: null,
+    })
+
+    res.status(200).json({ message: 'Password updated successfully' })
 }
