@@ -23,3 +23,8 @@ export async function create(data: CreateUserInput) {
 
     return user
 }
+
+export async function update(id: string, data: any) {
+    const user = await db.user.update({ where: { id }, data })
+    return user
+}

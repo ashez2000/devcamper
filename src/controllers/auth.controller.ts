@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import argon from 'argon2'
 import { Request, Response } from 'express'
 
@@ -56,4 +57,21 @@ export async function signin(req: Request, res: Response) {
 
     res.cookie('token', token, { httpOnly: true })
     res.status(200).json({ token })
+}
+
+export async function forgotPassword(req: Request, res: Response) {
+    const user = await userRepo.findByEmail(req.body.email)
+    if (!user) {
+        return res
+            .status(400)
+            .json({ message: 'No user with that email address exists' })
+    }
+
+    const resetPasswordToken = crypto.randomBytes(20).toString('hex')
+    const resetPasswordExpires = Date.now() + 10 * 60 * 1000 // 10 minutes
+
+    await userRepo.update(user.id, {
+        resetPasswordToken,
+        resetPasswordExpires,
+    })
 }
