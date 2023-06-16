@@ -22,6 +22,8 @@ export async function create(data: any) {
         data,
     })
 
+    await avgCost(data.bootcampId)
+
     return course
 }
 
@@ -31,6 +33,10 @@ export async function update(id: string, data: any) {
         data,
     })
 
+    if (data.avgCost) {
+        await avgCost(data.bootcampId)
+    }
+
     return course
 }
 
@@ -39,5 +45,23 @@ export async function remove(id: string) {
         where: { id },
     })
 
+    await avgCost(course.bootcampId)
+
     return course
+}
+
+async function avgCost(bootcampId: string) {
+    const res = await db.course.aggregate({
+        where: { bootcampId },
+        _avg: { tuition: true },
+    })
+
+    const avg = res._avg.tuition?.toFixed(1)
+
+    if (avg) {
+        await db.bootcamp.update({
+            where: { id: bootcampId },
+            data: { avgCost: parseFloat(avg) },
+        })
+    }
 }
