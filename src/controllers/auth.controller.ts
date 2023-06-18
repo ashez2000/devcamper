@@ -5,20 +5,22 @@ import { Request, Response } from 'express'
 import { sendEmail } from '../services/email.service'
 import { generateToken } from '../utils/jwt.util'
 import * as userRepo from '../db/repo/user.repo'
-import { SigninSchema, SignupSchema, UserRoles } from '../db/schema/user.schema'
+import { SignUpInput, SignInInput, UserRoles } from '../db/schema/user.schema'
 
-export async function signup(req: Request, res: Response) {
-    const parsedResutlt = SignupSchema.safeParse(req.body)
-    if (!parsedResutlt.success) {
-        return res.status(400).json({ message: parsedResutlt.error })
-    }
-
-    const exist = await userRepo.findByEmail(parsedResutlt.data.email)
+/**
+ * @desc    Sign up user
+ * @route   POST /api/{ver}/auth/sign-up
+ */
+export async function signUp(
+    req: Request<unknown, unknown, SignUpInput>,
+    res: Response
+) {
+    const exist = await userRepo.findByEmail(req.body.email)
     if (exist) {
         return res.status(400).json({ message: 'Email already exist' })
     }
 
-    const user = await userRepo.create(parsedResutlt.data)
+    const user = await userRepo.create(req.body)
 
     const token = generateToken({
         id: user.id,
@@ -30,22 +32,22 @@ export async function signup(req: Request, res: Response) {
     res.status(200).json({ token })
 }
 
-export async function signin(req: Request, res: Response) {
-    const parsedResutlt = SigninSchema.safeParse(req.body)
-    if (!parsedResutlt.success) {
-        return res.status(400).json({ message: parsedResutlt.error })
-    }
-
-    const { email, password } = parsedResutlt.data
+/**
+ * @desc    Sign in user
+ * @route   POST /api/{ver}/auth/sign-in
+ */
+export async function signIn(
+    req: Request<unknown, unknown, SignInInput, unknown>,
+    res: Response
+) {
+    const { email, password } = req.body
 
     const user = await userRepo.findByEmail(email)
-
     if (!user) {
         return res.status(401).json({ message: 'Invalid credentials' })
     }
 
     const isMatch = await argon.verify(user.password, password)
-
     if (!isMatch) {
         return res.status(401).json({ message: 'Invalid credentials' })
     }
@@ -60,6 +62,10 @@ export async function signin(req: Request, res: Response) {
     res.status(200).json({ token })
 }
 
+/**
+ * @desc    Forgot password
+ * @route   POST /api/{ver}/auth/forgot-password
+ */
 export async function forgotPassword(req: Request, res: Response) {
     const user = await userRepo.findByEmail(req.body.email)
     if (!user) {
@@ -101,6 +107,10 @@ export async function forgotPassword(req: Request, res: Response) {
     }
 }
 
+/**
+ * @desc    Reset password
+ * @route   PUT /api/{ver}/auth/reset-password
+ */
 export async function resetPassword(req: Request, res: Response) {
     const { resetToken, email, password } = req.body
 
