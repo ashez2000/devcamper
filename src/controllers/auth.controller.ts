@@ -3,6 +3,7 @@ import argon from 'argon2'
 import { Request, Response } from 'express'
 
 import { sendEmail } from '../services/email.service'
+import { AppError } from '../utils/app-error.util'
 import { generateToken } from '../utils/jwt.util'
 import * as userRepo from '../db/repo/user.repo'
 import { SignUpInput, SignInInput, UserRoles } from '../db/schema/user.schema'
@@ -16,9 +17,7 @@ export async function signUp(
     res: Response
 ) {
     const exist = await userRepo.findByEmail(req.body.email)
-    if (exist) {
-        return res.status(400).json({ message: 'Email already exist' })
-    }
+    if (exist) throw new AppError('User already exists', 400)
 
     const user = await userRepo.create(req.body)
 
@@ -43,14 +42,10 @@ export async function signIn(
     const { email, password } = req.body
 
     const user = await userRepo.findByEmail(email)
-    if (!user) {
-        return res.status(401).json({ message: 'Invalid credentials' })
-    }
+    if (!user) throw new AppError('Invalid credentials', 401)
 
     const isMatch = await argon.verify(user.password, password)
-    if (!isMatch) {
-        return res.status(401).json({ message: 'Invalid credentials' })
-    }
+    if (!isMatch) throw new AppError('Invalid credentials', 401)
 
     const token = generateToken({
         id: user.id,

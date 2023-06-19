@@ -1,5 +1,5 @@
-import { Prisma } from '@prisma/client'
 import { Request, Response, NextFunction } from 'express'
+import { AppError } from '../utils/app-error.util'
 
 export async function globalError(
     err: Error,
@@ -8,6 +8,11 @@ export async function globalError(
     next: NextFunction
 ) {
     console.log('error:', err.message)
+
+    if (err instanceof AppError) {
+        return res.status(err.statusCode).json({ message: err.message })
+    }
+
     res.status(500).json({ message: err.message })
 }
 
