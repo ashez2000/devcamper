@@ -6,7 +6,7 @@ import helmet from 'helmet'
 import hpp from 'hpp'
 import 'express-async-errors'
 
-import { authRouter } from './routes/auth.router'
+import { authRouter } from '$/routes/auth.router'
 import { bootcampRouter } from './routes/bootcamp.router'
 import { courseRouter } from './routes/course.router'
 import { reviewRouter } from './routes/review.router'
@@ -25,8 +25,8 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(morgan('dev'))
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
+app.get('/ping', (req, res) => {
+  res.send('OK')
 })
 
 app.use('/api/v1/auth', authRouter)
