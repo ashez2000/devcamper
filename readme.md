@@ -1,6 +1,6 @@
 # Devcamper
 
-Express CRUD API for Devcamper application, which is a bootcamp directory website.
+Devcamper is a REST API designed to provide developers with a platform to manage and access information about coding bootcamps.
 
 ## Run the app locally
 
