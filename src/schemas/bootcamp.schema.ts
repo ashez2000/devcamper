@@ -14,4 +14,7 @@ export const createBootcampSchema = z.object({
   acceptGi: z.boolean().default(false),
 })
 
+export const updateBootcampSchema = createBootcampSchema.partial()
+
 export type CreateBootcamp = z.infer<typeof createBootcampSchema>
+export type UpdateBootcamp = Partial<CreateBootcamp>

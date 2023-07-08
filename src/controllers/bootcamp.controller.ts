@@ -1,9 +1,14 @@
 import { Request, Response } from 'express'
 
-import { createBootcampSchema } from '$/db/schema/bootcamp.schema'
-import * as bootcampRepo from '$/db/repo/bootcamp.repo'
 import { getCurrentUser } from '$/helpers/auth.helpers'
 import { AppError } from '$/utils/app-error.util'
+
+import {
+  createBootcampSchema,
+  updateBootcampSchema,
+} from '$/schemas/bootcamp.schema'
+
+import * as bootcampRepo from '$/db/repo/bootcamp.repo'
 
 export async function findAll(req: Request, res: Response) {
   const bootcamps = await bootcampRepo.findAll({
@@ -27,31 +32,25 @@ export async function findById(req: Request, res: Response) {
 
 export async function create(req: Request, res: Response) {
   const currentUser = getCurrentUser(req)
+  const data = createBootcampSchema.parse(req.body)
 
-  const parsedResult = createBootcampSchema.safeParse(req.body)
-  if (!parsedResult.success) {
-    return res.status(400).json({ message: parsedResult.error })
-  }
-
-  const exist = await bootcampRepo.findByName(parsedResult.data.name)
+  const exist = await bootcampRepo.findByName(data.name)
   if (exist) {
-    return res.status(400).json({
-      message: `Bootcamp ${parsedResult.data.name} already exist`,
-    })
+    throw new AppError('Bootcamp already exists', 400)
   }
 
   const bootcamp = await bootcampRepo.create({
-    ...parsedResult.data,
+    ...data,
     userId: currentUser.id,
   })
 
-  res.status(200).json(bootcamp)
+  res.status(201).json(bootcamp)
 }
 
 export async function update(req: Request, res: Response) {
   const { id } = req.params
-  const data = req.body
   const currentUser = getCurrentUser(req)
+  const data = updateBootcampSchema.parse(req.body)
 
   const bootcamp = await bootcampRepo.findById(id)
   if (!bootcamp) {
@@ -63,7 +62,6 @@ export async function update(req: Request, res: Response) {
   }
 
   const updatedBootcamp = await bootcampRepo.update(id, data)
-
   res.status(200).json(updatedBootcamp)
 }
 
