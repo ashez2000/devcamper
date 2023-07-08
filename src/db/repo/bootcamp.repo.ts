@@ -1,51 +1,55 @@
 import { db } from '../conn'
+import { paginate, select, orderBy } from '$/helpers/query.helpers'
 
-export async function findAll({ page = 1, limit = 10 }) {
-    const bootcamps = await db.bootcamp.findMany({
-        skip: (page - 1) * limit,
-        take: limit,
-    })
+export async function findAll(query: any) {
+  console.log(query)
 
-    return bootcamps
+  const bootcamps = await db.bootcamp.findMany({
+    select: select(query),
+    ...paginate(query),
+    orderBy: orderBy(query),
+  })
+
+  return bootcamps
 }
 
 export async function findById(id: string) {
-    const bootcamp = await db.bootcamp.findUnique({
-        where: { id },
-    })
+  const bootcamp = await db.bootcamp.findUnique({
+    where: { id },
+  })
 
-    return bootcamp
+  return bootcamp
 }
 
 export async function findByName(name: string) {
-    const bootcamp = await db.bootcamp.findUnique({
-        where: { name },
-    })
+  const bootcamp = await db.bootcamp.findUnique({
+    where: { name },
+  })
 
-    return bootcamp
+  return bootcamp
 }
 
 export async function create(data: any) {
-    const bootcamp = await db.bootcamp.create({
-        data,
-    })
+  const bootcamp = await db.bootcamp.create({
+    data,
+  })
 
-    return bootcamp
+  return bootcamp
 }
 
 export async function update(id: string, data: any) {
-    const bootcamp = await db.bootcamp.update({
-        where: { id },
-        data,
-    })
+  const bootcamp = await db.bootcamp.update({
+    where: { id },
+    data,
+  })
 
-    return bootcamp
+  return bootcamp
 }
 
 export async function remove(id: string) {
-    const bootcamp = await db.bootcamp.delete({
-        where: { id },
-    })
+  const bootcamp = await db.bootcamp.delete({
+    where: { id },
+  })
 
-    return bootcamp
+  return bootcamp
 }
