@@ -1,4 +1,4 @@
-import { db } from '../conn'
+import db from '$/lib/prisma'
 import { paginate, select, orderBy } from '$/helpers/query.helpers'
 
 export async function findAll(query: any) {

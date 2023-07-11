@@ -1,6 +1,5 @@
 import argon from 'argon2'
-
-import { db } from '../conn'
+import db from '$/lib/prisma'
 import { CreateUser } from '$/schemas/user.schema'
 
 export async function findById(id: string) {
