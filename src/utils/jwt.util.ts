@@ -1,16 +1,15 @@
 import { Role } from '.prisma/client'
 import jwt from 'jsonwebtoken'
 
+import { config } from '$/config'
+
 export type AuthPayload = {
   id: string
   email: string
   role: Role
 }
 
-export function generateToken(payload: AuthPayload) {
-  const token = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
+export const generateToken = (payload: AuthPayload) =>
+  jwt.sign(payload, config.jwt.secret, {
+    expiresIn: config.jwt.expiresIn,
   })
-
-  return token
-}

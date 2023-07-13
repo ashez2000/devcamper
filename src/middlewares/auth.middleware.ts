@@ -2,6 +2,7 @@ import { Role } from '.prisma/client'
 import jwt from 'jsonwebtoken'
 import { Request, Response, NextFunction } from 'express'
 
+import { config } from '$/config'
 import { AuthPayload } from '$/utils/jwt.util'
 
 declare global {
@@ -22,7 +23,7 @@ export function protect(req: Request, res: Response, next: NextFunction) {
   }
 
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET) as AuthPayload
+    const payload = jwt.verify(token, config.jwt.secret) as AuthPayload
     req.user = payload
     next()
   } catch (err) {

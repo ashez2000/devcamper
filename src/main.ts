@@ -1,20 +1,19 @@
 import http from 'http'
 
-import { envSchema } from './env'
-import { app } from './app'
+import { config, configSchema } from '$/config'
+import { app } from '$/app'
 
 async function main() {
-    envSchema.parse(process.env)
+  configSchema.parse(config)
 
-    const port = process.env.PORT
-    const server = http.createServer(app)
+  const server = http.createServer(app)
 
-    server.listen(port, () => {
-        console.log(`main: server running on port ${port}`)
-    })
+  server.listen(config.port, () => {
+    console.log(`main: server running on port ${config.port}`)
+  })
 }
 
-main().catch((err) => {
-    console.error('main:', err)
-    process.exit(1)
+main().catch(err => {
+  console.error('main:', err)
+  process.exit(1)
 })
