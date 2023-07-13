@@ -1,4 +1,4 @@
-import db from '$/lib/prisma'
+import db from '$/libs/prisma'
 
 export async function findAll({ page = 1, limit = 10 }) {
   const courses = await db.course.findMany({

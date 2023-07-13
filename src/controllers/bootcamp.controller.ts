@@ -8,7 +8,7 @@ import {
   updateBootcampSchema,
 } from '$/schemas/bootcamp.schema'
 
-import * as bootcampRepo from '$/db/repo/bootcamp.repo'
+import * as bootcampRepo from '$/repos/bootcamp.repo'
 
 export async function findAll(req: Request, res: Response) {
   const bootcamps = await bootcampRepo.findAll(req.query)

@@ -6,7 +6,7 @@ import { AppError } from '$/utils/app-error.util'
 import { generateToken } from '$/utils/jwt.util'
 import { sendEmail } from '$/services/email.service'
 import { CreateUser, UserCredential } from '$/schemas/user.schema'
-import * as userRepo from '$/db/repo/user.repo'
+import * as userRepo from '$/repos/user.repo'
 
 /**
  * @desc    Sign up user

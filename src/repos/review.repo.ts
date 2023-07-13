@@ -1,4 +1,4 @@
-import db from '$/lib/prisma'
+import db from '$/libs/prisma'
 
 export async function findAllByBootcampId(
   bootcampId: string,

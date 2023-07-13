@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 
 import { createReviewSchema } from '$/schemas/review.schema'
-import * as reviewRepo from '../db/repo/review.repo'
+import * as reviewRepo from '$/repos/review.repo'
 
 export async function findAllByBootcampId(req: Request, res: Response) {
   const { bootcampId } = req.params

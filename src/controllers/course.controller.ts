@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 
 import { AppError } from '$/utils/app-error.util'
 import { createCourseSchema } from '$/schemas/course.schema'
-import * as courseRepo from '$/db/repo/course.repo'
+import * as courseRepo from '$/repos/course.repo'
 
 export async function findAll(req: Request, res: Response) {
   const courses = await courseRepo.findAll({
