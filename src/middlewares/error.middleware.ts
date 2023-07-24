@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
+import { MongoServerError } from 'mongodb'
 import { AppError } from '$/utils/app-error.util'
 
 export async function globalError(
@@ -13,6 +14,17 @@ export async function globalError(
 
   if (err.name === 'CastError') {
     return res.status(400).json({ message: 'Invalid id format' })
+  }
+
+  if (err.name === 'MongoServerError') {
+    const mongoErr = err as any
+    if (mongoErr.code === 11000) {
+      return res
+        .status(400)
+        .json({
+          message: `Duplicated values: ${JSON.stringify(mongoErr.keyValue)}`,
+        })
+    }
   }
 
   console.error(err)

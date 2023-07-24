@@ -4,6 +4,7 @@ const BootcampSchema = new Schema({
   name: {
     type: String,
     required: [true, 'name is required'],
+    unique: true,
   },
   description: {
     type: String,
