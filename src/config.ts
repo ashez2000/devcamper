@@ -13,6 +13,8 @@ const config = {
   port: Number(loadEnv('PORT')),
   nodeEnv: loadEnv('NODE_ENV'),
 
+  mongoUri: loadEnv('MONGO_URI'),
+
   jwtSecret: loadEnv('JWT_SECRET'),
   jwtExpiresIn: loadEnv('JWT_EXPIRES_IN'),
 

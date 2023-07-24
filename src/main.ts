@@ -1,9 +1,11 @@
 import http from 'http'
 
 import config from './config'
+import connectDb from './db'
 import app from './app'
 
 async function main() {
+  connectDb(config.mongoUri)
   const server = http.createServer(app)
 
   server.listen(config.port, () => {
