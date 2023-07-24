@@ -1,17 +1,21 @@
-import crypto from 'crypto'
+import crypto from 'node:crypto'
+import * as R from 'ramda'
 import argon from 'argon2'
 import { Request, Response } from 'express'
 
 import { AppError } from '../utils/app-error.util'
-import { generateToken } from '../libs/jwt'
+import { signToken } from '../libs/jwt'
 import { sendEmail } from '../services/email.service'
 import { CreateUser, UserCredential } from '../schemas/user.schema'
 import * as userRepo from '../repos/user.repo'
 
-/**
- * @desc    Sign up user
- * @route   POST /api/{ver}/auth/sign-up
- */
+const serializeUser = R.omit([
+  'password',
+  'resetPasswordToken',
+  'resetPasswordExpire',
+])
+
+// sign up
 export async function signUp(
   req: Request<unknown, unknown, CreateUser>,
   res: Response
@@ -22,44 +26,49 @@ export async function signUp(
   }
 
   const user = await userRepo.create(req.body)
-
-  const token = generateToken({
-    id: user.id,
-    email: user.email,
-    role: user.role,
-  })
+  const token = signToken(user)
 
   res.cookie('token', token, { httpOnly: true })
-  res.status(200).json({ token })
+  res.status(200).json({
+    user: serializeUser(user),
+    token,
+  })
 }
 
-/**
- * @desc    Sign in user
- * @route   POST /api/{ver}/auth/sign-in
- */
+// sign in
 export async function signIn(
   req: Request<unknown, unknown, UserCredential>,
   res: Response
 ) {
   const user = await userRepo.findByCredential(req.body)
-  if (!user) {
-    throw new AppError('Invalid credential', 401)
-  }
+  if (!user) throw new AppError('Invalid credential', 401)
 
-  const token = generateToken({
-    id: user.id,
-    email: user.email,
-    role: user.role,
-  })
+  const token = signToken(user)
 
   res.cookie('token', token, { httpOnly: true })
-  res.status(200).json({ token })
+  res.status(200).json({
+    user: serializeUser(user),
+    token,
+  })
 }
 
-/**
- * @desc    Forgot password
- * @route   POST /api/{ver}/auth/forgot-password
- */
+// sign out
+export async function signOut(_: Request, res: Response) {
+  res.clearCookie('token')
+  res.status(200).json({})
+}
+
+// get current user
+export async function currentUser(req: Request, res: Response) {
+  if (!req.user) throw new AppError('Unauthorized', 401)
+
+  const user = await userRepo.findById(req.user.id)
+  if (!user) throw new AppError('User not found', 404)
+
+  res.status(200).json({ user: serializeUser(user) })
+}
+
+// forgot password
 export async function forgotPassword(req: Request, res: Response) {
   const user = await userRepo.findByEmail(req.body.email)
   if (!user) {
@@ -101,10 +110,7 @@ export async function forgotPassword(req: Request, res: Response) {
   }
 }
 
-/**
- * @desc    Reset password
- * @route   PUT /api/{ver}/auth/reset-password
- */
+// reset password
 export async function resetPassword(req: Request, res: Response) {
   const { resetToken, email, password } = req.body
 

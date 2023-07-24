@@ -9,7 +9,8 @@ export type JwtPayload = {
 }
 
 export function signToken(payload: JwtPayload) {
-  return jwt.sign(payload, config.jwtSecret, {
+  const { id, email, role } = payload
+  return jwt.sign({ id, email, role }, config.jwtSecret, {
     expiresIn: config.jwtExpiresIn,
   })
 }

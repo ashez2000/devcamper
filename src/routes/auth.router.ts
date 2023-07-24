@@ -26,6 +26,9 @@ router.post('/sign-up', zodValidator(createUserSchema), authCtrl.signUp)
  */
 router.post('/sign-in', zodValidator(userCredentialSchema), authCtrl.signIn)
 
+router.post('/sign-out', authCtrl.signOut)
+router.get('/current-user', authCtrl.currentUser)
+
 router.post('/forgot-password', authCtrl.forgotPassword)
 router.put('/reset-password', authCtrl.resetPassword)
 
