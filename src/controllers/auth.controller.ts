@@ -1,4 +1,3 @@
-import * as R from 'ramda'
 import argon from 'argon2'
 import { Request, Response } from 'express'
 
@@ -6,8 +5,6 @@ import { AppError } from '$/utils/app-error.util'
 import { signToken } from '$/libs/jwt'
 import User from '$/models/user.model'
 import { UserRole } from '$/schemas/user.schema'
-
-const serializeUser = R.omit(['password'])
 
 // sign up
 export async function signUp(req: Request, res: Response) {
@@ -27,11 +24,9 @@ export async function signUp(req: Request, res: Response) {
     role: user.role as UserRole,
   })
 
+  user.password = undefined
   res.cookie('token', token, { httpOnly: true })
-  res.status(200).json({
-    user: serializeUser(user),
-    token,
-  })
+  res.status(200).json({ data: { user, token } })
 }
 
 // sign in
@@ -50,11 +45,9 @@ export async function signIn(req: Request, res: Response) {
     role: user.role as UserRole,
   })
 
+  user.password = undefined
   res.cookie('token', token, { httpOnly: true })
-  res.status(200).json({
-    user: serializeUser(user),
-    token,
-  })
+  res.status(200).json({ data: { user, token } })
 }
 
 // sign out
@@ -70,5 +63,6 @@ export async function currentUser(req: Request, res: Response) {
   const user = await User.findById(req.user.id)
   if (!user) throw new AppError('User not found', 404)
 
-  res.status(200).json({ user: serializeUser(user) })
+  user.password = undefined
+  res.status(200).json({ data: user })
 }
