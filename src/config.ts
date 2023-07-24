@@ -1,30 +1,23 @@
 import 'dotenv/config'
-import { z } from 'zod'
 
-export const configSchema = z.object({
-  port: z.number().default(3000),
+function loadEnv(name: string) {
+  const value = process.env[name]
+  if (value === undefined || value.trim() === '') {
+    throw new Error(`config - ${name} is undefined or empty`)
+  }
 
-  jwt: z.object({
-    secret: z.string(),
-    expiresIn: z.string(),
-  }),
+  return value
+}
 
-  rateLimit: z.object({
-    windowMs: z.number(),
-    max: z.number(),
-  }),
-})
+const config = {
+  port: Number(loadEnv('PORT')),
+  nodeEnv: loadEnv('NODE_ENV'),
 
-export const config = {
-  port: parseInt(process.env.PORT!),
+  jwtSecret: loadEnv('JWT_SECRET'),
+  jwtExpiresIn: loadEnv('JWT_EXPIRES_IN'),
 
-  jwt: {
-    secret: process.env.JWT_SECRET!,
-    expiresIn: process.env.JWT_EXPIRES_IN!,
-  },
-
-  rateLimit: {
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100,
-  },
+  rateLimitMax: Number(loadEnv('RATE_LIMIT_MAX')),
+  rateLimitWindowMs: Number(loadEnv('RATE_LIMIT_WINDOW_MS')),
 } as const
+
+export default config
