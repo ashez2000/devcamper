@@ -1,23 +1,24 @@
 import { Request, Response, NextFunction } from 'express'
-import { AppError } from '../utils/app-error.util'
+import { AppError } from '$/utils/app-error.util'
 
 export async function globalError(
-    err: Error,
-    req: Request,
-    res: Response,
-    next: NextFunction
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) {
-    console.log('error:', err.message)
+  if (err instanceof AppError) {
+    return res.status(err.statusCode).json({ message: err.message })
+  }
 
-    if (err instanceof AppError) {
-        return res.status(err.statusCode).json({ message: err.message })
-    }
+  if (err.name === 'CastError') {
+    return res.status(400).json({ message: 'Invalid id format' })
+  }
 
-    res.status(500).json({ message: err.message })
+  console.error(err)
+  res.status(500).json({ message: 'Internal server error' })
 }
 
 export function notFound(req: Request, res: Response) {
-    res.status(404).json({
-        message: `Not found: ${req.method} ${req.originalUrl}`,
-    })
+  throw new AppError(`Not found: ${req.method} ${req.originalUrl}`, 404)
 }
