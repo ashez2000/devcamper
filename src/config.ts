@@ -18,6 +18,9 @@ const config = {
   jwtSecret: loadEnv('JWT_SECRET'),
   jwtExpiresIn: loadEnv('JWT_EXPIRES_IN'),
 
+  geocodeProvider: loadEnv('GEOCODE_PROVIDER'),
+  geocodeApiKey: loadEnv('GEOCODE_API_KEY'),
+
   rateLimitMax: Number(loadEnv('RATE_LIMIT_MAX')),
   rateLimitWindowMs: Number(loadEnv('RATE_LIMIT_WINDOW_MS')),
 } as const
