@@ -1,8 +1,8 @@
-export class AppError extends Error {
-    statusCode: number
+export type HttpErrStatus = 400 | 401 | 403 | 404 | 500
 
-    constructor(message: string, statusCode: number) {
-        super(message)
-        this.statusCode = statusCode
-    }
+export class AppError extends Error {
+  constructor(message: string, public statusCode: HttpErrStatus) {
+    super(message)
+    this.statusCode = statusCode
+  }
 }
