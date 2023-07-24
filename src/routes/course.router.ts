@@ -1,13 +1,13 @@
 import { Router } from 'express'
-import * as courseController from '../controllers/course.controller'
+import * as courseCtrl from '$/controllers/course.controller'
 
 const router = Router({ mergeParams: true })
 
-router.get('/', courseController.findAll)
-router.post('/', courseController.create)
+router.get('/', courseCtrl.getCourses)
+router.post('/', courseCtrl.createCourse)
+router.get('/:id', courseCtrl.getCourse)
 
-router.get('/:id', courseController.findById)
-router.put('/:id', courseController.update)
-router.delete('/:id', courseController.remove)
+router.put('/:id', courseCtrl.updateCourse)
+router.delete('/:id', courseCtrl.deleteCourse)
 
-export { router as courseRouter }
+export default router

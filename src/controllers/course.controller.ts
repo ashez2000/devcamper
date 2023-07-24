@@ -1,71 +1,45 @@
 import { Request, Response } from 'express'
-
 import { AppError } from '$/utils/app-error.util'
-import { createCourseSchema } from '$/schemas/course.schema'
-import * as courseRepo from '$/repos/course.repo'
+import Course from '$/models/course.model'
 
-export async function findAll(req: Request, res: Response) {
-  const courses = await courseRepo.findAll({
-    page: parseInt(req.query.page as string) || 1,
-    limit: parseInt(req.query.limit as string) || 10,
-  })
+// Get all courses
+export async function getCourses(req: Request, res: Response) {
+  if (req.params.bootcampId) {
+    const courses = await Course.find({ bootcamp: req.params.bootcampId })
+    return res.status(200).json({ data: courses })
+  }
 
-  res.status(200).json(courses)
+  const courses = await Course.find()
+  res.status(200).json({ data: courses })
 }
 
-export async function findById(req: Request, res: Response) {
-  const { id } = req.params
-  const course = await courseRepo.findById(id)
-  if (!course) {
-    throw new AppError('Course not found', 404)
-  }
+// Get course by id
+export async function getCourse(req: Request, res: Response) {
+  const course = await Course.findById(req.params.id)
+  if (!course) throw new AppError('Course not found', 404)
 
-  res.status(200).json(course)
+  res.status(200).json({ data: course })
 }
 
-export async function create(req: Request, res: Response) {
-  const parsedResult = createCourseSchema.safeParse(req.body)
-  if (!parsedResult.success) {
-    return res.status(400).json({ message: parsedResult.error })
-  }
-
-  const course = await courseRepo.create({
-    ...parsedResult.data,
-    userId: req.user?.id,
-  })
-
-  res.status(200).json(course)
+// Create new course
+export async function createCourse(req: Request, res: Response) {
+  req.body.bootcamp = req.params.bootcampId
+  const course = await Course.create(req.body)
+  res.status(201).json({ data: course })
 }
 
-export async function update(req: Request, res: Response) {
-  const { id } = req.params
-  const data = req.body
+// Update course by id
+export async function updateCourse(req: Request, res: Response) {
+  const course = await Course.findByIdAndUpdate(req.params.id)
+  if (!course) throw new AppError('Course not found', 404)
 
-  const course = await courseRepo.findById(id)
-  if (!course) {
-    return res.status(404).json({ message: 'Course not found' })
-  }
-
-  if (course.userId !== req.user?.id && req.user?.role !== 'admin') {
-    return res.status(403).json({ message: 'Not authorized' })
-  }
-
-  const updatedCourse = await courseRepo.update(id, data)
-  res.status(200).json(updatedCourse)
+  res.status(200).json({ data: course })
 }
 
-export async function remove(req: Request, res: Response) {
-  const { id } = req.params
+// Delete course by id
+export async function deleteCourse(req: Request, res: Response) {
+  const course = await Course.findByIdAndDelete(req.params.id)
+  if (!course) throw new AppError('Course not found', 404)
 
-  const course = await courseRepo.findById(id)
-  if (!course) {
-    return res.status(404).json({ message: 'Course not found' })
-  }
-
-  if (course.userId !== req.user?.id && req.user?.role !== 'admin') {
-    return res.status(403).json({ message: 'Not authorized' })
-  }
-
-  await courseRepo.remove(id)
-  res.status(200).json({ message: 'Course removed' })
+  res.status(200).json({ data: course })
 }
