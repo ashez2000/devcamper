@@ -14,3 +14,4 @@ export const userCredentialSchema = z.object({
 
 export type CreateUser = z.infer<typeof createUserSchema>
 export type UserCredential = z.infer<typeof userCredentialSchema>
+export type UserRole = 'admin' | 'publisher' | 'user'

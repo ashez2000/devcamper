@@ -1,8 +1,8 @@
 import { Router } from 'express'
 
-import { createUserSchema, userCredentialSchema } from '$/schemas/user.schema'
-import { zodValidator } from '$/middlewares/zod-validator.middleware'
-import * as authCtrl from '$/controllers/auth.controller'
+import { createUserSchema, userCredentialSchema } from '../schemas/user.schema'
+import { zodValidator } from '../middlewares/zod-validator.middleware'
+import * as authCtrl from '../controllers/auth.controller'
 
 const router = Router()
 

@@ -1,47 +1,32 @@
-import { Role } from '.prisma/client'
-import jwt from 'jsonwebtoken'
 import { Request, Response, NextFunction } from 'express'
-
-import { config } from '$/config'
-import { AuthPayload } from '$/utils/jwt.util'
+import { JwtPayload, verifyToken } from '../libs/jwt'
+import { UserRole } from '../schemas/user.schema'
+import { AppError } from '../utils/app-error.util'
 
 declare global {
   namespace Express {
     interface Request {
-      user?: AuthPayload
+      user?: JwtPayload
     }
   }
 }
 
-export function protect(req: Request, res: Response, next: NextFunction) {
-  const token =
-    req.headers.authorization?.split(' ')[1] || (req.cookies.token as string)
+export function authenticate(req: Request, res: Response, next: NextFunction) {
+  const bearerToken = String(req.headers.authorization)
+  const cookieToken = String(req.cookies.token)
+  const token = bearerToken.split(' ')[1] || cookieToken
 
-  if (!token) {
-    console.error('auth: token not found')
-    return res.status(401).json({ message: 'Not authorized' })
-  }
+  const payload = verifyToken(token)
+  if (!payload) throw new AppError('Not authorized', 401)
 
-  try {
-    const payload = jwt.verify(token, config.jwt.secret) as AuthPayload
-    req.user = payload
-    next()
-  } catch (err) {
-    console.error('auth: token not valid')
-    return res.status(401).json({ message: 'Not authorized' })
-  }
+  req.user = payload
+  next()
 }
 
-export function authorize(...roles: Role[]) {
-  return (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user) {
-      return res.status(401).json({ message: 'Not authorized' })
-    }
-
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ message: 'Not authorized' })
-    }
-
+export function authorize(...roles: UserRole[]) {
+  return function (req: Request, _: Response, next: NextFunction) {
+    if (!req.user) throw new AppError('Not authorized', 401)
+    if (!roles.includes(req.user.role)) throw new AppError('Forbidden', 403)
     next()
   }
 }

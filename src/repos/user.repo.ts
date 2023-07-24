@@ -1,6 +1,6 @@
 import argon from 'argon2'
-import db from '$/libs/prisma'
-import { CreateUser } from '$/schemas/user.schema'
+import db from '../libs/prisma'
+import { CreateUser, UserCredential } from '../schemas/user.schema'
 
 export async function findById(id: string) {
   const user = await db.user.findUnique({ where: { id } })
@@ -9,6 +9,18 @@ export async function findById(id: string) {
 
 export async function findByEmail(email: string) {
   const user = await db.user.findUnique({ where: { email } })
+  return user
+}
+
+export async function findByCredential(data: UserCredential) {
+  const { email, password } = data
+
+  const user = await findByEmail(email)
+  if (!user) return null
+
+  const isMatch = await argon.verify(user.password, password)
+  if (!isMatch) return null
+
   return user
 }
 

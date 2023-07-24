@@ -2,11 +2,11 @@ import crypto from 'crypto'
 import argon from 'argon2'
 import { Request, Response } from 'express'
 
-import { AppError } from '$/utils/app-error.util'
-import { generateToken } from '$/utils/jwt.util'
-import { sendEmail } from '$/services/email.service'
-import { CreateUser, UserCredential } from '$/schemas/user.schema'
-import * as userRepo from '$/repos/user.repo'
+import { AppError } from '../utils/app-error.util'
+import { generateToken } from '../libs/jwt'
+import { sendEmail } from '../services/email.service'
+import { CreateUser, UserCredential } from '../schemas/user.schema'
+import * as userRepo from '../repos/user.repo'
 
 /**
  * @desc    Sign up user
@@ -41,16 +41,9 @@ export async function signIn(
   req: Request<unknown, unknown, UserCredential>,
   res: Response
 ) {
-  const { email, password } = req.body
-
-  const user = await userRepo.findByEmail(email)
+  const user = await userRepo.findByCredential(req.body)
   if (!user) {
-    throw new AppError('Invalid credentials', 401)
-  }
-
-  const isMatch = await argon.verify(user.password, password)
-  if (!isMatch) {
-    throw new AppError('Invalid credentials', 401)
+    throw new AppError('Invalid credential', 401)
   }
 
   const token = generateToken({
