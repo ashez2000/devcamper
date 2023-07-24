@@ -14,8 +14,8 @@ import swaggerUi from 'swagger-ui-express'
 // import { reviewRouter } from './routes/review.router'
 
 import apiSpec from './libs/swagger-doc'
-import limiter from './services/rate-limiter.service'
-import * as error from './middlewares/error.middleware'
+import limiter from './libs/rate-limit'
+import { globalError, notFound } from './middlewares/error.middleware'
 
 const app = express()
 
@@ -38,7 +38,7 @@ app.get('/ping', (_, res) => res.send('OK'))
 
 app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(apiSpec))
 
-app.use(error.notFound)
-app.use(error.globalError)
+app.use(notFound)
+app.use(globalError)
 
 export default app
