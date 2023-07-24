@@ -1,25 +1,30 @@
 import { Router } from 'express'
 
-import { protect, authorize } from '../middlewares/auth.middleware'
-import * as reviewCtrl from '../controllers/review.controller'
+import { authenticate, authorize } from '$/middlewares/auth.middleware'
+import * as reviewCtrl from '$/controllers/review.controller'
 
 const router = Router({ mergeParams: true })
 
-router.get('/', reviewCtrl.findAllByBootcampId)
-router.post('/', protect, authorize('user', 'admin'), reviewCtrl.create)
+router.get('/', reviewCtrl.getReviews)
+router.post(
+  '/',
+  authenticate,
+  authorize('user', 'admin'),
+  reviewCtrl.createReview
+)
 
 router.put(
-    '/reviews/:id',
-    protect,
-    authorize('user', 'admin'),
-    reviewCtrl.update
+  '/:id',
+  authenticate,
+  authorize('user', 'admin'),
+  reviewCtrl.updateReview
 )
 
 router.delete(
-    '/reviews/:id',
-    protect,
-    authorize('user', 'admin'),
-    reviewCtrl.remove
+  '/:id',
+  authenticate,
+  authorize('user', 'admin'),
+  reviewCtrl.deleteReview
 )
 
-export { router as reviewRouter }
+export default router

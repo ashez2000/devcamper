@@ -1,63 +1,68 @@
 import { Request, Response } from 'express'
+import { AppError } from '$/utils/app-error.util'
+import Review from '$/models/review.model'
 
-import { createReviewSchema } from '$/schemas/review.schema'
-import * as reviewRepo from '$/repos/review.repo'
+// Get all reviews
+export async function getReviews(req: Request, res: Response) {
+  if (req.params.bootcampId) {
+    const reviews = await Review.find({ bootcamp: req.params.bootcampId })
+    return res.status(200).json({ data: reviews })
+  }
 
-export async function findAllByBootcampId(req: Request, res: Response) {
-  const { bootcampId } = req.params
-
-  const reviews = await reviewRepo.findAllByBootcampId(bootcampId, {
-    page: parseInt(req.query.page as string) || 1,
-    limit: parseInt(req.query.limit as string) || 10,
-  })
-
-  res.status(200).json(reviews)
+  const reviews = await Review.find()
+  res.status(200).json({ data: reviews })
 }
 
-export async function create(req: Request, res: Response) {
-  const parsedResult = createReviewSchema.safeParse(req.body)
-  if (!parsedResult.success) {
-    return res.status(400).json(parsedResult.error)
-  }
+// Get review by id
+export async function getReview(req: Request, res: Response) {
+  const review = await Review.findById(req.params.id)
+  if (!review) throw new AppError('Review not found', 404)
 
-  const review = await reviewRepo.create({
-    ...parsedResult.data,
-    bootcampId: req.params.bootcampId,
-    userId: req.user?.id,
-  })
-
-  res.status(201).json(review)
+  res.status(200).json({ data: review })
 }
 
-export async function update(req: Request, res: Response) {
-  const { id } = req.params
-  const data = req.body
+// Create new review
+export async function createReview(req: Request, res: Response) {
+  if (!req.user) throw new AppError('Unauthorized', 401)
 
-  const review = await reviewRepo.findById(id)
-  if (!review) {
-    return res.status(404).json({ message: 'Review not found' })
-  }
+  req.body.bootcamp = req.params.bootcampId
+  req.body.user = req.user.id
 
-  if (review.userId !== req.user?.id) {
-    return res.status(403).json({ message: 'Not authorized' })
-  }
-
-  const updatedReview = await reviewRepo.update(id, data)
-  res.status(200).json(updatedReview)
+  const review = await Review.create(req.body)
+  res.status(201).json({ data: review })
 }
 
-export async function remove(req: Request, res: Response) {
-  const { id } = req.params
+// Update review by id
+export async function updateReview(req: Request, res: Response) {
+  if (!req.user) throw new AppError('Unauthorized', 401)
 
-  const review = await reviewRepo.findById(id)
-  if (!review) {
-    return res.status(404).json({ message: 'Review not found' })
+  const review = await Review.findById(req.params.id)
+  if (!review) throw new AppError('Review not found', 404)
+
+  if (review.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    throw new AppError('Unauthorized', 401)
   }
 
-  if (review.userId !== req.user?.id && req.user?.role !== 'admin') {
-    return res.status(403).json({ message: 'Not authorized' })
+  const updatedReview = await Review.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true, runValidators: true }
+  )
+
+  res.status(200).json({ data: updatedReview })
+}
+
+// Delete review by id
+export async function deleteReview(req: Request, res: Response) {
+  if (!req.user) throw new AppError('Unauthorized', 401)
+
+  const review = await Review.findById(req.params.id)
+  if (!review) throw new AppError('Review not found', 404)
+
+  if (review.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    throw new AppError('Unauthorized', 401)
   }
 
-  const deletedReview = await reviewRepo.remove(id)
-  res.status(200).json(deletedReview)
+  const deletedReview = await review.deleteOne()
+  res.status(204).json({ data: deletedReview })
 }
