@@ -1,35 +1,39 @@
-const fieldsToExclude = ['page', 'limit', 'sort', 'select']
-
 export function select(query: any) {
-  const select = (query.select as string) || null
-  const fields = select
-    ? select.split(',').reduce((acc: any, field: string) => {
-        return Object.assign(acc, { [field]: true })
-      }, {})
-    : null
-
-  return fields
+  return query.select ? query.select.split(',').join(' ') : ''
 }
 
-export function paginate(qury: any) {
-  const page = parseInt(qury.page || '1')
-  const limit = parseInt(qury.limit || '10')
+export function filter(_query: any) {
+  const query = { ..._query }
+  const fieldsToRemove = ['select', 'sort', 'page', 'limit']
+  fieldsToRemove.forEach(param => delete query[param])
+
+  let queryStr = JSON.stringify(query).replace(
+    /\b(gt|gte|lt|lte|in)\b/g,
+    match => `$${match}`
+  )
+
+  return JSON.parse(queryStr)
+}
+
+export function paginate(query: any) {
+  const page = parseInt(query.page || '1')
+  const limit = parseInt(query.limit || '10')
 
   return {
     skip: (page - 1) * limit,
-    take: limit,
+    limit,
   }
 }
 
-export function orderBy(query: any) {
-  const sort = (query.sort as string) || null
-  const sortBy = sort ? sort.split(',') : ['-createdAt']
+export function sortBy(query: any) {
+  return query.sort ? query.sort.split(',').join(' ') : '-createdAt'
+}
 
-  return sortBy.map((field: string) => {
-    const order = field.startsWith('-') ? 'desc' : 'asc'
-    const name = field.replace(/^-/, '')
-    return {
-      [name]: order,
-    }
-  })
+export function getQuery(query: any) {
+  return {
+    select: select(query),
+    filter: filter(query),
+    paginate: paginate(query),
+    sortBy: sortBy(query),
+  }
 }

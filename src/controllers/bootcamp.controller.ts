@@ -1,10 +1,18 @@
 import { Request, Response } from 'express'
 import Bootcamp from '$/models/bootcamp.model'
 import { AppError } from '$/utils/app-error.util'
+import { getQuery } from '$/utils/query.util'
 
 // Get all bootcamps
 export async function getBootcamps(req: Request, res: Response) {
-  const bootcamps = await Bootcamp.find()
+  const query = getQuery(req.query)
+
+  const bootcamps = await Bootcamp.find(query.filter)
+    .select(query.select)
+    .sort(query.sortBy)
+    .skip(query.paginate.skip)
+    .limit(query.paginate.limit)
+
   res.status(200).json({ data: bootcamps })
 }
 
