@@ -10,5 +10,6 @@ router.post('/sign-out', authCtrl.signOut)
 router.get('/current-user', authenticate, authCtrl.currentUser)
 
 router.post('/forgot-password', authCtrl.forgotPassword)
+router.put('/reset-password/:resetToken', authCtrl.resetPassword)
 
 export default router

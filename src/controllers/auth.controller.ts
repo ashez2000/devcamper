@@ -93,3 +93,22 @@ export async function forgotPassword(req: Request, res: Response) {
 
   res.status(200).json({ data: 'Email sent' })
 }
+
+export async function resetPassword(req: Request, res: Response) {
+  // Get hashed token
+  const resetPasswordToken = await argon.hash(req.params.resetToken)
+  const user = await User.findOne({
+    resetPasswordToken,
+    resetPasswordExpire: { $gt: Date.now() },
+  })
+
+  if (!user) throw new AppError('Invalid token', 400)
+
+  // Set new password
+  user.password = await argon.hash(req.body.password)
+  user.resetPasswordToken = undefined
+  user.resetPasswordExpire = undefined
+  await user.save()
+
+  res.status(200).json({ data: 'Password reset success' })
+}
