@@ -1,15 +1,31 @@
 import { Request, Response } from 'express'
 import { AppError } from '$/utils/app-error.util'
 import Course from '$/models/course.model'
+import { getQuery } from '$/utils/query.util'
 
 // Get all courses
 export async function getCourses(req: Request, res: Response) {
+  const query = getQuery(req.query)
+
   if (req.params.bootcampId) {
-    const courses = await Course.find({ bootcamp: req.params.bootcampId })
+    const courses = await Course.find({
+      ...query.filter,
+      bootcamp: req.params.bootcampId,
+    })
+      .select(query.select)
+      .sort(query.sortBy)
+      .skip(query.paginate.skip)
+      .limit(query.paginate.limit)
+
     return res.status(200).json({ data: courses })
   }
 
-  const courses = await Course.find()
+  const courses = await Course.find(query.filter)
+    .select(query.select)
+    .sort(query.sortBy)
+    .skip(query.paginate.skip)
+    .limit(query.paginate.limit)
+
   res.status(200).json({ data: courses })
 }
 

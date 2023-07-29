@@ -1,15 +1,31 @@
 import { Request, Response } from 'express'
 import { AppError } from '$/utils/app-error.util'
 import Review from '$/models/review.model'
+import { getQuery } from '$/utils/query.util'
 
 // Get all reviews
 export async function getReviews(req: Request, res: Response) {
+  const query = getQuery(req.query)
+
   if (req.params.bootcampId) {
-    const reviews = await Review.find({ bootcamp: req.params.bootcampId })
+    const reviews = await Review.find({
+      ...query.filter,
+      bootcamp: req.params.bootcampId,
+    })
+      .select(query.select)
+      .sort(query.sortBy)
+      .skip(query.paginate.skip)
+      .limit(query.paginate.limit)
+
     return res.status(200).json({ data: reviews })
   }
 
-  const reviews = await Review.find()
+  const reviews = await Review.find(query.filter)
+    .select(query.select)
+    .sort(query.sortBy)
+    .skip(query.paginate.skip)
+    .limit(query.paginate.limit)
+
   res.status(200).json({ data: reviews })
 }
 
