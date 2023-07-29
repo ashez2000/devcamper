@@ -9,4 +9,6 @@ router.post('/sign-in', authCtrl.signIn)
 router.post('/sign-out', authCtrl.signOut)
 router.get('/current-user', authenticate, authCtrl.currentUser)
 
+router.post('/forgot-password', authCtrl.forgotPassword)
+
 export default router
