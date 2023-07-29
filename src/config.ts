@@ -23,6 +23,10 @@ const config = {
 
   rateLimitMax: Number(loadEnv('RATE_LIMIT_MAX')),
   rateLimitWindowMs: Number(loadEnv('RATE_LIMIT_WINDOW_MS')),
+
+  smtpHost: loadEnv('SMTP_HOST'),
+  smtpUsername: loadEnv('SMTP_USERNAME'),
+  smtpPassword: loadEnv('SMTP_PASSWORD'),
 } as const
 
 export default config

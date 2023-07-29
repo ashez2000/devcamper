@@ -1,28 +1,31 @@
 import nodemailer from 'nodemailer'
+import config from '$/config'
 
 const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT),
-    auth: {
-        user: process.env.SMTP_EMAIL,
-        pass: process.env.SMTP_PASSWORD,
-    },
+  host: config.smtpHost,
+  port: 2525,
+  auth: {
+    user: config.smtpUsername,
+    pass: config.smtpPassword,
+  },
 })
 
-export async function sendEmail({ email = '', subject = '', message = '' }) {
-    const info = {
-        from: `${process.env.FROM_NAME} <${process.env.FROM_EMAIL}>`,
-        to: email,
-        subject,
-        text: message,
-    }
+export async function sendEmail(
+  recipient: string,
+  subject: string,
+  message: string
+) {
+  const info = {
+    from: `Devcamper <noreply@devcamper.io>`,
+    to: recipient,
+    subject,
+    text: message,
+  }
 
-    try {
-        const res = await transporter.sendMail(info)
-        console.log('email: msg sent', res.messageId)
-    } catch (err) {
-        console.log('email: msg failed')
-        console.error(err)
-        throw err
-    }
+  try {
+    const emailInfo = await transporter.sendMail(info)
+    return emailInfo
+  } catch (err) {
+    return null
+  }
 }
