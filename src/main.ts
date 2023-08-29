@@ -1,15 +1,18 @@
 import http from 'http'
 
-import config from './config'
-import connectDb from './db'
-import app from './app'
+import { app } from '@/app'
+import { connectDb } from '@/db'
+import { envLoader } from '@/utils/env-loader'
+
+const PORT = envLoader('PORT')
+const NODE_ENV = envLoader('NODE_ENV')
 
 async function main() {
-  connectDb(config.mongoUri)
-  const server = http.createServer(app)
+  connectDb()
 
-  server.listen(config.port, () => {
-    console.log(`main: ${config.nodeEnv} server running on port ${config.port}`)
+  const server = http.createServer(app)
+  server.listen(PORT, () => {
+    console.log(`main: Server is running in ${NODE_ENV} mode on port ${PORT}`)
   })
 }
 

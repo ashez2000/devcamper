@@ -41,4 +41,4 @@ app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(apiSpec))
 app.use(notFound)
 app.use(globalError)
 
-export default app
+export { app }
