@@ -13,6 +13,7 @@ import {
   createUserSchema,
   findUserByCredentials,
 } from '@/models/user.model'
+import { getAuthUser } from '$/auth'
 
 // sign up
 export async function signup(req: Request, res: Response) {
@@ -58,10 +59,15 @@ export async function signout(_: Request, res: Response) {
 
 // get current user profile
 export async function profile(req: Request, res: Response) {
-  if (!req.user) throw new AppError('Unauthorized', 401)
+  let auth = getAuthUser(req)
+  if (!auth) {
+    return res.status(401).json({ message: 'Unauthorized' })
+  }
 
-  const user = await User.findById(req.user.id)
-  if (!user) throw new AppError('User not found', 404)
+  let user = await User.findById(auth.id)
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' })
+  }
 
   res.status(200).json({ data: user })
 }
