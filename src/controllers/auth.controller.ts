@@ -2,70 +2,67 @@ import crypto from 'node:crypto'
 import argon from 'argon2'
 import { Request, Response } from 'express'
 
-import { sendEmail } from '$/services/email.service'
-import { AppError } from '$/utils/app-error.util'
-import { signToken } from '$/libs/jwt'
-import User from '$/models/user.model'
-import { UserRole } from '$/schemas/user.schema'
+import { sendEmail } from '@/services/email.service'
+import { AppError } from '@/utils/app-error.util'
+import { signToken } from '@/utils/jwt'
+
+import {
+  User,
+  createUser,
+  userCredentialsSchema,
+  createUserSchema,
+  findUserByCredentials,
+} from '@/models/user.model'
 
 // sign up
-export async function signUp(req: Request, res: Response) {
-  const { name, email, password, role } = req.body
-  const hash = await argon.hash(password)
-
-  const user = await User.create({
-    name,
-    email,
-    password: hash,
-    role,
-  })
-
-  const token = signToken({
-    id: user._id.toString(),
+export async function signup(req: Request, res: Response) {
+  let data = createUserSchema.parse(req.body)
+  let user = await createUser(data)
+  let token = signToken({
+    id: user.id,
     email: user.email!,
-    role: user.role as UserRole,
+    role: user.role,
   })
 
-  user.password = undefined
-  res.cookie('token', token, { httpOnly: true })
-  res.status(200).json({ data: { user, token } })
+  return res
+    .status(200)
+    .cookie('token', token, { httpOnly: true })
+    .json({ data: { user, token } })
 }
 
 // sign in
-export async function signIn(req: Request, res: Response) {
-  const { email, password } = req.body
+export async function signin(req: Request, res: Response) {
+  let data = userCredentialsSchema.parse(req.body)
+  let user = await findUserByCredentials(data.email, data.password)
+  if (!user) {
+    return res.status(401).json({ message: 'Invalid credentials' })
+  }
 
-  const user = await User.findOne({ email })
-  if (!user) throw new AppError('Invalid credentials', 401)
-
-  const isMatch = await argon.verify(user.password!, password)
-  if (!isMatch) throw new AppError('Invalid credentials', 401)
-
-  const token = signToken({
-    id: user._id.toString(),
+  let token = signToken({
+    id: user.id,
     email: user.email!,
-    role: user.role as UserRole,
+    role: user.role,
   })
 
-  user.password = undefined
-  res.cookie('token', token, { httpOnly: true })
-  res.status(200).json({ data: { user, token } })
+  return res
+    .status(200)
+    .cookie('token', token, { httpOnly: true })
+    .json({ data: { user, token } })
 }
 
 // sign out
-export async function signOut(_: Request, res: Response) {
+export async function signout(_: Request, res: Response) {
   res.clearCookie('token')
   res.status(200).json({})
 }
 
-// get current user
-export async function currentUser(req: Request, res: Response) {
+// get current user profile
+export async function profile(req: Request, res: Response) {
   if (!req.user) throw new AppError('Unauthorized', 401)
 
   const user = await User.findById(req.user.id)
   if (!user) throw new AppError('User not found', 404)
 
-  user.password = undefined
   res.status(200).json({ data: user })
 }
 
