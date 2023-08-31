@@ -1,7 +1,8 @@
 import { Request, Response } from 'express'
-import Bootcamp from '$/models/bootcamp.model'
+import { Bootcamp, createBootcamp as newBootamp } from '@/models/bootcamp.model'
 import { AppError } from '$/utils/app-error.util'
 import { getQuery } from '$/utils/query.util'
+import { getAuthUser } from '$/auth'
 
 // Get all bootcamps
 export async function getBootcamps(req: Request, res: Response) {
@@ -26,22 +27,30 @@ export async function getBootcamp(req: Request, res: Response) {
 
 // Create new bootcamp
 export async function createBootcamp(req: Request, res: Response) {
-  const bootcamp = await Bootcamp.create(req.body)
-  res.status(201).json({ data: bootcamp })
+  let auth = getAuthUser(req, ['publisher', 'admin'])
+  if (!auth) throw new AppError('Unauthorized', 401)
+
+  let bootcamp = await newBootamp({ ...req.body, user: auth.id })
+  return res.status(201).json({ data: bootcamp })
 }
 
 // Update bootcamp by id
 export async function updateBootcamp(req: Request, res: Response) {
-  const bootcamp = await Bootcamp.findByIdAndUpdate(req.params.id)
-  if (!bootcamp) throw new AppError('Bootcamp not found', 404)
-
-  res.status(200).json({ data: bootcamp })
+  res.status(500).json({ data: 'Not implemented' })
 }
 
 // Delete bootcamp by id
 export async function deleteBootcamp(req: Request, res: Response) {
-  const bootcamp = await Bootcamp.findByIdAndDelete(req.params.id)
+  let auth = getAuthUser(req, ['publisher', 'admin'])
+  if (!auth) throw new AppError('Unauthorized', 401)
+
+  let bootcamp = await Bootcamp.findById(req.params.id)
   if (!bootcamp) throw new AppError('Bootcamp not found', 404)
 
-  res.status(204).json({ data: null })
+  if (bootcamp.user.toString() !== auth.id && auth.role !== 'admin') {
+    throw new AppError('Unauthorized', 401)
+  }
+
+  await Bootcamp.findByIdAndDelete(req.params.id)
+  return res.status(204).json({ data: null })
 }

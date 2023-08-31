@@ -9,7 +9,7 @@ import hpp from 'hpp'
 import swaggerUi from 'swagger-ui-express'
 
 import authRouter from '$/routes/auth.router'
-// import bootcampRouter from '$/routes/bootcamp.router'
+import bootcampRouter from '$/routes/bootcamp.router'
 // import courseRouter from '$/routes/course.router'
 // import reviewRouter from '$/routes/review.router'
 
@@ -32,7 +32,7 @@ app.get('/', (_, res) => res.redirect('/api/v1/docs'))
 app.get('/ping', (_, res) => res.send('OK'))
 
 app.use('/api/v1/auth', authRouter)
-// app.use('/api/v1/bootcamps', bootcampRouter)
+app.use('/api/v1/bootcamps', bootcampRouter)
 // app.use('/api/v1/courses', courseRouter)
 // app.use('/api/v1/reviews', reviewRouter)
 
