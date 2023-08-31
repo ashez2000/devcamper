@@ -1,50 +1,81 @@
-import { Schema, model } from 'mongoose'
-import geocoder from '$/libs/geocoder'
+import { Schema, model, Types } from 'mongoose'
+import { geocoder } from '@/utils/geocoder'
 
-const BootcampSchema = new Schema({
-  name: {
-    type: String,
-    required: [true, 'Name is required'],
-    unique: true,
-  },
+export type Location = {
+  type: string
+  coordinates: [number, number]
+  formattedAddress: string
+  street: string
+  city: string
+  state: string
+  zipcode: string
+  country: string
+}
 
-  description: {
-    type: String,
-    required: [true, 'Description is required'],
-  },
+export type Bootcamp = {
+  name: string
+  description: string
+  address: string
+  location: Location
+  user: Types.ObjectId
+}
 
-  address: {
-    type: String,
-    required: [true, 'Address is required'],
-  },
-
-  location: {
-    type: {
+const bootcampSchema = new Schema<Bootcamp>(
+  {
+    name: {
       type: String,
-      enum: ['Point'],
+      required: [true, 'Name is required'],
+      unique: true,
     },
-    coordinates: {
-      type: [Number],
-      index: '2dsphere',
+
+    description: {
+      type: String,
+      required: [true, 'Description is required'],
     },
-    formattedAddress: String,
-    street: String,
-    city: String,
-    state: String,
-    zipcode: String,
-    country: String,
+
+    address: {
+      type: String,
+      required: [true, 'Address is required'],
+    },
+
+    location: {
+      type: {
+        type: String,
+        enum: ['Point'],
+      },
+      coordinates: {
+        type: [Number],
+        index: '2dsphere',
+      },
+      formattedAddress: String,
+      street: String,
+      city: String,
+      state: String,
+      zipcode: String,
+      country: String,
+    },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
   },
-})
+  {
+    toJSON: {
+      transform(_, ret) {
+        ret.id = ret._id
+        delete ret._id
+        delete ret.__v
+      },
+    },
+  }
+)
 
-BootcampSchema.pre('save', async function (next) {
-  if (!this.isModified(this.address)) return next()
+async function getLocation(addr: string) {
+  let [loc] = await geocoder.geocode(addr)
 
-  const address = this.address!
-  const [loc] = await geocoder.geocode(address)
-
-  this.location = {
+  return {
     type: 'Point',
-    /* @ts-ignore */
     coordinates: [loc.longitude, loc.latitude],
     formattedAddress: loc.formattedAddress,
     street: loc.streetName,
@@ -53,11 +84,15 @@ BootcampSchema.pre('save', async function (next) {
     zipcode: loc.zipcode,
     country: loc.countryCode,
   }
+}
 
-  this.address = undefined
-  next()
-})
+export const Bootcamp = model('Bootcamp', bootcampSchema)
 
-const Bootcamp = model('Bootcamp', BootcampSchema)
-
-export default Bootcamp
+// TODO: types
+export async function createBootcamp(bootcamp: any) {
+  let location = await getLocation(bootcamp.address)
+  return Bootcamp.create({
+    ...bootcamp,
+    location,
+  })
+}
