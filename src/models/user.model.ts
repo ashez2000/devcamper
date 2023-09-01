@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto'
 import { z } from 'zod'
 import { hash, verify } from 'argon2'
 import { Schema, model } from 'mongoose'
@@ -85,4 +86,39 @@ export async function createUser(data: z.infer<typeof createUserSchema>) {
     password: hashedPassword,
   })
   return user
+}
+
+export async function generatePasswordResetToken(userId: string) {
+  let token = randomBytes(20).toString('hex')
+  let expire = new Date(Date.now() + 10 * 60 * 1000)
+  let tokenHash = await hash(token)
+
+  await User.findByIdAndUpdate(userId, {
+    resetPasswordToken: tokenHash,
+    resetPasswordExpire: expire,
+  })
+
+  return token
+}
+
+export async function resetPassword(token: string, password: string) {
+  let tokenHash = await hash(token)
+  let user = await User.findOne({
+    resetPasswordToken: tokenHash,
+    resetPasswordExpire: { $gt: Date.now() },
+  })
+
+  if (!user) {
+    return false
+  }
+
+  let passwordHash = await hash(password)
+
+  await User.findByIdAndUpdate(user.id, {
+    resetPasswordToken: undefined,
+    resetPasswordExpire: undefined,
+    password: passwordHash,
+  })
+
+  return true
 }

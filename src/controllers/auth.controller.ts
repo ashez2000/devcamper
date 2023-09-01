@@ -12,6 +12,8 @@ import {
   userCredentialsSchema,
   createUserSchema,
   findUserByCredentials,
+  generatePasswordResetToken,
+  resetPassword as _resetPassword,
 } from '@/models/user.model'
 import { getAuthUser } from '$/auth'
 
@@ -73,45 +75,26 @@ export async function profile(req: Request, res: Response) {
 }
 
 export async function forgotPassword(req: Request, res: Response) {
-  const user = await User.findOne({ email: req.body.email })
+  let { email } = req.body
+  let user = await User.findOne({ email })
   if (!user) throw new AppError('User not found', 404)
 
-  const resetToken = crypto.randomBytes(16).toString('hex')
-  const tokenExpire = Date.now() + 10 * 60 * 1000
-  const resetTokenHash = await argon.hash(resetToken)
+  let resetToken = await generatePasswordResetToken(user.id)
+  let host = req.get('host')
+  let resetUrl = `${req.protocol}://${host}/api/v1/auth/resetpassword/${resetToken}`
+  let message = `Make a PUT request to: ${resetUrl} to reset your password`
 
-  await User.findByIdAndUpdate(user._id, {
-    passwordResetToken: resetTokenHash,
-    passwordResetExpire: tokenExpire,
-  })
-
-  const resetUrl = `${req.protocol}://${req.get(
-    'host'
-  )}/api/v1/auth/resetpassword/${resetToken}`
-
-  const message = `Please make a PUT request to: ${resetUrl} to reset your password`
-
-  const emailResponse = await sendEmail(user.email!, 'Password reset', message)
-  if (!emailResponse) throw new AppError('Email could not be sent', 500)
+  let info = await sendEmail(user.email!, 'Password reset', message)
+  if (!info) throw new AppError('Email could not be sent', 500)
 
   res.status(200).json({ data: 'Email sent' })
 }
 
 export async function resetPassword(req: Request, res: Response) {
-  // Get hashed token
-  const resetPasswordToken = await argon.hash(req.params.resetToken)
-  const user = await User.findOne({
-    resetPasswordToken,
-    resetPasswordExpire: { $gt: Date.now() },
-  })
+  let { resetToken, password } = req.body
 
-  if (!user) throw new AppError('Invalid token', 400)
-
-  // Set new password
-  user.password = await argon.hash(req.body.password)
-  user.resetPasswordToken = undefined
-  user.resetPasswordExpire = undefined
-  await user.save()
+  let ok = await _resetPassword(resetToken, password)
+  if (!ok) throw new AppError('Invalid reset token', 400)
 
   res.status(200).json({ data: 'Password reset success' })
 }
