@@ -7,7 +7,11 @@ class AppError extends Error {
   }
 }
 
-export function notfound(msg: string = 'Not found') {
+export function badrequest(msg: string = 'Bad Request') {
+  return new AppError(msg, 400)
+}
+
+export function notfound(msg: string = 'Not Found') {
   return new AppError(msg, 404)
 }
 
