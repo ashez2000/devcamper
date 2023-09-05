@@ -15,7 +15,7 @@ import bootcampRouter from '$/routes/bootcamp.router'
 
 import apiSpec from '$/libs/swagger-doc'
 import limiter from '$/libs/rate-limit'
-import { globalError, notFound } from '$/middlewares/error.middleware'
+import { globalError, notFound } from './error'
 
 const app = express()
 
