@@ -3,13 +3,13 @@ import { z } from 'zod'
 import { hash, verify } from 'argon2'
 import { Schema, model } from 'mongoose'
 
-export type UserRoles = 'user' | 'publisher' | 'admin'
+export type UserRole = 'user' | 'publisher' | 'admin'
 
 export type User = {
   name: string
   email: string
   password: string
-  role: UserRoles
+  role: UserRole
   resetPasswordToken?: string
   resetPasswordExpire?: Date
 }
