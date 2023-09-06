@@ -1,11 +1,15 @@
 import mongoose from 'mongoose'
+
 import { envLoader } from '@/utils/env-loader'
+import { createDebug } from './utils/debug'
 
-const MONGODB_URI = envLoader('MONGODB_URI')
+let debug = createDebug('db')
+let MONGODB_URI = envLoader('MONGODB_URI')
 
-export function connectDb() {
-  mongoose
-    .connect(MONGODB_URI)
-    .then(conn => console.log(`db: Connected to ${conn.connection.host}`))
-    .catch(console.error)
+export async function connectDb() {
+  let db = await mongoose.connect(MONGODB_URI)
+  return {
+    conn: db,
+    dbClose: () => mongoose.connection.close(),
+  }
 }
