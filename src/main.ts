@@ -14,7 +14,10 @@ async function main() {
     console.log(`main: Connected to ${conn.connection.host}`)
 
     let server = http.createServer(app)
-    server.listen(PORT, () => console.log(`main: Listening on port :${PORT}`))
+    server.listen(PORT, () => {
+      console.log(`main: Listening on port :${PORT}`)
+      console.log(`main: Docs http://localhost:${PORT}/docs/v1`)
+    })
 
     function gracefulShutdown() {
       dbClose()

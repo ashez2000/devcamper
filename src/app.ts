@@ -6,12 +6,14 @@ import morgan from 'morgan'
 import cors from 'cors'
 import helmet from 'helmet'
 import hpp from 'hpp'
+import swaggerUi from 'swagger-ui-express'
 
 import authRouter from '$/routes/auth.router'
 // import bootcampRouter from '$/routes/bootcamp.router'
 // import courseRouter from '$/routes/course.router'
 // import reviewRouter from '$/routes/review.router'
 
+import { swaggerSpec } from './utils/swagger'
 import { globalError, notFound } from './error'
 
 const app = express()
@@ -24,8 +26,9 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(morgan('dev'))
 
-app.get('/', (_, res) => res.redirect('/api/v1/docs'))
+app.get('/', (_, res) => res.redirect('/docs/v1'))
 app.get('/ping', (_, res) => res.send('OK'))
+app.use('/docs/v1', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
 app.use('/api/v1/auth', authRouter)
 // app.use('/api/v1/bootcamps', bootcampRouter)
