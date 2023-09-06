@@ -1,44 +1,46 @@
-import { Schema, model, Types } from 'mongoose'
+import { Schema, model } from 'mongoose'
 import { geocoder } from '@/utils/geocoder'
+import { Bootcamp } from '@/schemas/bootcamp.schema'
 
-export type Location = {
-  type: string
-  coordinates: [number, number]
-  formattedAddress: string
-  street: string
-  city: string
-  state: string
-  zipcode: string
-  country: string
-}
-
-export type Bootcamp = {
-  name: string
-  description: string
-  address: string
-  location: Location
-  user: Types.ObjectId
-}
-
-const bootcampSchema = new Schema<Bootcamp>(
+let bootcampSchema = new Schema<Bootcamp>(
   {
     name: {
       type: String,
-      required: [true, 'Name is required'],
+      required: [true, 'Please add a name'],
       unique: true,
+      trim: true,
+      maxlength: [50, 'Name can not be more than 50 characters'],
     },
-
+    slug: String,
     description: {
       type: String,
-      required: [true, 'Description is required'],
+      required: [true, 'Please add a description'],
+      maxlength: [500, 'Description can not be more than 500 characters'],
     },
-
+    website: {
+      type: String,
+      match: [
+        /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
+        'Please use a valid URL with HTTP or HTTPS',
+      ],
+    },
+    phone: {
+      type: String,
+      maxlength: [20, 'Phone number can not be longer than 20 characters'],
+    },
+    email: {
+      type: String,
+      match: [
+        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+        'Please add a valid email',
+      ],
+    },
     address: {
       type: String,
-      required: [true, 'Address is required'],
+      required: [true, 'Please add an address'],
     },
-
     location: {
+      // GeoJSON Point
       type: {
         type: String,
         enum: ['Point'],
@@ -54,13 +56,46 @@ const bootcampSchema = new Schema<Bootcamp>(
       zipcode: String,
       country: String,
     },
+    careers: {
+      type: [String],
+      required: true,
+    },
+    averageRating: {
+      type: Number,
+      default: 0,
+    },
+    averageCost: {
+      type: Number,
+      default: 0,
+    },
+    photo: {
+      type: String,
+      default: 'no-photo.jpg',
+    },
+    housing: {
+      type: Boolean,
+      default: false,
+    },
+    jobAssistance: {
+      type: Boolean,
+      default: false,
+    },
+    jobGuarantee: {
+      type: Boolean,
+      default: false,
+    },
+    acceptGi: {
+      type: Boolean,
+      default: false,
+    },
     user: {
-      type: Schema.Types.ObjectId,
+      type: Schema.ObjectId,
       ref: 'User',
       required: true,
     },
   },
   {
+    timestamps: true,
     toJSON: {
       transform(_, ret) {
         ret.id = ret._id
@@ -86,12 +121,12 @@ async function getLocation(addr: string) {
   }
 }
 
-export const Bootcamp = model('Bootcamp', bootcampSchema)
+export const BootcampModel = model('Bootcamp', bootcampSchema)
 
 // TODO: types
 export async function createBootcamp(bootcamp: any) {
   let location = await getLocation(bootcamp.address)
-  return Bootcamp.create({
+  return BootcampModel.create({
     ...bootcamp,
     location,
   })
