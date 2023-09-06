@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 
 import { signToken } from '@/utils/jwt'
-import { sendEmail } from '@/services/email.service'
+import { sendEmail } from '@/utils/email'
 import * as apperr from '@/utils/app-error'
 
 import {
@@ -82,7 +82,12 @@ export async function forgotPassword(req: Request, res: Response) {
   let resetUrl = `${req.protocol}://${host}/api/v1/auth/resetpassword/${resetToken}`
   let message = `Make a PUT request to: ${resetUrl} to reset your password`
 
-  let info = await sendEmail(user.email!, 'Password reset', message)
+  let info = await sendEmail({
+    recipient: user.email!,
+    subject: 'Password reset token',
+    message,
+  })
+
   if (!info) {
     throw apperr.internalservererror('Error sending email')
   }
