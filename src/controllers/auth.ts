@@ -10,5 +10,10 @@ export async function signup(req: Request, res: Response) {
 // path: POST /api/{ver}/auth/signin | public
 export async function signin(req: Request, res: Response) {
   const data = await userSrv.findUserByCredentials(req.body)
-  res.cookie('token', data.token).status(201).json(data)
+  res.cookie('token', data.token).status(200).json(data)
+}
+
+// path: PUT /api/{ver}/auth/signout | public
+export async function signout(req: Request, res: Response) {
+  res.clearCookie('token').status(200).json({})
 }

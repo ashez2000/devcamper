@@ -20,7 +20,7 @@ router.post('/signup', auth.signup)
  *   tags:
  *   - Auth
  */
-router.post('/signin', authCtrl.signin)
+router.post('/signin', auth.signin)
 
 /**
  * @openapi
@@ -29,7 +29,7 @@ router.post('/signin', authCtrl.signin)
  *   tags:
  *   - Auth
  */
-router.post('/signout', authCtrl.signout)
+router.post('/signout', auth.signout)
 
 /**
  * @openapi
