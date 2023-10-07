@@ -4,7 +4,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "node dist/main.js",
-    "dev": "tsup src/main.ts --format cjs --watch --onSuccess \"node dist/main.js\"",
+    "dev": "nodemon --exec tsx src/main.ts | pino-pretty",
     "build": "tsup src/main.ts --format cjs",
     "data:import": "tsx seeder/main.ts",
     "data:destroy": "tsx seeder/main.ts -d"
@@ -24,6 +24,7 @@
     "morgan": "^1.10.0",
     "node-geocoder": "^4.2.0",
     "nodemailer": "^6.9.3",
+    "pino": "^8.15.6",
     "ramda": "^0.29.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
@@ -41,8 +42,10 @@
     "@types/ramda": "^0.29.3",
     "@types/swagger-jsdoc": "^6.0.1",
     "@types/swagger-ui-express": "^4.1.3",
+    "nodemon": "^3.0.1",
+    "pino-pretty": "^10.2.3",
     "tsup": "^7.1.0",
-    "tsx": "^3.12.7",
+    "tsx": "^3.13.0",
     "typescript": "^5.2.2"
   }
 }

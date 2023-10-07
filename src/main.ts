@@ -2,32 +2,27 @@ import http from 'http'
 
 import { app } from '@/app'
 import { connectDb } from '@/db'
-import { envLoader } from '@/utils/env-loader'
-import { createDebug } from '@/utils/debug'
+import { PORT, NODE_ENV } from '@/env'
+import logger from '@/utils/logger'
 
 async function main() {
-  let debug = createDebug('main')
-  let PORT = envLoader('PORT')
-
   try {
     let { conn, dbClose } = await connectDb()
-    console.log(`main: Connected to ${conn.connection.host}`)
+    logger.info(`main: Connected to ${conn.connection.host}`)
 
     let server = http.createServer(app)
     server.listen(PORT, () => {
-      console.log(`main: Listening on port :${PORT}`)
-      console.log(`main: Docs http://localhost:${PORT}/docs/v1`)
+      logger.info(`main: Listening { port: ${PORT}, env: ${NODE_ENV} }`)
     })
 
-    function gracefulShutdown() {
+    function shutdown() {
       dbClose()
       server.close()
     }
 
-    process.on('SIGINT', gracefulShutdown)
-    process.on('SIGTERM', gracefulShutdown)
+    process.on('SIGINT', shutdown)
+    process.on('SIGTERM', shutdown)
   } catch (err) {
-    debug(err)
     process.exit(1)
   }
 }
