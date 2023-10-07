@@ -5,3 +5,7 @@ export class AppError extends Error {
     this.statusCode = statusCode
   }
 }
+
+export function UnauthorizedError(message: string = 'Unauthorized') {
+  return new AppError(message, 401)
+}

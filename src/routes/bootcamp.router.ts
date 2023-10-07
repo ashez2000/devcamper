@@ -1,10 +1,7 @@
 import { Router } from 'express'
-import courseRoutes from '$/routes/course.router'
-import * as bootcampCtrl from '$/controllers/bootcamp.controller'
+import * as bootcamps from '@/controllers/bootcamps'
 
 const router = Router()
-
-router.use('/:bootcampId/courses', courseRoutes)
 
 /**
  * @openapi
@@ -13,7 +10,7 @@ router.use('/:bootcampId/courses', courseRoutes)
  *   tags:
  *   - Bootcamp
  */
-router.get('/', bootcampCtrl.getBootcamps)
+router.get('/', bootcamps.getBootcamps)
 
 /**
  * @openapi
@@ -22,7 +19,7 @@ router.get('/', bootcampCtrl.getBootcamps)
  *   tags:
  *   - Bootcamp
  */
-router.post('/', bootcampCtrl.createBootcamp)
+router.post('/', bootcamps.createBootcamp)
 
 /**
  * @openapi
@@ -31,7 +28,7 @@ router.post('/', bootcampCtrl.createBootcamp)
  *   tags:
  *   - Bootcamp
  */
-router.get('/:id', bootcampCtrl.getBootcamp)
+router.get('/:id', bootcamps.getBootcamp)
 
 /**
  * @openapi
@@ -40,7 +37,7 @@ router.get('/:id', bootcampCtrl.getBootcamp)
  *   tags:
  *   - Bootcamp
  */
-router.put('/:id', bootcampCtrl.updateBootcamp)
+router.put('/:id', bootcamps.updateBootcamp)
 
 /**
  * @openapi
@@ -49,6 +46,6 @@ router.put('/:id', bootcampCtrl.updateBootcamp)
  *   tags:
  *   - Bootcamp
  */
-router.delete('/:id', bootcampCtrl.deleteBootcamp)
+router.delete('/:id', bootcamps.deleteBootcamp)
 
 export default router

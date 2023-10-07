@@ -1,21 +1,22 @@
 import { Request } from 'express'
-import * as apperr from '@/utils/app-error'
-import { verifyToken } from '@/utils/jwt'
-import { UserRole } from '$/models/user.model'
+import { Role } from '@prisma/client'
 
-export function getAuthPayload(req: Request, restrict?: UserRole[]) {
+import { verifyToken } from '@/utils/jwt'
+import { UnauthorizedError } from '@/utils/app-error'
+
+export function getAuthPayload(req: Request, restrict?: Role[]) {
   let token = req.cookies.token
   if (!token) {
-    throw apperr.unauthorized()
+    throw UnauthorizedError()
   }
 
   let payload = verifyToken(token)
   if (!payload) {
-    throw apperr.unauthorized()
+    throw UnauthorizedError()
   }
 
   if (restrict && !restrict.includes(payload.role)) {
-    throw apperr.unauthorized()
+    throw UnauthorizedError()
   }
 
   return payload
