@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import * as auth from '@/controllers/auth'
 import * as authCtrl from '@/controllers/auth.controller'
 
 const router = Router()
@@ -10,7 +11,7 @@ const router = Router()
  *   tags:
  *   - Auth
  */
-router.post('/signup', authCtrl.signup)
+router.post('/signup', auth.signup)
 
 /**
  * @openapi

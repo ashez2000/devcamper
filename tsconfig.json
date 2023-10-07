@@ -4,7 +4,6 @@
     "lib": ["esnext"],
     "outDir": "dist",
     "paths": {
-      "$/*": ["./src/*"],
       "@/*": ["./src/*"]
     }
   },

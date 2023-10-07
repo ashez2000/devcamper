@@ -8,7 +8,7 @@ import helmet from 'helmet'
 import hpp from 'hpp'
 import swaggerUi from 'swagger-ui-express'
 
-import authRouter from '$/routes/auth.router'
+import authRouter from '@/routes/auth.router'
 // import bootcampRouter from '$/routes/bootcamp.router'
 // import courseRouter from '$/routes/course.router'
 // import reviewRouter from '$/routes/review.router'
