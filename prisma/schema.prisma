@@ -21,6 +21,7 @@ model User {
   role     Role   @default(USER)
 
   bootcamps Bootcamp[]
+  reviews   Review[]
 }
 
 model Bootcamp {
@@ -33,5 +34,21 @@ model Bootcamp {
 
   authorId String @db.ObjectId
 
-  author User @relation(fields: [authorId], references: [id])
+  author  User     @relation(fields: [authorId], references: [id])
+  reviews Review[]
+}
+
+model Review {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  title   String
+  content String
+  rating  Int
+
+  userId     String @db.ObjectId
+  bootcampId String @db.ObjectId
+
+  user     User     @relation(fields: [userId], references: [id])
+  bootcamp Bootcamp @relation(fields: [bootcampId], references: [id])
+
+  @@unique([userId, bootcampId])
 }

@@ -10,11 +10,10 @@ import swaggerUi from 'swagger-ui-express'
 
 import authRouter from '@/routes/auth.router'
 import bootcampRouter from '@/routes/bootcamp.router'
-// import courseRouter from '$/routes/course.router'
-// import reviewRouter from '$/routes/review.router'
+import reviewRouter from '@/routes/review.router'
 
-import { swaggerSpec } from './utils/swagger'
-import { globalError, notFound } from './error'
+import { swaggerSpec } from '@/utils/swagger'
+import { globalError, notFound } from '@/error'
 
 const app = express()
 
@@ -32,8 +31,7 @@ app.use('/docs/v1', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/bootcamps', bootcampRouter)
-// app.use('/api/v1/courses', courseRouter)
-// app.use('/api/v1/reviews', reviewRouter)
+app.use('/api/v1/reviews', reviewRouter)
 
 app.use(notFound)
 app.use(globalError)

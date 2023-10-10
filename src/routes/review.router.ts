@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import * as reviewCtrl from '$/controllers/review.controller'
+import * as review from '@/controllers/reviews'
 
 const router = Router({ mergeParams: true })
 
@@ -17,7 +17,7 @@ const router = Router({ mergeParams: true })
  *   tags:
  *   - Review
  */
-router.get('/', reviewCtrl.getReviews)
+router.get('/', review.getReviews)
 
 /**
  * @openapi
@@ -26,7 +26,7 @@ router.get('/', reviewCtrl.getReviews)
  *   tags:
  *   - Review
  */
-router.post('/', reviewCtrl.createReview)
+router.post('/', review.createReview)
 
 /**
  * @openapi
@@ -35,7 +35,7 @@ router.post('/', reviewCtrl.createReview)
  *   tags:
  *   - Review
  */
-router.put('/:id', reviewCtrl.updateReview)
+router.put('/:id', review.updateReview)
 
 /**
  * @openapi
@@ -44,6 +44,6 @@ router.put('/:id', reviewCtrl.updateReview)
  *   tags:
  *   - Review
  */
-router.delete('/:id', reviewCtrl.deleteReview)
+router.delete('/:id', review.deleteReview)
 
 export default router
