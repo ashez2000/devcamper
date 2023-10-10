@@ -1,6 +1,5 @@
 import { Router } from 'express'
 import * as auth from '@/controllers/auth'
-import * as authCtrl from '@/controllers/auth.controller'
 
 const router = Router()
 
@@ -31,31 +30,31 @@ router.post('/signin', auth.signin)
  */
 router.post('/signout', auth.signout)
 
-/**
- * @openapi
- * /api/v1/auth/profile:
- *  post:
- *   tags:
- *   - Auth
- */
-router.get('/profile', authCtrl.profile)
+// /**
+//  * @openapi
+//  * /api/v1/auth/profile:
+//  *  post:
+//  *   tags:
+//  *   - Auth
+//  */
+// router.get('/profile', authCtrl.profile)
 
-/**
- * @openapi
- * /api/v1/auth/forgot-password:
- *  post:
- *   tags:
- *   - Auth
- */
-router.post('/forgot-password', authCtrl.forgotPassword)
+// /**
+//  * @openapi
+//  * /api/v1/auth/forgot-password:
+//  *  post:
+//  *   tags:
+//  *   - Auth
+//  */
+// router.post('/forgot-password', authCtrl.forgotPassword)
 
-/**
- * @openapi
- * /api/v1/auth/reset-password/{resetToken}:
- *  put:
- *   tags:
- *   - Auth
- */
-router.put('/reset-password/:resetToken', authCtrl.resetPassword)
+// /**
+//  * @openapi
+//  * /api/v1/auth/reset-password/{resetToken}:
+//  *  put:
+//  *   tags:
+//  *   - Auth
+//  */
+// router.put('/reset-password/:resetToken', authCtrl.resetPassword)
 
 export default router
