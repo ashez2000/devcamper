@@ -1,12 +1,11 @@
 {
   "extends": "@tsconfig/node18/tsconfig.json",
+  "include": ["src/**/*"],
   "compilerOptions": {
     "lib": ["esnext"],
     "outDir": "dist",
     "paths": {
       "@/*": ["./src/*"]
     }
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "**/*.test.ts"]
+  }
 }
