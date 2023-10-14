@@ -2,13 +2,15 @@ import http from 'http'
 
 import { app } from '@/app'
 import { PORT, NODE_ENV } from '@/env'
-import logger from '@/utils/logger'
+import createLogger from '@/utils/logger'
+
+const log = createLogger('main')
 
 async function main() {
   try {
     const server = http.createServer(app)
     server.listen(PORT, () => {
-      logger.info(`main: Listening { port: ${PORT}, env: ${NODE_ENV} }`)
+      log.info(`Listening { port: ${PORT}, env: ${NODE_ENV} }`)
     })
 
     const shutdown = () => {

@@ -1,5 +1,9 @@
 import pino from 'pino'
 
-const logger = pino()
+function createLogger(name: string) {
+  return pino({
+    name: name,
+  })
+}
 
-export default logger
+export default createLogger
