@@ -24,37 +24,10 @@ router.post('/signin', auth.signin)
 /**
  * @openapi
  * /api/v1/auth/signout:
- *  post:
+ *  put:
  *   tags:
  *   - Auth
  */
-router.post('/signout', auth.signout)
-
-// /**
-//  * @openapi
-//  * /api/v1/auth/profile:
-//  *  post:
-//  *   tags:
-//  *   - Auth
-//  */
-// router.get('/profile', authCtrl.profile)
-
-// /**
-//  * @openapi
-//  * /api/v1/auth/forgot-password:
-//  *  post:
-//  *   tags:
-//  *   - Auth
-//  */
-// router.post('/forgot-password', authCtrl.forgotPassword)
-
-// /**
-//  * @openapi
-//  * /api/v1/auth/reset-password/{resetToken}:
-//  *  put:
-//  *   tags:
-//  *   - Auth
-//  */
-// router.put('/reset-password/:resetToken', authCtrl.resetPassword)
+router.put('/signout', auth.signout)
 
 export default router
