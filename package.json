@@ -7,7 +7,7 @@
     "dev": "nodemon --exec tsx src/main.ts | pino-pretty",
     "build": "tsup src/main.ts --format cjs",
     "test": "vitest",
-    "data:import": "tsx seeder/main.ts",
+    "data:import": "tsx seeder/main.ts -i",
     "data:destroy": "tsx seeder/main.ts -d"
   },
   "dependencies": {
