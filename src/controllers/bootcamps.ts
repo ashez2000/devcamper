@@ -5,14 +5,14 @@ import * as bootcampSrv from '@/services/bootcamps'
 
 // path: POST /api/{ver}/bootcamps | private(publisher, admin)
 export async function createBootcamp(req: Request, res: Response) {
-  const auth = getAuthPayload(req)
-  const bootcamp = bootcampSrv.createBootcamp(req.body, auth)
+  const auth = getAuthPayload(req, ['PUBLISHER', 'ADMIN'])
+  const bootcamp = await bootcampSrv.createBootcamp(req.body, auth)
   res.status(201).json({ bootcamp })
 }
 
 // path: GET /api/{ver}/bootcamps | public
 export async function getBootcamps(req: Request, res: Response) {
-  const bootcamps = bootcampSrv.findBootcamps()
+  const bootcamps = await bootcampSrv.findBootcamps()
   res.status(200).json({ bootcamps })
 }
 
@@ -24,14 +24,20 @@ export async function getBootcamp(req: Request, res: Response) {
 
 // path: PUT /api/{ver}/bootcamps/{id} | private(publisher, admin)
 export async function updateBootcamp(req: Request, res: Response) {
-  const auth = getAuthPayload(req)
-  const bootcamp = bootcampSrv.updateBootcamp(req.params.id, req.body, auth)
+  const auth = getAuthPayload(req, ['PUBLISHER', 'ADMIN'])
+
+  const bootcamp = await bootcampSrv.updateBootcamp(
+    req.params.id,
+    req.body,
+    auth
+  )
+
   res.status(200).json({ bootcamp })
 }
 
 // path: DELETE /api/{ver}/bootcamps/{id} | private(publisher, admin)
 export async function deleteBootcamp(req: Request, res: Response) {
-  const auth = getAuthPayload(req)
-  const bootcamp = bootcampSrv.deleteBootcamp(req.params.id, auth)
+  const auth = getAuthPayload(req, ['PUBLISHER', 'ADMIN'])
+  const bootcamp = await bootcampSrv.deleteBootcamp(req.params.id, auth)
   res.status(200).json({ bootcamp })
 }

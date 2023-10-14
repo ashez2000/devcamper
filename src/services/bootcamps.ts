@@ -1,11 +1,16 @@
+import { z } from 'zod'
 import db from '@/utils/prisma'
 import { AppError, UnauthorizedError } from '@/utils/app-error'
 import { JwtPayload } from '@/utils/jwt'
 import { BootcampCreateSchema } from '@/schemas/bootcamp-schema'
+import { Bootcamp } from '@prisma/client'
 
 const BootcampNotFoundError = () => new AppError('Bootcamp not found!', 404)
 
-export async function createBootcamp(data: any, auth: JwtPayload) {
+export async function createBootcamp(
+  data: z.infer<typeof BootcampCreateSchema>,
+  auth: JwtPayload
+) {
   const { name, description } = BootcampCreateSchema.parse(data)
   const bootcamp = await db.bootcamp.create({
     data: {
@@ -32,7 +37,11 @@ export async function findBootcampById(id: string) {
   return bootcamp
 }
 
-export async function updateBootcamp(id: string, data: any, auth: JwtPayload) {
+export async function updateBootcamp(
+  id: string,
+  data: Partial<Bootcamp>,
+  auth: JwtPayload
+) {
   const bootcamp = await findBootcampById(id)
   if (bootcamp.authorId !== auth.id && auth.role !== 'ADMIN') {
     throw UnauthorizedError()

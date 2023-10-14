@@ -1,5 +1,3 @@
-import 'express-async-errors'
-
 import express from 'express'
 import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
@@ -7,6 +5,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import hpp from 'hpp'
 import swaggerUi from 'swagger-ui-express'
+import 'express-async-errors'
 
 import authRouter from '@/routes/auth.router'
 import bootcampRouter from '@/routes/bootcamp.router'

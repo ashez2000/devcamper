@@ -6,8 +6,8 @@ import db from '@/utils/prisma'
 import { AppError } from '@/utils/app-error'
 import { signToken } from '@/utils/jwt'
 import { SignupSchema, SigninSchema } from '@/schemas/user-schema'
+import { z } from 'zod'
 
-const UserNotFoundError = () => new AppError('User not found!', 404)
 const InvalidCredentialsError = () => new AppError('Invalid credentials', 404)
 
 function tokenResponse(user: User) {
@@ -19,7 +19,7 @@ function tokenResponse(user: User) {
   }
 }
 
-export async function createUser(data: any) {
+export async function createUser(data: z.infer<typeof SignupSchema>) {
   const { name, email, password, role } = SignupSchema.parse(data)
 
   const hash = await argon.hash(password)
@@ -36,7 +36,9 @@ export async function createUser(data: any) {
   return tokenResponse(user)
 }
 
-export async function findUserByCredentials(data: any) {
+export async function findUserByCredentials(
+  data: z.infer<typeof SigninSchema>
+) {
   const { email, password } = SigninSchema.parse(data)
   const user = await db.user.findUnique({ where: { email } })
   if (!user) {
