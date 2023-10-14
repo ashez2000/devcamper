@@ -22,26 +22,26 @@ export async function getReviews(req: Request, res: Response) {
     return
   }
 
-  const reviews = reviewSrv.findReviews()
+  const reviews = await reviewSrv.findReviews()
   res.status(200).json({ reviews })
 }
 
 // path: GET /api/{ver}/reviews/{id} | public
 export async function getReview(req: Request, res: Response) {
-  const review = reviewSrv.findReviewById(req.params.id)
+  const review = await reviewSrv.findReviewById(req.params.id)
   res.status(200).json({ review })
 }
 
 // path: PUT /api/{ver}/bootcamps/{id} | private(publisher, admin)
 export async function updateReview(req: Request, res: Response) {
   const auth = getAuthPayload(req)
-  const review = reviewSrv.updateReview(req.params.id, req.body, auth)
+  const review = await reviewSrv.updateReview(req.params.id, req.body, auth)
   res.status(200).json({ review })
 }
 
 // path: DELETE /api/{ver}/bootcamps/{id} | private(publisher, admin)
 export async function deleteReview(req: Request, res: Response) {
   const auth = getAuthPayload(req)
-  const bootcamp = reviewSrv.deleteReview(req.params.id, auth)
+  const bootcamp = await reviewSrv.deleteReview(req.params.id, auth)
   res.status(200).json({ bootcamp })
 }
