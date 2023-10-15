@@ -5,8 +5,8 @@ import * as reviewSrv from '@/services/reviews'
 
 // path: POST /api/{ver}/bootcamps/{bootcampId}/reviews | private(user, admin)
 export async function createReview(req: Request, res: Response) {
-  const auth = getAuthPayload(req)
-  const review = reviewSrv.createReview(req.params.bootcampId, req.body, auth)
+  const auth = getAuthPayload(req, ['USER', 'ADMIN'])
+  const review = await reviewSrv.createReview(req.params.bootcampId, req.body, auth)
   res.status(201).json({ review })
 }
 
@@ -34,14 +34,14 @@ export async function getReview(req: Request, res: Response) {
 
 // path: PUT /api/{ver}/bootcamps/{id} | private(publisher, admin)
 export async function updateReview(req: Request, res: Response) {
-  const auth = getAuthPayload(req)
+  const auth = getAuthPayload(req, ['USER', 'ADMIN'])
   const review = await reviewSrv.updateReview(req.params.id, req.body, auth)
   res.status(200).json({ review })
 }
 
 // path: DELETE /api/{ver}/bootcamps/{id} | private(publisher, admin)
 export async function deleteReview(req: Request, res: Response) {
-  const auth = getAuthPayload(req)
+  const auth = getAuthPayload(req, ['USER', 'ADMIN'])
   const bootcamp = await reviewSrv.deleteReview(req.params.id, auth)
   res.status(200).json({ bootcamp })
 }
