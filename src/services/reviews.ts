@@ -5,9 +5,30 @@ import { ReviewCreateSchema } from '@/schemas/review-schema'
 
 const ReviewNotFoundError = () => new AppError('Review not found!', 404)
 
+async function saveAvgRating(bootcampId: string) {
+  const aggr = await db.review.aggregate({
+    where: {
+      bootcampId,
+    },
+    _avg: {
+      rating: true,
+    },
+  })
+
+  const avgRating = aggr._avg.rating
+  if (avgRating) {
+    await db.bootcamp.update({
+      where: { id: bootcampId },
+      data: {
+        averageRating: avgRating,
+      },
+    })
+  }
+}
+
 export async function createReview(
   bootcampId: string,
-  data: any,
+  data: unknown,
   auth: JwtPayload
 ) {
   const { title, content, rating } = ReviewCreateSchema.parse(data)
@@ -21,6 +42,8 @@ export async function createReview(
       userId: auth.id,
     },
   })
+
+  await saveAvgRating(bootcampId)
 
   return review
 }
@@ -44,7 +67,11 @@ export async function findReviewById(id: string) {
   return review
 }
 
-export async function updateReview(id: string, data: any, auth: JwtPayload) {
+export async function updateReview(
+  id: string,
+  data: unknown,
+  auth: JwtPayload
+) {
   const review = await findReviewById(id)
   if (review.userId !== auth.id) {
     throw UnauthorizedError()
@@ -53,6 +80,7 @@ export async function updateReview(id: string, data: any, auth: JwtPayload) {
   const res = ReviewCreateSchema.partial().parse(data)
 
   const update = await db.review.update({ where: { id }, data: res })
+  await saveAvgRating(review.bootcampId)
   return update
 }
 
@@ -63,5 +91,6 @@ export async function deleteReview(id: string, auth: JwtPayload) {
   }
 
   const deleted = await db.review.delete({ where: { id } })
+  await saveAvgRating(review.bootcampId)
   return deleted
 }
