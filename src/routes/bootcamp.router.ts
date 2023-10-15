@@ -1,7 +1,10 @@
 import { Router } from 'express'
 import * as bootcamps from '@/controllers/bootcamps'
+import reviewRoutes from '@/routes/review.router'
 
 const router = Router()
+
+router.use('/:bootcampId/reviews', reviewRoutes)
 
 /**
  * @openapi

@@ -18,7 +18,7 @@ export async function getBootcamps(req: Request, res: Response) {
 
 // path: GET /api/{ver}/bootcamps/{id} | public
 export async function getBootcamp(req: Request, res: Response) {
-  const bootcamp = bootcampSrv.findBootcampById(req.params.id)
+  const bootcamp = await bootcampSrv.findBootcampById(req.params.id)
   res.status(200).json({ bootcamp })
 }
 
