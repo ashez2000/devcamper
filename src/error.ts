@@ -1,6 +1,10 @@
 import { Request, Response, NextFunction } from 'express'
-import { AppError } from '@/utils/app-error'
 import { ZodError } from 'zod'
+
+import createLogger from '@/utils/logger'
+import { AppError } from '@/utils/app-error'
+
+const log = createLogger('errorhandler')
 
 export async function globalError(
   err: Error,
@@ -8,15 +12,17 @@ export async function globalError(
   res: Response,
   next: NextFunction
 ) {
-  console.error(err)
-
   if (err instanceof AppError) {
+    log.debug(err)
     return res.status(err.statusCode).json({ message: err.message })
   }
 
   if (err instanceof ZodError) {
+    log.debug(err)
     return res.status(400).json({ message: err.message })
   }
+
+  log.error(err)
 
   res.status(500).json({ message: 'Internal server error' })
 }
