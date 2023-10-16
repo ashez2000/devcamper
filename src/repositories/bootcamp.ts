@@ -50,10 +50,9 @@ export async function bootcampUpdate(
 }
 
 export async function bootcampRemove(id: string) {
-  const bootcamp = await bootcampFindById(id)
-  await db.bootcamp.delete({
+  const bootcamp = await db.bootcamp.delete({
     where: {
-      id: bootcamp.id,
+      id: id,
     },
   })
   return bootcamp
