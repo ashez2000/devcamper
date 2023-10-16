@@ -11,7 +11,7 @@ import authRouter from '@/routes/auth.router'
 import bootcampRouter from '@/routes/bootcamp.router'
 import reviewRouter from '@/routes/review.router'
 
-import { swaggerSpec } from '@/utils/swagger'
+import swaggerSpec from '@/utils/swagger'
 import { globalError, notFound } from '@/error'
 
 const app = express()
@@ -35,4 +35,4 @@ app.use('/api/v1/reviews', reviewRouter)
 app.use(notFound)
 app.use(globalError)
 
-export { app }
+export default app

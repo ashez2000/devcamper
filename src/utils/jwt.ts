@@ -1,16 +1,15 @@
 import { createSigner, createVerifier } from 'fast-jwt'
-import { Role } from '@prisma/client'
-import { envLoader } from '@/utils/env-loader'
+import envLoad from '@/utils/envload'
 
-const JWT_SECRET = envLoader('JWT_SECRET')
+const secret = envLoad('JWT_SECRET')
 
-const sign = createSigner({ key: JWT_SECRET })
-const verify = createVerifier({ key: JWT_SECRET })
+const sign = createSigner({ key: secret })
+const verify = createVerifier({ key: secret })
 
 export type JwtPayload = {
   id: string
   email: string
-  role: Role
+  role: 'USER' | 'PUBLISHER' | 'ADMIN'
 }
 
 export function signToken(payload: JwtPayload) {
