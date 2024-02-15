@@ -3,7 +3,7 @@ import { UnauthorizedError } from '@/utils/app-error'
 import { JwtPayload } from '@/utils/jwt'
 
 import { BootcampCreate } from '@/schemas/bootcamp'
-import * as bootcampRepo from '@/repositories/bootcamp'
+import * as bootcampRepo from '@/repository/bootcamp'
 
 export async function findBootcamps(page: number, limit: number) {
   const skip = (page - 1) * limit
