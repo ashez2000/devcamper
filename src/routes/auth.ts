@@ -1,4 +1,6 @@
 import { Router } from 'express'
+
+import { protect } from '@/middlewares/auth'
 import * as auth from '@/controllers/auth'
 
 const router = Router()
@@ -29,5 +31,14 @@ router.post('/signin', auth.signin)
  *   - Auth
  */
 router.put('/signout', auth.signout)
+
+/**
+ * @openapi
+ * /api/v1/auth/profile:
+ *  get:
+ *   tags:
+ *   - Auth
+ */
+router.get('/profile', protect, auth.profile)
 
 export default router

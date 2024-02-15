@@ -1,19 +1,97 @@
-import { Request, Response } from 'express'
-import * as userSrv from '@/services/users'
+import { RequestHandler } from 'express'
 
-// path: POST /api/{ver}/auth/signup | public
-export async function signup(req: Request, res: Response) {
-  const data = await userSrv.createUser(req.body)
-  res.cookie('token', data.token).status(201).json(data)
+import { signToken } from '@/utils/jwt'
+import { signupSchema, signinSchema } from '@/schemas/auth'
+import * as userrepo from '@/repository/user'
+import { AppError } from '@/utils/app-error'
+import { getAuthPayload } from '@/helpers/auth'
+
+/**
+ * Signup user
+ * @path POST /auth/signup | Public
+ */
+export const signup: RequestHandler = async (req, res) => {
+  const data = signupSchema.parse(req.body)
+  const { id, name, email, role } = await userrepo.create(data)
+
+  const token = signToken({
+    id,
+    email,
+    role,
+  })
+
+  res.cookie('token', token)
+  res.status(201).json({
+    user: {
+      id,
+      name,
+      email,
+      role,
+    },
+    token,
+  })
 }
 
-// path: POST /api/{ver}/auth/signin | public
-export async function signin(req: Request, res: Response) {
-  const data = await userSrv.findUserByCredentials(req.body)
-  res.cookie('token', data.token).status(200).json(data)
+/**
+ * Signin user
+ * @path POST /auth/signin | Public
+ */
+export const signin: RequestHandler = async (req, res) => {
+  const data = signinSchema.parse(req.body)
+
+  const user = await userrepo.findByCredential(data)
+  if (user === null) {
+    throw new AppError('Invalid Credential', 401)
+  }
+
+  const { id, name, email, role } = user
+
+  const token = signToken({
+    id,
+    email,
+    role,
+  })
+
+  res.cookie('token', token)
+  res.status(201).json({
+    user: {
+      id,
+      name,
+      email,
+      role,
+    },
+    token,
+  })
 }
 
-// path: PUT /api/{ver}/auth/signout | public
-export async function signout(req: Request, res: Response) {
+/**
+ * Signout user
+ * @path POST /auth/signout | Private
+ */
+export const signout: RequestHandler = async (req, res) => {
   res.clearCookie('token').status(200).json({})
+}
+
+/**
+ * Get user profile data
+ * @path GET /auth/profile | Private
+ */
+export const profile: RequestHandler = async (req, res) => {
+  const auth = getAuthPayload(res)
+
+  const user = await userrepo.findById(auth.id)
+  if (user === null) {
+    throw new AppError('User not found', 404)
+  }
+
+  const { id, name, email, role } = user
+
+  res.status(200).json({
+    user: {
+      id,
+      name,
+      email,
+      role,
+    },
+  })
 }

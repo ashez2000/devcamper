@@ -1,23 +1,13 @@
-import { Request } from 'express'
-import { Role } from '@prisma/client'
+import { Response } from 'express'
 
-import { verifyToken } from '@/utils/jwt'
-import { UnauthorizedError } from '@/utils/app-error'
+import { AppError } from '@/utils/app-error'
+import { JwtPayload } from '@/utils/jwt'
 
-export function getAuthPayload(req: Request, restrict?: Role[]) {
-  const token = req.cookies.token
-  if (!token) {
-    throw UnauthorizedError()
+export const getAuthPayload = (res: Response) => {
+  const user = res.locals.user
+  if (!user) {
+    throw new AppError('Unauthorzied', 401)
   }
 
-  const payload = verifyToken(token)
-  if (!payload) {
-    throw UnauthorizedError()
-  }
-
-  if (restrict && !restrict.includes(payload.role)) {
-    throw UnauthorizedError()
-  }
-
-  return payload
+  return user as JwtPayload
 }

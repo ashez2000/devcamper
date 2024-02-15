@@ -7,7 +7,7 @@ import hpp from 'hpp'
 import swaggerUi from 'swagger-ui-express'
 import 'express-async-errors'
 
-import authRouter from '@/routes/auth.router'
+import authRoutes from '@/routes/auth'
 import bootcampRouter from '@/routes/bootcamp.router'
 import reviewRouter from '@/routes/review.router'
 
@@ -28,7 +28,7 @@ app.get('/', (_, res) => res.redirect('/docs/v1'))
 app.get('/health', (_, res) => res.send('OK'))
 app.use('/docs/v1', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
-app.use('/api/v1/auth', authRouter)
+app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/bootcamps', bootcampRouter)
 app.use('/api/v1/reviews', reviewRouter)
 
