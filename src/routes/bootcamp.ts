@@ -1,10 +1,7 @@
 import { Router } from 'express'
-import * as bootcamps from '@/controllers/bootcamps'
-import reviewRoutes from '@/routes/review.router'
+import * as bootcamp from '@/controllers/bootcamp'
 
 const router = Router()
-
-router.use('/:bootcampId/reviews', reviewRoutes)
 
 /**
  * @openapi
@@ -13,7 +10,7 @@ router.use('/:bootcampId/reviews', reviewRoutes)
  *   tags:
  *   - Bootcamp
  */
-router.get('/', bootcamps.getBootcamps)
+router.get('/', bootcamp.findMany)
 
 /**
  * @openapi
@@ -22,7 +19,7 @@ router.get('/', bootcamps.getBootcamps)
  *   tags:
  *   - Bootcamp
  */
-router.post('/', bootcamps.createBootcamp)
+router.post('/', bootcamp.create)
 
 /**
  * @openapi
@@ -31,7 +28,7 @@ router.post('/', bootcamps.createBootcamp)
  *   tags:
  *   - Bootcamp
  */
-router.get('/:id', bootcamps.getBootcamp)
+router.get('/:id', bootcamp.findById)
 
 /**
  * @openapi
@@ -40,7 +37,7 @@ router.get('/:id', bootcamps.getBootcamp)
  *   tags:
  *   - Bootcamp
  */
-router.put('/:id', bootcamps.updateBootcamp)
+router.put('/:id', bootcamp.update)
 
 /**
  * @openapi
@@ -49,6 +46,6 @@ router.put('/:id', bootcamps.updateBootcamp)
  *   tags:
  *   - Bootcamp
  */
-router.delete('/:id', bootcamps.deleteBootcamp)
+router.delete('/:id', bootcamp.remove)
 
 export default router

@@ -8,7 +8,7 @@ import swaggerUi from 'swagger-ui-express'
 import 'express-async-errors'
 
 import authRoutes from '@/routes/auth'
-import bootcampRouter from '@/routes/bootcamp.router'
+import bootcampRouter from '@/routes/bootcamp'
 import reviewRouter from '@/routes/review.router'
 
 import swaggerSpec from '@/utils/swagger'
