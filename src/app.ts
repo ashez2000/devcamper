@@ -9,7 +9,7 @@ import 'express-async-errors'
 
 import authRoutes from '@/routes/auth'
 import bootcampRouter from '@/routes/bootcamp'
-import reviewRouter from '@/routes/review.router'
+import reviewRouter from '@/routes/review'
 
 import swaggerSpec from '@/utils/swagger'
 import { globalError, notFound } from '@/error'
