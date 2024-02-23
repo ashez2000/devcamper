@@ -14,7 +14,7 @@ async function seedUsers() {
   const hash = await argon.hash('123456')
 
   await db.user.createMany({
-    data: data.users.map(u => ({
+    data: data.users.map((u) => ({
       id: u._id,
       name: u.name,
       email: u.email,
@@ -26,18 +26,21 @@ async function seedUsers() {
 
 async function seedBootcamps() {
   await db.bootcamp.createMany({
-    data: data.bootcamps.map(b => ({
+    data: data.bootcamps.map((b) => ({
       id: b._id,
       name: b.name,
       description: b.description,
-      authorId: b.user,
+      website: b.website,
+      address: b.address,
+      careers: b.careers,
+      publisherId: b.user,
     })),
   })
 }
 
 async function seedReviews() {
   await db.review.createMany({
-    data: data.reviews.map(r => ({
+    data: data.reviews.map((r) => ({
       id: r._id,
       title: r.title,
       content: r.text,

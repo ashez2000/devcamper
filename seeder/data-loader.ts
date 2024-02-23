@@ -17,6 +17,9 @@ type BootcampData = {
   _id: string
   name: string
   description: string
+  website: string
+  address: string
+  careers: string[]
   user: string
 }
 
