@@ -2,6 +2,7 @@ import { RequestHandler } from 'express'
 
 import { AppError } from '@/utils/app-error'
 import { getAuthPayload } from '@/helpers/auth'
+import { extractPagination } from '@/helpers/pagination'
 import { bootcampSchema } from '@/schemas/bootcamp'
 import * as bootcamp_repo from '@/repository/bootcamp'
 
@@ -10,7 +11,9 @@ import * as bootcamp_repo from '@/repository/bootcamp'
  * @path GET /bootcamps | Public
  */
 export const findMany: RequestHandler = async (req, res) => {
-  const bootcamps = await bootcamp_repo.findMany()
+  const { page, limit } = extractPagination(req.query)
+
+  const bootcamps = await bootcamp_repo.findMany(page, limit)
   res.status(200).json(bootcamps)
 }
 

@@ -2,24 +2,19 @@ import db from '@/utils/prisma'
 import { BootcampInput } from '@/schemas/bootcamp'
 
 // Find all bootcamps
-export const findMany = async () => {
+export const findMany = async (page: number, limit: number) => {
   const bootcamps = await db.bootcamp.findMany({
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      website: true,
-      careers: true,
-      address: true,
-      createdAt: true,
-
+    include: {
       publisher: {
         select: {
+          id: true,
           name: true,
           email: true,
         },
       },
     },
+    skip: (page - 1) * limit,
+    take: limit,
   })
 
   return bootcamps
