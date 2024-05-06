@@ -25,7 +25,7 @@ app.use(cookieParser())
 app.use(morgan('dev'))
 
 app.get('/', (_, res) => res.redirect('/docs/v1'))
-app.get('/health', (_, res) => res.send('OK'))
+app.get('/healthcheck', (_, res) => res.send('OK'))
 app.use('/docs/v1', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
 app.use('/api/v1/auth', authRoutes)

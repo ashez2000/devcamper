@@ -1,4 +1,5 @@
 import { createSigner, createVerifier } from 'fast-jwt'
+import 'dotenv/config'
 
 const secret = process.env.JWT_SECRET
 const sign = createSigner({ key: secret })
