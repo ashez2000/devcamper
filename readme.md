@@ -1,6 +1,8 @@
 # Devcamper
 
-Express REST API service for organizing educational online bootcamps
+RESTful API for a bootcamp directory platform, enabling users to manage bootcamps, courses, reviews, and user profiles.
+
+[swagger docs](https://devcamper-bboj.onrender.com)
 
 ## Run locally
 

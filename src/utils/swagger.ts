@@ -17,6 +17,14 @@ const options: SwaggerJSDoc.Options = {
         },
       },
     },
+    servers: [
+      {
+        url: 'http://localhost:3000',
+      },
+      {
+        url: 'https://devcamper-bboj.onrender.com',
+      },
+    ],
     security: [
       {
         bearerAuth: [],
@@ -27,6 +35,6 @@ const options: SwaggerJSDoc.Options = {
 }
 
 const swaggerSpec = SwaggerJSDoc(options)
-const swaggerUi = setup(swaggerSpec)
+const swaggerUi = setup(swaggerSpec, { explorer: true })
 
 export { swaggerUi, serve as swaggerServe }
