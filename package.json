@@ -10,7 +10,6 @@
     "seed": "tsx ./seed/seeder.ts"
   },
   "dependencies": {
-    "argon2": "^0.28.7",
     "bcryptjs": "^2.4.3",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.6",
@@ -33,6 +32,7 @@
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",
     "@types/argon2": "^0.15.0",
+    "@types/bcryptjs": "^2.4.6",
     "@types/cookie-parser": "^1.4.3",
     "@types/cors": "^2.8.12",
     "@types/dotenv": "^8.2.0",
