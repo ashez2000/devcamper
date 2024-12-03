@@ -3,10 +3,10 @@ import mongoose from 'mongoose'
 
 import config from '../src/config'
 
-import User from '../src/users/user.model'
+import User from '../src/user/user.model'
 import Bootcamp from '../src/bootcamp/bootcamp.model'
 import Course from '../src/courses/course.model'
-import Review from '../src/reviews/review.model'
+import Review from '../src/review/review.model'
 
 mongoose.connect(config.MONGO_URI).then(() => {
   console.log('MongoDB Connected')

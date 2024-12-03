@@ -7,8 +7,7 @@
     "build": "rimraf ./dist && tsup ./src/main.ts",
     "dev": "tsx watch ./src/main.ts",
     "test": "vitest",
-    "data:im": "ts-node ./seed/seeder.ts -i",
-    "data:ds": "ts-node ./seed/seeder.ts -d"
+    "seed": "tsx ./seed/seeder.ts"
   },
   "dependencies": {
     "argon2": "^0.28.7",
