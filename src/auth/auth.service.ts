@@ -1,9 +1,8 @@
-import User from '../users/user.model'
+import User from '../user/user.model'
 import AppError from '../utils/app-error'
-import { SigninDto } from '../users/user.dto'
 import { verifyPassword } from './auth.utils'
 
-export const getUserByCredentials = async (data: SigninDto) => {
+export const getUserByCredentials = async (data: any) => {
   const user = await User.findOne({ email: data.email })
   if (!user) throw new AppError('Invalid credentials', 401)
 

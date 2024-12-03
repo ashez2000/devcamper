@@ -1,8 +1,7 @@
 import User from './user.model'
 import AppError from '../utils/app-error'
-import { CreateUserDto } from './user.dto'
 
-export const createUser = async (data: CreateUserDto) => {
+export const createUser = async (data: any) => {
   return await User.create(data)
 }
 

@@ -1,9 +1,7 @@
 import { HydratedDocument } from 'mongoose'
 import { IUser } from './user.model'
 
-import { UserDto } from './user.dto'
-
-export const serializeUser = (user: HydratedDocument<IUser>): UserDto => {
+export const serializeUser = (user: HydratedDocument<IUser>) => {
   return {
     _id: user._id,
     name: user.name,

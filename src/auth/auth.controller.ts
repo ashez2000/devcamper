@@ -54,7 +54,7 @@ export const user: RequestHandler = asyncHandler(async (req, res, next) => {
  * Authencation middleware
  */
 export const protect: RequestHandler = (req, res, next) => {
-  let token =
+  const token =
     (req.headers.authorization || '').replace(/^Bearer\s/, '') ||
     req.cookies.token
 
