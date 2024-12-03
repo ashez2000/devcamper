@@ -1,108 +1,78 @@
-import { RequestHandler } from 'express'
+import { Request, Response } from 'express'
 
 import asyncHandler from '../utils/async-handler'
 import AppError from '../utils/app-error'
-import {
-  findAllBootcamp,
-  findBootcampById,
-  findBootcampWithinRadius,
-  createBootcamp,
-  updateBootcampById,
-  deleteBootcampById,
-} from './bootcamp.service'
 import { isAuthorized } from '../auth/auth.utils'
+import * as bootcamp from './bootcamp.service'
 
-/** Get all bootcamps handler */
-export const getAllBootcampHandler: RequestHandler = asyncHandler(
-  async (req, res, next) => {
-    const q = req.query as any
-    const bootcamps = await findAllBootcamp(q)
-
-    return res.status(200).json({
-      results: bootcamps.length,
-      bootcamps,
-    })
-  }
-)
-
-/** Get single bootcamp handler */
-export const getBootcampByIdHandler: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
-  try {
-    const bootcamp = await findBootcampById(req.params.id)
-    return res.status(200).json({
-      bootcamp,
-    })
-  } catch (error) {
-    next(error)
-  }
+/**
+ * Get bootcamps
+ * @route GET /bootcamps
+ */
+export async function getBootcamps(req: Request, res: Response) {
+  const q = req.query as any
+  const bootcamps = await bootcamp.findBootcamps(q)
+  res.status(200).json({
+    results: bootcamps.length,
+    bootcamps,
+  })
 }
 
-/** Get Bootcamps within radius */
-export const getBootcampWithinRadiusHandler: RequestHandler = asyncHandler(
-  async (req, res, next) => {
-    const { zipcode, distance } = req.params
-
-    const bootcamps = await findBootcampWithinRadius(
-      zipcode,
-      parseInt(distance)
-    )
-
-    return res.status(200).json({
-      results: bootcamps.length,
-      bootcamps,
-    })
-  }
-)
-
-/** Create bootcamp handler */
-export const createBootcampHandler: RequestHandler = async (req, res, next) => {
-  try {
-    // req.body.user = res.locals.user.id
-    const bootcamp = await createBootcamp(req.body)
-
-    return res.status(201).json({
-      bootcamp,
-    })
-  } catch (error) {
-    next(error)
-  }
+/**
+ * Get bootcamps
+ * @route GET /bootcamps/{id}
+ */
+export async function getBootcamp(req: Request, res: Response) {
+  const b = await bootcamp.findBootcamp(req.params.id)
+  res.status(200).json({
+    bootcamp: b,
+  })
 }
 
-/** Update bootcamp handler */
-export const updateBootcampByIdHandler: RequestHandler = asyncHandler(
-  async (req, res, next) => {
-    // const currentUser = res.locals.user
-    let bootcamp = await findBootcampById(req.params.id)
+/**
+ * Create bootcamp
+ * @route POST /bootcamps
+ */
+export async function createBootcamp(req: Request, res: Response) {
+  req.body.user = res.locals.user.id
+  const b = await bootcamp.createBootcamp(req.body)
+  res.status(201).json({
+    bootcamp: b,
+  })
+}
 
-    // if (!isAuthorized(bootcamp.user, currentUser)) {
-    //   return next(new AppError(`User:${currentUser.id} is not authorized`, 401))
-    // }
+/**
+ * Update bootcamp
+ * @route PUT /bootcamps/{id}
+ */
+export async function updateBootcamp(req: Request, res: Response) {
+  const curUser = res.locals.user
 
-    bootcamp = await updateBootcampById(req.params.id, req.body)
-
-    return res.status(200).json({
-      bootcamp,
-    })
+  const b = await bootcamp.findBootcamp(req.params.id)
+  if (b.user.toString() != curUser.id && curUser.role != 'admin') {
+    throw new AppError('unauthorized', 403)
   }
-)
 
-export const deleteBootcampByIdHandler: RequestHandler = asyncHandler(
-  async (req, res, next) => {
-    // const currentUser = res.locals.user
-    let bootcamp = await findBootcampById(req.params.id)
+  const update = await bootcamp.updateBootcamp(req.params.id, req.body)
+  res.status(200).json({
+    bootcamp: update,
+  })
+}
 
-    // if (!isAuthorized(bootcamp.user, currentUser)) {
-    //   return next(new AppError(`User:${currentUser.id} is not authorized`, 401))
-    // }
+/**
+ * Delete bootcamp
+ * @route DELETE /bootcamps/{id}
+ */
+export async function deleteBootcamp(req: Request, res: Response) {
+  const curUser = res.locals.user
 
-    bootcamp = await deleteBootcampById(req.params.id)
-
-    return res.status(200).json({
-      bootcamp,
-    })
+  const b = await bootcamp.findBootcamp(req.params.id)
+  if (b.user.toString() != curUser.id && curUser.role != 'admin') {
+    throw new AppError('unauthorized', 403)
   }
-)
+
+  await bootcamp.deleteBootcamp(req.params.id)
+  res.status(200).json({
+    bootcamp: b,
+  })
+}

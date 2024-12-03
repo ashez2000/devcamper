@@ -1,19 +1,7 @@
 import express from 'express'
 
-import { protect, restrictTo } from '../auth/auth.controller'
-import {
-  getAllBootcampHandler,
-  getBootcampByIdHandler,
-  getBootcampWithinRadiusHandler,
-  createBootcampHandler,
-  updateBootcampByIdHandler,
-  deleteBootcampByIdHandler,
-} from './bootcamp.controller'
-
-import {
-  createCourseHandler,
-  getAllCourseForBootcampHandler,
-} from '../courses/course.controller'
+import { protect, restrictTo } from '../middlewares/auth.middleware'
+import * as bootcampHandler from './bootcamp.controller'
 
 const router = express.Router()
 
@@ -24,7 +12,7 @@ const router = express.Router()
  *    tags:
  *      - Bootcamps
  */
-router.get('/', getAllBootcampHandler)
+router.get('/', bootcampHandler.getBootcamps)
 
 /**
  * @openapi
@@ -33,18 +21,7 @@ router.get('/', getAllBootcampHandler)
  *    tags:
  *      - Bootcamps
  */
-router.get('/:id', getBootcampByIdHandler)
-
-router.get('/:bootcampId/courses', getAllCourseForBootcampHandler)
-
-/**
- * @openapi
- * /api/v1/bootcamps/radius/{zipcode}/{distance}:
- *  get:
- *    tags:
- *      - Bootcamps
- */
-router.get('/radius/:zipcode/:distance', getBootcampWithinRadiusHandler)
+router.get('/:id', bootcampHandler.getBootcamp)
 
 /**
  * @openapi
@@ -55,16 +32,9 @@ router.get('/radius/:zipcode/:distance', getBootcampWithinRadiusHandler)
  */
 router.post(
   '/',
-  // protect,
-  // restrictTo('admin', 'publisher'),
-  createBootcampHandler
-)
-
-router.post(
-  '/:bootcampId/courses',
-  // protect,
-  // restrictTo('admin', 'publisher'),
-  createCourseHandler
+  protect,
+  restrictTo('admin', 'publisher'),
+  bootcampHandler.createBootcamp
 )
 
 /**
@@ -76,9 +46,9 @@ router.post(
  */
 router.put(
   '/:id',
-  // protect,
-  // restrictTo('admin', 'publisher'),
-  updateBootcampByIdHandler
+  protect,
+  restrictTo('admin', 'publisher'),
+  bootcampHandler.updateBootcamp
 )
 
 /**
@@ -90,9 +60,9 @@ router.put(
  */
 router.delete(
   '/:id',
-  // protect,
-  // restrictTo('admin', 'publisher'),
-  deleteBootcampByIdHandler
+  protect,
+  restrictTo('admin', 'publisher'),
+  bootcampHandler.deleteBootcamp
 )
 
 export default router
