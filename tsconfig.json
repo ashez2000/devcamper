@@ -1,9 +1,3 @@
 {
-  "extends": "@tsconfig/node16/tsconfig.json",
-  "compilerOptions": {
-    "lib": ["esnext"],
-    "module": "commonjs",
-    "outDir": "/dist"
-  },
-  "include": ["src/**/*"]
+  "extends": "@tsconfig/node20/tsconfig.json"
 }
