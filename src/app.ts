@@ -9,7 +9,7 @@ import 'express-async-errors'
 
 import ratelimit from './utils/ratelimit.util'
 import { swaggerServe, swaggerUi } from './utils/swagger'
-import { errorHandler, notFoundHandler } from './error/error.controller'
+import { errorHandler, notFoundHandler } from './middlewares/error.middleware'
 import routes from './routes'
 
 const app = express()
