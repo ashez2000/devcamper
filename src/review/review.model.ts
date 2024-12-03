@@ -1,27 +1,34 @@
-import { Schema, model, Types, Model } from 'mongoose'
-import { updateBootcampById } from '../bootcamp/bootcamp.service'
+import { Schema, model, Types } from 'mongoose'
 
 interface IReview {
-  content: string
+  title: string
+  text: string
   rating: number
+  createdAt: Date
   bootcamp: Types.ObjectId
   user: Types.ObjectId
 }
 
-interface IReviewModel extends Model<IReview> {
-  getAverageRating: (bootcampId: string) => Promise<void>
-}
-
-const ReviewSchema = new Schema<IReview, IReviewModel>({
-  content: {
+const ReviewSchema = new Schema<IReview>({
+  title: {
     type: String,
-    required: [true, 'Please provide some content'],
+    trim: true,
+    required: [true, 'Please add a title for the review'],
+    maxlength: 100,
+  },
+  text: {
+    type: String,
+    required: [true, 'Please add some text'],
   },
   rating: {
     type: Number,
-    required: true,
     min: 1,
     max: 10,
+    required: [true, 'Please add a rating between 1 and 10'],
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
   bootcamp: {
     type: Schema.Types.ObjectId,
@@ -35,38 +42,6 @@ const ReviewSchema = new Schema<IReview, IReviewModel>({
   },
 })
 
-// Prevent user from submitting more than one review per bootcamp
-// ReviewSchema.index({ bootcamp: 1, user: 1 }, { unique: true })
-
-// Static method to get avg rating and save
-ReviewSchema.statics.getAverageRating = async function (bootcampId) {
-  const obj = await this.aggregate([
-    {
-      $match: { bootcamp: bootcampId },
-    },
-    {
-      $group: {
-        _id: '$bootcamp',
-        averageRating: { $avg: '$rating' },
-      },
-    },
-  ])
-
-  await updateBootcampById(bootcampId, {
-    averageRating: obj[0].averageRating,
-  })
-}
-
-// Call getAverageRating after save
-ReviewSchema.post('save', function () {
-  Review.getAverageRating(this.bootcamp.toString())
-})
-
-// Call getAverageRating before remove
-ReviewSchema.pre('remove', function () {
-  Review.getAverageRating(this.bootcamp.toString())
-})
-
-const Review = model<IReview, IReviewModel>('Review', ReviewSchema)
+const Review = model<IReview>('Review', ReviewSchema)
 
 export default Review

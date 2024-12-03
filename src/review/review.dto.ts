@@ -1,4 +1,5 @@
 export interface CreateReviewDto {
-  content: string
+  title: string
+  text: string
   rating: number
 }

@@ -5,7 +5,7 @@ import config from '../src/config'
 
 import User from '../src/user/user.model'
 import Bootcamp from '../src/bootcamp/bootcamp.model'
-import Course from '../src/courses/course.model'
+import Course from '../src/course/course.model'
 import Review from '../src/review/review.model'
 
 mongoose.connect(config.MONGO_URI).then(() => {
@@ -29,7 +29,7 @@ const importData = async () => {
     await User.create(users)
     await Bootcamp.create(bootcamps)
     await Course.create(courses)
-    // await Review.create(reviews)
+    await Review.create(reviews)
     console.log('Data Imported')
     process.exit()
   } catch (err) {

@@ -1,27 +1,67 @@
-import express = require('express')
-import { protect, restrictTo } from '../auth/auth.controller'
-import {
-  getReviewsForBootcampHandler,
-  createReviewHandler,
-  deleteReviewHandler,
-} from './review.controller'
+import { Router } from 'express'
+import { protect, restrictTo } from '../middlewares/auth.middleware'
+import * as reviewHandler from './review.controller'
 
-const router = express.Router()
+const router = Router()
 
-router.get('/bootcamps/:bootcampId/reviews', getReviewsForBootcampHandler)
+/**
+ * @openapi
+ * /api/v1/reviews:
+ *  get:
+ *    tags:
+ *      - Reviews
+ */
+router.get('/', reviewHandler.getReviews)
 
+/**
+ * @openapi
+ * /api/v1/reviews/{id}:
+ *  get:
+ *    tags:
+ *      - Reviews
+ */
+router.get('/:id', reviewHandler.getReview)
+
+/**
+ * @openapi
+ * /api/v1/reviews:
+ *  post:
+ *    tags:
+ *      - Courses
+ */
 router.post(
-  '/bootcamps/:bootcampId/reviews',
-  protect,
-  restrictTo('user'),
-  createReviewHandler
-)
-
-router.delete(
-  '/reviews/:id',
+  '/',
   protect,
   restrictTo('user', 'admin'),
-  deleteReviewHandler
+  reviewHandler.createReview
+)
+
+/**
+ * @openapi
+ * /api/v1/reviews/{id}:
+ *  put:
+ *    tags:
+ *      - Reviews
+ */
+router.put(
+  '/:id',
+  protect,
+  restrictTo('user', 'admin'),
+  reviewHandler.updateReview
+)
+
+/**
+ * @openapi
+ * /api/v1/reviews/{id}:
+ *  delete:
+ *    tags:
+ *      - Reviews
+ */
+router.delete(
+  '/:id',
+  protect,
+  restrictTo('review', 'admin'),
+  reviewHandler.deleteReview
 )
 
 export default router

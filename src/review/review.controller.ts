@@ -1,59 +1,77 @@
-import { RequestHandler } from 'express'
+import { Request, Response } from 'express'
 
 import AppError from '../utils/app-error'
-import asyncHandler from '../utils/async-handler'
-import {
-  findReviewsForBootcamp,
-  createReview,
-  findReviewById,
-  deleteReviewById,
-} from './review.service'
-import { isAuthorized } from '../auth/auth.utils'
+import * as bootcamp from '../bootcamp/bootcamp.service'
+import * as review from './review.service'
 
 /**
- * Get all reviews for bootcamp handler
+ * Get reviews
+ * @route GET /reviews
  */
-export const getReviewsForBootcampHandler: RequestHandler = asyncHandler(
-  async (req, res, next) => {
-    const reviews = await findReviewsForBootcamp(req.params.bootcampId)
-
-    res.status(200).json({
-      reviews,
-    })
-  }
-)
+export async function getReviews(req: Request, res: Response) {
+  const q = req.query as any
+  const reviews = await review.findReviews(q)
+  res.status(200).json({
+    results: reviews.length,
+    reviews,
+  })
+}
 
 /**
- * Create new review for bootcamp handler
+ * Get review by id
+ * @route GET /reviews/{id}
  */
-export const createReviewHandler: RequestHandler = asyncHandler(
-  async (req, res, next) => {
-    req.body.bootcamp = req.params.bootcampId
-    req.body.user = res.locals.user.id
-
-    const review = await createReview(req.body)
-
-    res.status(201).json({
-      review,
-    })
-  }
-)
+export async function getReview(req: Request, res: Response) {
+  const r = await review.findReview(req.params.id)
+  res.status(200).json({
+    review: r,
+  })
+}
 
 /**
- * Delete a review by id handler
+ * Create review
+ * @route POST /reviews
  */
-export const deleteReviewHandler: RequestHandler = asyncHandler(
-  async (req, res, next) => {
-    let review = await findReviewById(req.params.id)
+export async function createReview(req: Request, res: Response) {
+  req.body.user = res.locals.user.id
 
-    if (!isAuthorized(review.user, res.locals.user)) {
-      throw new AppError('Not authorized to delete this review', 401)
-    }
+  await bootcamp.findBootcamp(req.body.bootcamp)
+  const r = await review.createReview(req.body)
+  res.status(201).json({
+    review: r,
+  })
+}
 
-    review = await deleteReviewById(req.params.id)
-
-    res.status(200).json({
-      review,
-    })
+/**
+ * Update review
+ * @route PUT /reviews/{id}
+ */
+export async function updateReview(req: Request, res: Response) {
+  const curUser = res.locals.user
+  const r = await review.findReview(req.params.id)
+  if (r.user.toString() != curUser.id && curUser.role != 'admin') {
+    throw new AppError('unauthorized', 403)
   }
-)
+
+  const update = await review.updateReview(req.params.id, req.body)
+  res.status(200).json({
+    review: update,
+  })
+}
+
+/**
+ * Delete review
+ * @route DELETE /reviews/{id}
+ */
+export async function deleteReview(req: Request, res: Response) {
+  const curUser = res.locals.user
+  const r = await review.findReview(req.params.id)
+  if (r.user.toString() != curUser.id && curUser.role != 'admin') {
+    throw new AppError('unauthorized', 403)
+  }
+
+  await review.deleteReview(req.params.id)
+  res.status(200).json({
+    review: r,
+  })
+}
