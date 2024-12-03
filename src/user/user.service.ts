@@ -1,12 +1,15 @@
-import User from './user.model'
 import AppError from '../utils/app-error'
+import User from './user.model'
+import { CreateUserDto } from './user.dto'
 
-export const createUser = async (data: any) => {
+export async function createUser(data: CreateUserDto) {
   return await User.create(data)
 }
 
-export const getUserById = async (id: string) => {
+export async function getUserById(id: string) {
   const user = await User.findById(id)
-  if (!user) throw new AppError('User not found', 404)
+  if (!user) {
+    throw new AppError(`user (${id}) not found`, 404)
+  }
   return user
 }

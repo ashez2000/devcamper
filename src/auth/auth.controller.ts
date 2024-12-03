@@ -1,54 +1,47 @@
-import { RequestHandler } from 'express'
+import { Request, Response, RequestHandler } from 'express'
 
+import AppError from '../utils/app-error'
+import { createUser } from '../user/user.service'
 import { getSignedToken, cookieOptions, verifyToken } from './auth.utils'
 import { getUserByCredentials } from './auth.service'
 
-import AppError from '../utils/app-error'
-import asyncHandler from '../utils/async-handler'
-import { serializeUser } from '../user/user.utils'
-import { createUser, getUserById } from '../user/user.service'
-
 /**
- * User signup controller
+ * Register new user
+ * @route POST /auth/register
  */
-export const signup: RequestHandler = asyncHandler(async (req, res, next) => {
+export async function register(req: Request, res: Response) {
   const { name, email, password, role } = req.body
+  if (role != 'user' && role != 'publisher') {
+    throw new AppError(`invalid user role "${role}"`, 400)
+  }
 
   const user = await createUser({ name, email, password, role })
   const token = getSignedToken({ id: user._id, role: user.role })
 
   res.cookie('token', token, cookieOptions)
-  return res.status(201).json({
+  res.status(201).json({
     token,
   })
-})
+}
 
 /**
- * User signin controller
+ * Login user
+ * @route POST /auth/login
  */
-export const signin: RequestHandler = asyncHandler(async (req, res, next) => {
+export async function login(req: Request, res: Response) {
   const { email, password } = req.body
+  if (!email || !password) {
+    throw new AppError('email and password required', 401)
+  }
 
   const user = await getUserByCredentials({ email, password })
   const token = getSignedToken({ id: user._id, role: user.role })
 
   res.cookie('token', token, cookieOptions)
-  return res.status(200).json({
+  res.status(200).json({
     token,
   })
-})
-
-/**
- * Get user profile controller
- */
-export const user: RequestHandler = asyncHandler(async (req, res, next) => {
-  const u = await getUserById(res.locals.user.id)
-  const user = serializeUser(u)
-
-  return res.status(200).json({
-    user,
-  })
-})
+}
 
 /**
  * Authencation middleware
