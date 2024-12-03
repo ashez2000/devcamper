@@ -42,3 +42,12 @@ export async function login(req: Request, res: Response) {
     token,
   })
 }
+
+/**
+ * Logout user
+ * @route POST /auth/logout
+ */
+export async function logout(req: Request, res: Response) {
+  res.clearCookie('token')
+  res.status(200).json({})
+}

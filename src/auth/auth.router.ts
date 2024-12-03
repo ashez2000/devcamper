@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { register, login } from './auth.controller'
+import { register, login, logout } from './auth.controller'
 
 const router = Router()
 
@@ -20,5 +20,14 @@ router.post('/register', register)
  *      - Auth
  */
 router.post('/login', login)
+
+/**
+ * @openapi
+ * /api/v1/auth/logout:
+ *  post:
+ *    tags:
+ *      - Auth
+ */
+router.post('/logout', logout)
 
 export default router
