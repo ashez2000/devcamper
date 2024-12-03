@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "type": "commonjs",
   "scripts": {
-    "start": "node build/main.js",
-    "build": "rimraf build && tsc",
+    "start": "node ./dist/main.js",
+    "build": "rimraf ./dist && tsup ./src/main.ts",
     "dev": "tsx watch ./src/main.ts",
     "test": "vitest",
     "data:im": "ts-node ./seed/seeder.ts -i",
@@ -53,6 +53,7 @@
     "prettier": "^2.7.1",
     "rimraf": "^3.0.2",
     "supertest": "^7.0.0",
+    "tsup": "^8.3.5",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
