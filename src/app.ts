@@ -24,6 +24,10 @@ app.use(morgan('dev'))
 app.use(cookieParser())
 app.use(express.json())
 
+app.get('/health', (req, res) => {
+  res.send('OK')
+})
+
 // Swagger Docs
 app.use('/api/v1/docs', swaggerServe, swaggerUi)
 app.get('/', (req, res) => {
