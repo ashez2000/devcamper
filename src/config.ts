@@ -1,6 +1,18 @@
-import dotenv from 'dotenv'
+import { loadenv } from './utils/env'
 
-dotenv.config()
+export type AppConfig = {
+  port: string
+  env: string
+}
+
+export const appConfig: AppConfig = {
+  port: loadenv('PORT', '3000'),
+  env: loadenv('NODE_ENV', 'development'),
+}
+
+export const dbConfig = {
+  url: loadenv('MONGODB_URI', 'mongodb://localhost:27017/devcamper'),
+}
 
 const config = {
   PORT: parseInt(process.env.PORT || '3000', 10),
