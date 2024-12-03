@@ -8,6 +8,7 @@ import mongoSanitize from 'express-mongo-sanitize'
 import rateLimit from 'express-rate-limit'
 import 'express-async-errors'
 
+import { requestLogger } from './middlewares/logger.middleware'
 import { swaggerServe, swaggerUi } from './utils/swagger'
 import { errorHandler, notFoundHandler } from './middlewares/error.middleware'
 import routes from './routes'
@@ -23,6 +24,7 @@ app.use(cors())
 app.use(morgan('dev'))
 app.use(cookieParser())
 app.use(express.json())
+app.use(requestLogger)
 
 // Ratelimt
 app.use(

@@ -15,7 +15,6 @@ export const filter = (query: Query): Query => {
 export const select = (query: Query) => {
   if (query.fields) {
     const fields = query.fields.split(',').join(' ')
-    console.log(fields)
     return fields
   }
 
