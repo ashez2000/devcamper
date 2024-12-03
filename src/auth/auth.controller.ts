@@ -1,8 +1,8 @@
-import { Request, Response, RequestHandler } from 'express'
+import { Request, Response } from 'express'
 
 import AppError from '../utils/app-error'
 import { createUser } from '../user/user.service'
-import { getSignedToken, cookieOptions, verifyToken } from './auth.utils'
+import { getSignedToken, cookieOptions } from './auth.utils'
 import { getUserByCredentials } from './auth.service'
 
 /**
@@ -41,40 +41,4 @@ export async function login(req: Request, res: Response) {
   res.status(200).json({
     token,
   })
-}
-
-/**
- * Authencation middleware
- */
-export const protect: RequestHandler = (req, res, next) => {
-  const token =
-    (req.headers.authorization || '').replace(/^Bearer\s/, '') ||
-    req.cookies.token
-
-  if (!token) {
-    return next(
-      new AppError('You are not logged in! Please log in to get access.', 401)
-    )
-  }
-
-  const decoded = verifyToken(token)
-  res.locals.user = decoded
-
-  next()
-}
-
-/**
- * Role authorization middleware
- */
-export const restrictTo = (...roles: string[]): RequestHandler => {
-  return (req, res, next) => {
-    // roles ['admin', 'publisher', 'user']
-    if (!roles.includes(res.locals.user.role)) {
-      return next(
-        new AppError('You do not have permission to perform this action', 403)
-      )
-    }
-
-    next()
-  }
 }
