@@ -1,6 +1,30 @@
 # Devcamper
 
-Nodejs API service for organizing educational online bootcamps.
+Express REST API service for organizing educational online bootcamps
+
+## Run locally
+
+```bash
+# Setup .env
+cp .env.example .env
+
+npm install
+npm run build
+npm start
+
+# Run in development
+npm run dev
+```
+
+## Environment variables
+
+```
+PORT = 3000
+NODE_ENV = "development"
+MONGO_URI = "mongodb://localhost:27017/devcamper"
+JWT_SECRET = "somethingsecret"
+JWT_EXPIRE = "1h"
+```
 
 ## Seed data
 
