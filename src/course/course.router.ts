@@ -1,13 +1,7 @@
 import express from 'express'
-import { protect, restrictTo } from '../auth/auth.controller'
-import {
-  getAllCourseHandler,
-  getAllCourseForBootcampHandler,
-  getCourseByIdHandler,
-  createCourseHandler,
-  updateCourseByIdHandler,
-  deleteCourseByIdHandler,
-} from './course.controller'
+
+import { protect, restrictTo } from '../middlewares/auth.middleware'
+import * as courseHandler from './course.controller'
 
 const router = express.Router()
 
@@ -18,7 +12,7 @@ const router = express.Router()
  *    tags:
  *      - Courses
  */
-router.get('/', getAllCourseHandler)
+router.get('/', courseHandler.getCourses)
 
 /**
  * @openapi
@@ -27,20 +21,20 @@ router.get('/', getAllCourseHandler)
  *    tags:
  *      - Courses
  */
-router.get('/:id', getCourseByIdHandler)
+router.get('/:id', courseHandler.getCourse)
 
 /**
  * @openapi
- * /api/v1/courses/{id}:
+ * /api/v1/courses:
  *  post:
  *    tags:
  *      - Courses
  */
 router.post(
-  '/:bootcampId/courses',
+  '/',
   protect,
   restrictTo('publisher', 'admin'),
-  createCourseHandler
+  courseHandler.createCourse
 )
 
 /**
@@ -52,9 +46,9 @@ router.post(
  */
 router.put(
   '/:id',
-  // protect,
-  // restrictTo('publisher', 'admin'),
-  updateCourseByIdHandler
+  protect,
+  restrictTo('publisher', 'admin'),
+  courseHandler.updateCourse
 )
 
 /**
@@ -66,9 +60,9 @@ router.put(
  */
 router.delete(
   '/:id',
-  // protect,
-  // restrictTo('publisher', 'admin'),
-  deleteCourseByIdHandler
+  protect,
+  restrictTo('publisher', 'admin'),
+  courseHandler.deleteCourse
 )
 
 export default router
