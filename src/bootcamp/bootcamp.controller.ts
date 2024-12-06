@@ -1,8 +1,7 @@
 import { Request, Response } from 'express'
 
-import asyncHandler from '../utils/async-handler'
 import AppError from '../utils/app-error'
-import { isAuthorized } from '../auth/auth.utils'
+import * as course from '../course/courses.service'
 import * as bootcamp from './bootcamp.service'
 
 /**
@@ -26,6 +25,21 @@ export async function getBootcamp(req: Request, res: Response) {
   const b = await bootcamp.findBootcamp(req.params.id)
   res.status(200).json({
     bootcamp: b,
+  })
+}
+
+/**
+ * Get courses for bootcamp
+ * @route GET /bootcamps/{id}/courses
+ */
+export async function getBootcampCourses(req: Request, res: Response) {
+  const courses = await course.findCoursesForBootcamp(
+    req.params.id,
+    req.query as any
+  )
+  res.status(200).json({
+    results: courses.length,
+    courses,
   })
 }
 

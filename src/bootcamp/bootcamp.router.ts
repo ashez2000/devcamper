@@ -16,6 +16,15 @@ router.get('/', bootcampHandler.getBootcamps)
 
 /**
  * @openapi
+ * /api/v1/bootcamps/{id}/courses:
+ *  get:
+ *    tags:
+ *      - Bootcamps
+ */
+router.get('/:id/courses', bootcampHandler.getBootcampCourses)
+
+/**
+ * @openapi
  * /api/v1/bootcamps/{id}:
  *  get:
  *    tags:
