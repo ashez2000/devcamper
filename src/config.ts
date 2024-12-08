@@ -23,3 +23,11 @@ export const jwtConfig = {
   secret: loadenv('JWT_SECRET'),
   expire: loadenv('JWT_EXPIRE', '30d'),
 }
+
+// SMTP Config
+export const smtpConfig = {
+  host: loadenv('SMTP_HOST'),
+  port: parseInt(loadenv('SMTP_PORT')),
+  username: loadenv('SMTP_USERNAME'),
+  password: loadenv('SMTP_PASSWORD'),
+}
